@@ -38,7 +38,7 @@ def marcar_com_pin(nome_municipio, base_image, df_coord, pgw):
     return imagem_marcada
 
 # Carregar dados
-df = pd.read_csv("../estatisticas_coverage_historico.csv", sep=";", decimal=",")
+df = pd.read_csv("../historico/estatisticas_coverage_historico.csv", sep=";", decimal=",")
 df["decada"] = (df["ano"] // 10) * 10
 
 # Legenda MapBiomas
@@ -109,7 +109,7 @@ else:
     st.markdown("#### Localização do Município no Mapa (Comparativo 1985 vs 2023)")
     col1, col2 = st.columns(2)
 
-    coord_path = "../municipios_coord.csv"
+    coord_path = "../coordenadas/municipios_coord.csv"
     df_coord = pd.read_csv(coord_path)
 
     for ano, col in zip(["1985", "2023"], [col1, col2]):
