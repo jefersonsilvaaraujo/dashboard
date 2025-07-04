@@ -44,8 +44,8 @@ pip install streamlit pandas plotly Pillow reportlab
 1. **Clone o repositório:**
 
 ```bash
-git clone https://github.com/seuusuario/jef_dashboard.git
-cd jef_dashboard
+git clone https://github.com/seuusuario/dashboard.git
+cd dashboard
 ```
 
 2. **(Opcional) Crie e ative um ambiente virtual:**
@@ -108,7 +108,7 @@ Desenvolvido como parte de um projeto de pesquisa sobre predição de risco ambi
 - VPS com Apache2 instalado e ativo
 - Python 3.8+ e pip
 - Sistema operacional Linux (Ubuntu recomendado)
-- A aplicação deve estar clonada em `/opt/jef_dashboard/`
+- A aplicação deve estar clonada em `/opt/dashboard/`
 
 ### 2. Criar um usuário para a aplicação
 
@@ -121,7 +121,7 @@ sudo usermod -aG sudo streamlituser
 
 ```bash
 sudo su - streamlituser
-cd /opt/jef_dashboard
+cd /opt/dashboard
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
@@ -142,8 +142,8 @@ After=network.target
 
 [Service]
 User=streamlituser
-WorkingDirectory=/opt/jef_dashboard
-ExecStart=/opt/jef_dashboard/venv/bin/streamlit run app.py --server.port=8501 --server.headless=true
+WorkingDirectory=/opt/dashboard
+ExecStart=/opt/dashboard/venv/bin/streamlit run app.py --server.port=8501 --server.headless=true
 Restart=always
 
 [Install]
