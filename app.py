@@ -9,6 +9,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from plotly.io import write_image
 import os
+from plotly.io import to_image
 
 
 # Funções auxiliares
@@ -339,7 +340,9 @@ c.drawString(50, 785, f"Gerado em: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')
 
 # Exportar o primeiro gráfico (fig1) como imagem temporária
 img_temp = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
-fig1.write_image(img_temp.name)
+img_bytes = fig1.to_image(format="png", engine="kaleido")
+with open(img_temp.name, "wb") as f:
+    f.write(img_bytes)
 c.drawImage(img_temp.name, 50, 500, width=500, height=250)
 c.showPage()
 
@@ -351,7 +354,9 @@ figures = [fig_area, fig_scatter, fig2, fig3, fig_dec, fig_comp, fig_dif, fig_an
 
 for fig in figures:
     img_temp = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
-    write_image(fig, img_temp.name)
+    img_bytes = fig.to_image(format="png", engine="kaleido")
+    with open(img_temp.name, "wb") as f:
+        f.write(img_bytes)
     c.drawImage(img_temp.name, 50, 500, width=500, height=250)
     c.showPage()
 
