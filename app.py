@@ -140,7 +140,7 @@ else:
             col.warning(f"Erro ao carregar mapa de {ano}: {e}")
 
 # Abas principais
-abas = st.tabs(["Evolução Temporal", "Distribuição Anual", "Participação Percentual", "Análise por Década", "Comparação Entre Anos", "Análises Especiais"])
+abas = st.tabs(["Evolução Temporal", "Distribuição Anual", "Participação Percentual", "Análise por Década", "Comparação Entre Anos", "Análises Especiais", "Análises por Estados" ])
 
 with abas[0]:
     st.markdown("#### Gráfico de Linha")
@@ -317,6 +317,72 @@ with abas[5]:
     fig_ant = px.line(df_idx.reset_index(), x="ano", y="índice", title="Índice de Antropização ao Longo do Tempo",
                       labels={"índice": "% Área Antropizada"})
     st.plotly_chart(fig_ant, use_container_width=True)
+
+with abas[6]:
+    st.markdown("Análises por Estado")
+
+    estados_disponiveis = sorted(df["SIGLA_UF"].unique())
+    estados_selecionados = st.multiselect("Filtrar estados:", estados_disponiveis, default=estados_disponiveis)
+    df_estado = df[df["SIGLA_UF"].isin(estados_selecionados)]
+
+    # 1. Quantidade de municípios por estado
+    st.markdown("### 1. Quantidade de Municípios por Estado")
+    df_mun = df_estado.groupby("SIGLA_UF")["NM_MUN"].nunique().reset_index(name="Quantidade de Municípios")
+    st.dataframe(df_mun)
+    fig1 = px.bar(df_mun, x="SIGLA_UF", y="Quantidade de Municípios", title="Quantidade de Municípios por Estado")
+    st.plotly_chart(fig1, use_container_width=True)
+
+    # 2. Perda de vegetação nativa por estado
+    st.markdown("### 2. Perda de Vegetação Nativa por Estado (1985–2023)")
+    nativas = ["Formação Florestal", "Formação Savânica"]
+    df_nat = df_estado[df_estado["nome_classe"].isin(nativas) & df_estado["ano"].isin([1985, 2023])]
+    df_nat_pivot = df_nat.pivot_table(index=["SIGLA_UF", "nome_classe"], columns="ano", values="area_ha", aggfunc="sum").fillna(0)
+    df_nat_pivot["variação"] = df_nat_pivot[2023] - df_nat_pivot[1985]
+    df_nat_agg = df_nat_pivot.groupby("SIGLA_UF")["variação"].sum().reset_index()
+    fig2 = px.bar(df_nat_agg, x="SIGLA_UF", y="variação", title="Perda Total de Vegetação Nativa (ha)", labels={"variação": "Perda (ha)"})
+    st.plotly_chart(fig2, use_container_width=True)
+
+    # 3. Evolução da cobertura agrícola por estado
+    st.markdown("### 3. Evolução da Cobertura Agrícola (1985–2023)")
+    agro = ["Soja", "Pastagem", "Agricultura (Outros)", "Cana-de-açúcar"]
+    df_agro = df_estado[df_estado["nome_classe"].isin(agro) & df_estado["ano"].isin([1985, 2023])]
+    df_agro_pivot = df_agro.pivot_table(index=["SIGLA_UF", "nome_classe"], columns="ano", values="area_ha", aggfunc="sum").fillna(0)
+    df_agro_pivot["crescimento"] = df_agro_pivot[2023] - df_agro_pivot[1985]
+    fig3 = px.bar(df_agro_pivot.reset_index(), x="SIGLA_UF", y="crescimento", color="nome_classe", title="Crescimento de Cobertura Agrícola por Estado")
+    st.plotly_chart(fig3, use_container_width=True)
+
+    # 4. Urbanização por estado
+    st.markdown("### 4. Urbanização por Estado ao Longo do Tempo")
+    df_urb = df_estado[df_estado["nome_classe"] == "Área Urbana"]
+    df_urb_agg = df_urb.groupby(["ano", "SIGLA_UF"])["area_ha"].sum().reset_index()
+    fig4 = px.line(df_urb_agg, x="ano", y="area_ha", color="SIGLA_UF", title="Evolução da Área Urbana por Estado")
+    st.plotly_chart(fig4, use_container_width=True)
+
+    # 5. Índice médio de antropização por estado
+    st.markdown("### 5. Índice Médio de Antropização por Estado")
+    antropicas = ["Pastagem", "Soja", "Agricultura (Outros)", "Área Urbana", "Mineração", "Cana-de-açúcar"]
+    df_ant = df_estado.copy()
+    df_ant["tipo"] = df_ant["nome_classe"].apply(lambda x: "Antropizado" if x in antropicas else "Natural")
+    df_idx = df_ant.groupby(["SIGLA_UF", "ano", "tipo"])["area_ha"].sum().unstack().fillna(0)
+    df_idx["índice"] = (df_idx["Antropizado"] / (df_idx["Antropizado"] + df_idx["Natural"])) * 100
+    df_idx_reset = df_idx.reset_index()
+    fig5 = px.line(df_idx_reset, x="ano", y="índice", color="SIGLA_UF", title="Índice de Antropização por Estado")
+    st.plotly_chart(fig5, use_container_width=True)
+
+    # 6. Diversidade de classes por estado
+    st.markdown("### 6. Diversidade de Classes por Estado")
+    df_div = df_estado.groupby(["SIGLA_UF", "ano"])["nome_classe"].nunique().reset_index(name="n_classes")
+    fig6 = px.line(df_div, x="ano", y="n_classes", color="SIGLA_UF", title="Número de Classes de Uso e Cobertura por Estado")
+    st.plotly_chart(fig6, use_container_width=True)
+
+    # 7. Década de maior alteração por estado
+    st.markdown("### 7. Década com Maior Alteração de Uso e Cobertura por Estado")
+    df_alt = df_estado.groupby(["SIGLA_UF", "decada", "nome_classe"])["area_ha"].sum().unstack().fillna(0)
+    df_alt_diff = df_alt.groupby(level=0).apply(lambda g: g.diff().abs().sum(axis=1)).reset_index(name="alteracao")
+    df_alt_max = df_alt_diff.groupby("SIGLA_UF").agg({"decada": "first", "alteracao": "max"}).reset_index()
+    fig7 = px.bar(df_alt_max, x="SIGLA_UF", y="alteracao", color="decada", title="Década com Maior Alteração por Estado", labels={"alteracao": "Mudança Total (ha)"})
+    st.plotly_chart(fig7, use_container_width=True)
+
 st.sidebar.markdown("---")
 
 # Botão para gerar relatório em PDF
