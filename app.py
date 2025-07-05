@@ -8,6 +8,7 @@ from datetime import datetime
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from plotly.io import write_image
+import os
 
 
 # Funções auxiliares
@@ -38,7 +39,11 @@ def marcar_com_pin(nome_municipio, base_image, df_coord, pgw):
     return imagem_marcada
 
 # Carregar dados
-df = pd.read_csv("../historico/estatisticas_coverage_historico.csv", sep=";", decimal=",")
+import os
+base_dir = os.path.dirname(os.path.abspath(__file__))
+csv_path = os.path.join(base_dir, "..", "historico", "estatisticas_coverage_historico.csv")
+df = pd.read_csv(csv_path, sep=";", decimal=",")
+
 df["decada"] = (df["ano"] // 10) * 10
 
 # Legenda MapBiomas
