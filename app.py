@@ -378,7 +378,13 @@ with abas[6]:
     # 7. Década de maior alteração por estado
     st.markdown("### 7. Década com Maior Alteração de Uso e Cobertura por Estado")
     df_alt = df_estado.groupby(["SIGLA_UF", "decada", "nome_classe"])["area_ha"].sum().unstack().fillna(0)
-    df_alt_diff = df_alt.groupby(level=0).apply(lambda g: g.diff().abs().sum(axis=1)).rename("alteracao").reset_index()
+    df_alt_diff = (
+        df_alt.groupby(level=0)
+        .apply(lambda g: g.diff().abs().sum(axis=1))
+        .reset_index(level=1, drop=True)
+        .reset_index(name="alteracao")
+    )
+
     df_alt_max = df_alt_diff.groupby("SIGLA_UF").agg({"decada": "first", "alteracao": "max"}).reset_index()
     fig7 = px.bar(df_alt_max, x="SIGLA_UF", y="alteracao", color="decada", title="Década com Maior Alteração por Estado", labels={"alteracao": "Mudança Total (ha)"})
     st.plotly_chart(fig7, use_container_width=True)
