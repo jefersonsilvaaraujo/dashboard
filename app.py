@@ -41,7 +41,7 @@ def marcar_com_pin(nome_municipio, base_image, df_coord, pgw):
 # Carregar dados
 import os
 base_dir = os.path.dirname(os.path.abspath(__file__))
-csv_path = os.path.join(base_dir, "..", "historico", "estatisticas_coverage_historico.csv")
+csv_path = "historico/estatisticas_coverage_historico.csv"
 df = pd.read_csv(csv_path, sep=";", decimal=",")
 
 df["decada"] = (df["ano"] // 10) * 10
