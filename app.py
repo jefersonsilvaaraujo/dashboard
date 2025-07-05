@@ -9,8 +9,6 @@ from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from plotly.io import write_image
 import os
-from plotly.io import to_image
-
 
 # Funções auxiliares
 def geo_to_pixel(lon, lat, pgw):
@@ -325,92 +323,87 @@ st.sidebar.markdown("---")
 if cidade != "Todos":
     gerar_pdf = st.sidebar.button("📄 Gerar Relatório em PDF")
     if gerar_pdf:
+        buffer = BytesIO()
+        buffer = BytesIO()
+        c = canvas.Canvas(buffer, pagesize=A4)
+        c.setFont("Helvetica-Bold", 14)
+        c.drawString(50, 800, f"Relatório de Análise Ambiental - {cidade}")
+        c.setFont("Helvetica", 10)
+        c.drawString(50, 785, f"Gerado em: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
+
+        # Exportar o primeiro gráfico (fig1) como imagem temporária
+        img_temp = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
+        img_bytes = fig1.to_image(format="png", engine="kaleido")
+        with open(img_temp.name, "wb") as f:
+            f.write(img_bytes)
+        c.drawImage(img_temp.name, 50, 500, width=500, height=250)
+        c.showPage()
+
+        # Exportar outros gráficos
+        from plotly.io import write_image
         import tempfile
-from reportlab.lib.pagesizes import A4
-from reportlab.pdfgen import canvas
-from datetime import datetime
 
-buffer = BytesIO()
-buffer = BytesIO()
-c = canvas.Canvas(buffer, pagesize=A4)
-c.setFont("Helvetica-Bold", 14)
-c.drawString(50, 800, f"Relatório de Análise Ambiental - {cidade}")
-c.setFont("Helvetica", 10)
-c.drawString(50, 785, f"Gerado em: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
+        figures = [fig_area, fig_scatter, fig2, fig3, fig_dec, fig_comp, fig_dif, fig_ant]
 
-# Exportar o primeiro gráfico (fig1) como imagem temporária
-img_temp = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
-img_bytes = fig1.to_image(format="png", engine="kaleido")
-with open(img_temp.name, "wb") as f:
-    f.write(img_bytes)
-c.drawImage(img_temp.name, 50, 500, width=500, height=250)
-c.showPage()
+        for fig in figures:
+            img_temp = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
+            img_bytes = fig.to_image(format="png", engine="kaleido")
+            with open(img_temp.name, "wb") as f:
+                f.write(img_bytes)
+            c.drawImage(img_temp.name, 50, 500, width=500, height=250)
+            c.showPage()
 
-# Exportar outros gráficos
-from plotly.io import write_image
-import tempfile
+        # Inserir mapas com pin (1985 e 2023)
+        mapas = []
+        for ano in ["1985", "2023"]:
+            try:
+                png_path = f"../municipios_shapefile/municipios_{ano}.png"
+                pgw_path = f"../municipios_shapefile/municipios_{ano}.pgw"
+                image = Image.open(png_path)
+                with open(pgw_path) as f:
+                    pgw = list(map(float, f.readlines()))
+                imagem_marcada = marcar_com_pin(cidade, image, df_coord, pgw)
+                mapa_path = tempfile.NamedTemporaryFile(delete=False, suffix=".png").name
+                imagem_marcada.save(mapa_path, format="PNG")
+                mapas.append((ano, mapa_path))
+            except:
+                continue
 
-figures = [fig_area, fig_scatter, fig2, fig3, fig_dec, fig_comp, fig_dif, fig_ant]
+        for ano, path in mapas:
+            c.drawImage(path, 50, 500, width=500, height=250)
+            c.drawString(50, 480, f"Mapa de {cidade} em {ano}")
+            c.showPage()
 
-for fig in figures:
-    img_temp = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
-    img_bytes = fig.to_image(format="png", engine="kaleido")
-    with open(img_temp.name, "wb") as f:
-        f.write(img_bytes)
-    c.drawImage(img_temp.name, 50, 500, width=500, height=250)
-    c.showPage()
+        # Sumário
+        c.setFont("Helvetica-Bold", 12)
+        c.drawString(50, 780, "Sumário")
+        c.setFont("Helvetica", 10)
+        c.drawString(70, 760, "1. Introdução")
+        c.drawString(70, 745, "2. Mapas com Localização (1985 e 2023)")
+        c.drawString(70, 730, "3. Análises Gráficas")
+        c.drawString(70, 715, "4. Indicadores e Alertas")
+        c.drawString(70, 700, "5. Índice de Antropização")
+        c.showPage()
 
-# Inserir mapas com pin (1985 e 2023)
-mapas = []
-for ano in ["1985", "2023"]:
-    try:
-        png_path = f"../municipios_shapefile/municipios_{ano}.png"
-        pgw_path = f"../municipios_shapefile/municipios_{ano}.pgw"
-        image = Image.open(png_path)
-        with open(pgw_path) as f:
-            pgw = list(map(float, f.readlines()))
-        imagem_marcada = marcar_com_pin(cidade, image, df_coord, pgw)
-        mapa_path = tempfile.NamedTemporaryFile(delete=False, suffix=".png").name
-        imagem_marcada.save(mapa_path, format="PNG")
-        mapas.append((ano, mapa_path))
-    except:
-        continue
+        # Texto descritivo adicional nas seções
+        c.setFont("Helvetica", 10)
+        c.drawString(50, 780, "Este relatório apresenta uma visão abrangente da dinâmica de uso e cobertura do solo para o município selecionado.")
+        c.drawString(50, 765, "Foram considerados dados do MapBiomas de 1985 a 2023, com foco em variações de área, indicadores de antropização e alertas ambientais.")
+        c.drawString(50, 750, "Os mapas com localização geográfica do município destacam a posição em diferentes anos, permitindo rápida referência espacial.")
+        c.drawString(50, 735, "Os gráficos seguintes ilustram as principais tendências de uso da terra, evolução por classe, participação percentual e análises de mudança.")
+        c.drawString(50, 720, "Ao final, são apresentados indicadores importantes, como o índice de antropização e o ano com maior alteração de cobertura.")
+        c.showPage()
 
-for ano, path in mapas:
-    c.drawImage(path, 50, 500, width=500, height=250)
-    c.drawString(50, 480, f"Mapa de {cidade} em {ano}")
-    c.showPage()
+        # Finaliza PDF
+        c.save()
+        buffer.seek(0)
 
-# Sumário
-c.setFont("Helvetica-Bold", 12)
-c.drawString(50, 780, "Sumário")
-c.setFont("Helvetica", 10)
-c.drawString(70, 760, "1. Introdução")
-c.drawString(70, 745, "2. Mapas com Localização (1985 e 2023)")
-c.drawString(70, 730, "3. Análises Gráficas")
-c.drawString(70, 715, "4. Indicadores e Alertas")
-c.drawString(70, 700, "5. Índice de Antropização")
-c.showPage()
-
-# Texto descritivo adicional nas seções
-c.setFont("Helvetica", 10)
-c.drawString(50, 780, "Este relatório apresenta uma visão abrangente da dinâmica de uso e cobertura do solo para o município selecionado.")
-c.drawString(50, 765, "Foram considerados dados do MapBiomas de 1985 a 2023, com foco em variações de área, indicadores de antropização e alertas ambientais.")
-c.drawString(50, 750, "Os mapas com localização geográfica do município destacam a posição em diferentes anos, permitindo rápida referência espacial.")
-c.drawString(50, 735, "Os gráficos seguintes ilustram as principais tendências de uso da terra, evolução por classe, participação percentual e análises de mudança.")
-c.drawString(50, 720, "Ao final, são apresentados indicadores importantes, como o índice de antropização e o ano com maior alteração de cobertura.")
-c.showPage()
-
-# Finaliza PDF
-c.save()
-buffer.seek(0)
-
-st.sidebar.download_button(
-    label="📄 Baixar Relatório PDF",
-    data=buffer.getvalue(),
-    file_name=f"relatorio_{cidade}.pdf",
-    mime="application/pdf"
-)
+        st.sidebar.download_button(
+            label="📄 Baixar Relatório PDF",
+            data=buffer.getvalue(),
+            file_name=f"relatorio_{cidade}.pdf",
+            mime="application/pdf"
+        )
 
 st.sidebar.download_button(
     label="Exportar dados filtrados (.csv)",
