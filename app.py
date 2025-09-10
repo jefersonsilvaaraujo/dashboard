@@ -392,90 +392,191 @@ with abas[6]:
 st.sidebar.markdown("---")
 
 # Botão para gerar relatório em PDF
-# if cidade != "Todos":
-#     gerar_pdf = st.sidebar.button("📄 Gerar Relatório em PDF")
-#     if gerar_pdf:
-#         buffer = BytesIO()
-#         buffer = BytesIO()
-#         c = canvas.Canvas(buffer, pagesize=A4)
-#         c.setFont("Helvetica-Bold", 14)
-#         c.drawString(50, 800, f"Relatório de Análise Ambiental - {cidade}")
-#         c.setFont("Helvetica", 10)
-#         c.drawString(50, 785, f"Gerado em: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-
-#         # Exportar o primeiro gráfico (fig1) como imagem temporária
-#         img_temp = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
-#         img_bytes = fig1.to_image(format="png", engine="kaleido")
-#         with open(img_temp.name, "wb") as f:
-#             f.write(img_bytes)
-#         c.drawImage(img_temp.name, 50, 500, width=500, height=250)
-#         c.showPage()
-
-#         # Exportar outros gráficos
-#         from plotly.io import write_image
-#         import tempfile
-
-#         figures = [fig_area, fig_scatter, fig2, fig3, fig_dec, fig_comp, fig_dif, fig_ant]
-
-#         for fig in figures:
-#             img_temp = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
-#             img_bytes = fig.to_image(format="png", engine="kaleido")
-#             with open(img_temp.name, "wb") as f:
-#                 f.write(img_bytes)
-#             c.drawImage(img_temp.name, 50, 500, width=500, height=250)
-#             c.showPage()
-
-#         # Inserir mapas com pin (1985 e 2023)
-#         mapas = []
-#         for ano in ["1985", "2023"]:
-#             try:
-#                 png_path = f"../municipios_shapefile/municipios_{ano}.png"
-#                 pgw_path = f"../municipios_shapefile/municipios_{ano}.pgw"
-#                 image = Image.open(png_path)
-#                 with open(pgw_path) as f:
-#                     pgw = list(map(float, f.readlines()))
-#                 imagem_marcada = marcar_com_pin(cidade, image, df_coord, pgw)
-#                 mapa_path = tempfile.NamedTemporaryFile(delete=False, suffix=".png").name
-#                 imagem_marcada.save(mapa_path, format="PNG")
-#                 mapas.append((ano, mapa_path))
-#             except:
-#                 continue
-
-#         for ano, path in mapas:
-#             c.drawImage(path, 50, 500, width=500, height=250)
-#             c.drawString(50, 480, f"Mapa de {cidade} em {ano}")
-#             c.showPage()
-
-#         # Sumário
-#         c.setFont("Helvetica-Bold", 12)
-#         c.drawString(50, 780, "Sumário")
-#         c.setFont("Helvetica", 10)
-#         c.drawString(70, 760, "1. Introdução")
-#         c.drawString(70, 745, "2. Mapas com Localização (1985 e 2023)")
-#         c.drawString(70, 730, "3. Análises Gráficas")
-#         c.drawString(70, 715, "4. Indicadores e Alertas")
-#         c.drawString(70, 700, "5. Índice de Antropização")
-#         c.showPage()
-
-#         # Texto descritivo adicional nas seções
-#         c.setFont("Helvetica", 10)
-#         c.drawString(50, 780, "Este relatório apresenta uma visão abrangente da dinâmica de uso e cobertura do solo para o município selecionado.")
-#         c.drawString(50, 765, "Foram considerados dados do MapBiomas de 1985 a 2023, com foco em variações de área, indicadores de antropização e alertas ambientais.")
-#         c.drawString(50, 750, "Os mapas com localização geográfica do município destacam a posição em diferentes anos, permitindo rápida referência espacial.")
-#         c.drawString(50, 735, "Os gráficos seguintes ilustram as principais tendências de uso da terra, evolução por classe, participação percentual e análises de mudança.")
-#         c.drawString(50, 720, "Ao final, são apresentados indicadores importantes, como o índice de antropização e o ano com maior alteração de cobertura.")
-#         c.showPage()
-
-#         # Finaliza PDF
-#         c.save()
-#         buffer.seek(0)
-
-#         st.sidebar.download_button(
-#             label="📄 Baixar Relatório PDF",
-#             data=buffer.getvalue(),
-#             file_name=f"relatorio_{cidade}.pdf",
-#             mime="application/pdf"
-#         )
+if cidade != "Todos":
+    gerar_pdf = st.sidebar.button("📄 Gerar Relatório em PDF")
+    if gerar_pdf:
+        try:
+            with st.spinner("Gerando relatório PDF..."):
+                buffer = BytesIO()
+                c = canvas.Canvas(buffer, pagesize=A4)
+                width, height = A4
+                
+                # Página 1 - Capa
+                c.setFont("Helvetica-Bold", 16)
+                c.drawString(50, height-100, f"Relatório de Análise Ambiental")
+                c.setFont("Helvetica-Bold", 14)
+                c.drawString(50, height-130, f"Município: {cidade}")
+                c.setFont("Helvetica", 12)
+                c.drawString(50, height-160, f"Gerado em: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
+                
+                # Sumário
+                c.setFont("Helvetica-Bold", 14)
+                c.drawString(50, height-220, "Sumário")
+                c.setFont("Helvetica", 11)
+                y_pos = height-250
+                sumario_items = [
+                    "1. Mapas com Localização (1985 e 2023)",
+                    "2. Evolução Temporal da Cobertura",
+                    "3. Distribuição por Classes",
+                    "4. Análise de Participação Percentual",
+                    "5. Análise por Décadas",
+                    "6. Comparação Entre Anos",
+                    "7. Análises Especiais"
+                ]
+                for item in sumario_items:
+                    c.drawString(70, y_pos, item)
+                    y_pos -= 20
+                
+                # Texto introdutório
+                c.setFont("Helvetica", 10)
+                y_pos = height-400
+                texto_intro = [
+                    "Este relatório apresenta uma visão abrangente da dinâmica de uso e cobertura",
+                    "do solo para o município selecionado. Foram considerados dados do MapBiomas",
+                    "de 1985 a 2023, com foco em variações de área, indicadores de antropização",
+                    "e alertas ambientais. Os mapas destacam a posição geográfica do município",
+                    "em diferentes anos, permitindo rápida referência espacial."
+                ]
+                for linha in texto_intro:
+                    c.drawString(50, y_pos, linha)
+                    y_pos -= 15
+                
+                c.showPage()
+                
+                # Página 2 e 3 - Mapas com pin (1985 e 2023)
+                coord_path = "coordenadas/municipios_coord.csv"
+                df_coord = pd.read_csv(coord_path)
+                
+                for ano in ["1985", "2023"]:
+                    try:
+                        png_path = f"municipios_shapefile/municipios_{ano}.png"
+                        pgw_path = f"municipios_shapefile/municipios_{ano}.pgw"
+                        
+                        if os.path.exists(png_path) and os.path.exists(pgw_path):
+                            image = Image.open(png_path)
+                            with open(pgw_path, 'r') as f:
+                                pgw = [float(line.strip()) for line in f.readlines()]
+                            
+                            imagem_marcada = marcar_com_pin(cidade, image, df_coord, pgw)
+                            
+                            # Redimensionar imagem para caber na página
+                            max_width = 500
+                            max_height = 400
+                            img_width, img_height = imagem_marcada.size
+                            ratio = min(max_width/img_width, max_height/img_height)
+                            new_width = int(img_width * ratio)
+                            new_height = int(img_height * ratio)
+                            imagem_marcada = imagem_marcada.resize((new_width, new_height))
+                            
+                            # Salvar imagem temporária
+                            with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as tmp_file:
+                                imagem_marcada.save(tmp_file.name, format="PNG")
+                                
+                                # Adicionar ao PDF
+                                c.setFont("Helvetica-Bold", 14)
+                                c.drawString(50, height-50, f"Localização de {cidade} em {ano}")
+                                c.drawImage(tmp_file.name, 50, height-500, width=new_width, height=new_height)
+                                
+                                # Limpar arquivo temporário
+                                os.unlink(tmp_file.name)
+                        else:
+                            c.setFont("Helvetica", 12)
+                            c.drawString(50, height-100, f"Mapa de {ano} não encontrado")
+                            
+                    except Exception as e:
+                        c.setFont("Helvetica", 10)
+                        c.drawString(50, height-100, f"Erro ao processar mapa de {ano}: {str(e)}")
+                    
+                    c.showPage()
+                
+                # Função auxiliar para adicionar gráficos
+                def adicionar_grafico_pdf(fig, titulo, c, width, height):
+                    try:
+                        c.setFont("Helvetica-Bold", 12)
+                        c.drawString(50, height-50, titulo)
+                        
+                        # Exportar gráfico como imagem
+                        img_bytes = fig.to_image(format="png", engine="kaleido", width=600, height=400)
+                        
+                        with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as tmp_file:
+                            tmp_file.write(img_bytes)
+                            tmp_file.flush()
+                            
+                            # Adicionar ao PDF
+                            c.drawImage(tmp_file.name, 50, height-500, width=500, height=350)
+                            
+                            # Limpar arquivo temporário
+                            os.unlink(tmp_file.name)
+                            
+                    except Exception as e:
+                        c.setFont("Helvetica", 10)
+                        c.drawString(50, height-100, f"Erro ao gerar gráfico: {str(e)}")
+                    
+                    c.showPage()
+                
+                # Gráficos das abas (somente se as variáveis existirem)
+                if 'fig1' in locals():
+                    adicionar_grafico_pdf(fig1, "Evolução da Cobertura do Solo", c, width, height)
+                
+                if 'fig_area' in locals():
+                    adicionar_grafico_pdf(fig_area, "Área Acumulada por Classe", c, width, height)
+                
+                if 'fig_scatter' in locals():
+                    adicionar_grafico_pdf(fig_scatter, "Dispersão das Áreas por Classe e Ano", c, width, height)
+                
+                if 'fig2' in locals():
+                    adicionar_grafico_pdf(fig2, f"Distribuição da Cobertura em {ano_analise}", c, width, height)
+                
+                if 'fig3' in locals():
+                    adicionar_grafico_pdf(fig3, f"Participação Percentual das Classes em {ano_percentual}", c, width, height)
+                
+                if 'fig_dec' in locals():
+                    adicionar_grafico_pdf(fig_dec, "Distribuição da Cobertura por Década", c, width, height)
+                
+                if 'fig_comp' in locals():
+                    adicionar_grafico_pdf(fig_comp, f"Comparação da Cobertura entre {ano_comp1} e {ano_comp2}", c, width, height)
+                
+                # Página final com estatísticas
+                c.setFont("Helvetica-Bold", 14)
+                c.drawString(50, height-50, "Resumo Estatístico")
+                
+                # Calcular algumas estatísticas básicas
+                df_mun_filtered = df_filtrado[df_filtrado["NM_MUN"] == cidade] if cidade != "Todos" else df_filtrado
+                
+                if not df_mun_filtered.empty:
+                    total_area_1985 = df_mun_filtered[df_mun_filtered["ano"] == 1985]["area_ha"].sum()
+                    total_area_2023 = df_mun_filtered[df_mun_filtered["ano"] == 2023]["area_ha"].sum()
+                    
+                    c.setFont("Helvetica", 11)
+                    y_pos = height-100
+                    stats_text = [
+                        f"Área total registrada em 1985: {total_area_1985:,.0f} ha",
+                        f"Área total registrada em 2023: {total_area_2023:,.0f} ha",
+                        f"Período analisado: {df_mun_filtered['ano'].min()} - {df_mun_filtered['ano'].max()}",
+                        f"Classes de cobertura identificadas: {df_mun_filtered['nome_classe'].nunique()}",
+                        f"Anos com dados disponíveis: {len(df_mun_filtered['ano'].unique())}"
+                    ]
+                    
+                    for linha in stats_text:
+                        c.drawString(50, y_pos, linha)
+                        y_pos -= 20
+                
+                # Finalizar PDF
+                c.save()
+                buffer.seek(0)
+                
+                st.sidebar.download_button(
+                    label="📄 Baixar Relatório PDF",
+                    data=buffer.getvalue(),
+                    file_name=f"relatorio_{cidade.replace(' ', '_')}.pdf",
+                    mime="application/pdf"
+                )
+                
+                st.sidebar.success("Relatório PDF gerado com sucesso!")
+                
+        except Exception as e:
+            st.sidebar.error(f"Erro ao gerar relatório PDF: {str(e)}")
+            st.sidebar.info("Verifique se todas as dependências estão instaladas e os arquivos de mapa estão disponíveis.")
 
 st.sidebar.download_button(
     label="Exportar dados filtrados (.csv)",
