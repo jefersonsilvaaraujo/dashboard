@@ -1,6 +1,6 @@
 # 🌱 Painel Interativo da Cobertura do Solo - MapBiomas
 
-Este painel interativo desenvolvido em **Python com Streamlit** tem como objetivo permitir a **análise da dinâmica de uso e cobertura do solo** em municípios da fronteira Cerrado-Amazônia, com base nos dados do projeto **MapBiomas** (séries históricas de 1985 a 2023).
+Este painel interativo desenvolvido em **Python com Streamlit** tem como objetivo permitir a **análise da dinâmica de uso e cobertura do solo** em municípios da fronteira Cerrado-Amazônia, com base nos dados do projeto **MapBiomas** (séries históricas de 1985 a 2024).
 
 ## 🔍 Funcionalidades
 
@@ -22,8 +22,8 @@ dashboard/
 └── municipios_shapefile/
     ├── municipios_1985.png
     ├── municipios_1985.pgw
-    ├── municipios_2023.png
-    ├── municipios_2023.pgw
+    ├── municipios_2024.png
+    ├── municipios_2024.pgw
 ```
 
 ## 🛠 Requisitos
