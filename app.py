@@ -109,14 +109,14 @@ if cidade == "Todos":
 else:
     st.subheader(f"Análise para {cidade}")
 
-    # Mostrar mapas de 1985 e 2023
-    st.markdown("#### Localização do Município no Mapa (Comparativo 1985 vs 2023)")
+    # Mostrar mapas de 1985 e 2024
+    st.markdown("#### Localização do Município no Mapa (Comparativo 1985 vs 2024)")
     col1, col2 = st.columns(2)
 
     coord_path = "coordenadas/municipios_coord.csv"
     df_coord = pd.read_csv(coord_path)
 
-    for ano, col in zip(["1985", "2023"], [col1, col2]):
+    for ano, col in zip(["1985", "2024"], [col1, col2]):
         png_path = f"municipios_shapefile/municipios_{ano}.png"
         pgw_path = f"municipios_shapefile/municipios_{ano}.pgw"
 
@@ -264,34 +264,34 @@ with abas[5]:
     # 1. Alerta de perda crítica de vegetação nativa
     if cidade != "Todos":
         df_mun = df[df["NM_MUN"] == cidade]
-        df_comp = df_mun[df_mun["ano"].isin([1985, 2023])].pivot(index="nome_classe", columns="ano", values="area_ha").fillna(0)
+        df_comp = df_mun[df_mun["ano"].isin([1985, 2024])].pivot(index="nome_classe", columns="ano", values="area_ha").fillna(0)
         vegetacao_nativa = ["Formação Florestal", "Formação Savânica"]
         uso_antropico = ["Pastagem", "Soja", "Agricultura (Outros)", "Área Urbana"]
 
-        perda_total = df_comp.loc[vegetacao_nativa].sum(axis=1).sum() - df_comp.loc[vegetacao_nativa][2023].sum()
+        perda_total = df_comp.loc[vegetacao_nativa].sum(axis=1).sum() - df_comp.loc[vegetacao_nativa][2024].sum()
         perda_percentual = (perda_total / df_comp.loc[vegetacao_nativa][1985].sum()) * 100 if df_comp.loc[vegetacao_nativa][1985].sum() > 0 else 0
 
         if perda_percentual > 30:
-            st.warning(f"⚠️ Alerta: {cidade} perdeu mais de 30% de sua vegetação nativa entre 1985 e 2023 ({perda_percentual:.2f}%).")
+            st.warning(f"⚠️ Alerta: {cidade} perdeu mais de 30% de sua vegetação nativa entre 1985 e 2024 ({perda_percentual:.2f}%).")
 
     # 2. Ranking de crescimento e perda por classe
-    st.markdown("#### Ranking de Variação por Classe (1985–2023)")
-    df_var = df[df["ano"].isin([1985, 2023])]
+    st.markdown("#### Ranking de Variação por Classe (1985–2024)")
+    df_var = df[df["ano"].isin([1985, 2024])]
     if cidade != "Todos":
         df_var = df_var[df_var["NM_MUN"] == cidade]
     df_pivot = df_var.pivot_table(index="nome_classe", columns="ano", values="area_ha", aggfunc="sum").fillna(0)
-    df_pivot["variação"] = df_pivot[2023] - df_pivot[1985]
+    df_pivot["variação"] = df_pivot[2024] - df_pivot[1985]
     top_ganhos = df_pivot.sort_values("variação", ascending=False).head(5)
     top_perdas = df_pivot.sort_values("variação").head(5)
 
     col1, col2 = st.columns(2)
     col1.markdown("**Maiores Ganhos**")
-    col1.dataframe(top_ganhos[[1985, 2023, "variação"]].round(2))
+    col1.dataframe(top_ganhos[[1985, 2024, "variação"]].round(2))
     col2.markdown("**Maiores Perdas**")
-    col2.dataframe(top_perdas[[1985, 2023, "variação"]].round(2))
+    col2.dataframe(top_perdas[[1985, 2024, "variação"]].round(2))
 
-    # 3. Gráfico de mudança líquida 1985–2023
-    st.markdown("#### Variação Líquida por Classe (1985–2023)")
+    # 3. Gráfico de mudança líquida 1985–2024
+    st.markdown("#### Variação Líquida por Classe (1985–2024)")
     fig_dif = px.bar(df_pivot.reset_index(), x="nome_classe", y="variação",
                      title="Mudança Líquida de Área (ha) por Classe",
                      color="variação",
@@ -333,21 +333,21 @@ with abas[6]:
     st.plotly_chart(fig1, use_container_width=True)
 
     # 2. Perda de vegetação nativa por estado
-    st.markdown("### 2. Perda de Vegetação Nativa por Estado (1985–2023)")
+    st.markdown("### 2. Perda de Vegetação Nativa por Estado (1985–2024)")
     nativas = ["Formação Florestal", "Formação Savânica"]
-    df_nat = df_estado[df_estado["nome_classe"].isin(nativas) & df_estado["ano"].isin([1985, 2023])]
+    df_nat = df_estado[df_estado["nome_classe"].isin(nativas) & df_estado["ano"].isin([1985, 2024])]
     df_nat_pivot = df_nat.pivot_table(index=["SIGLA_UF", "nome_classe"], columns="ano", values="area_ha", aggfunc="sum").fillna(0)
-    df_nat_pivot["variação"] = df_nat_pivot[2023] - df_nat_pivot[1985]
+    df_nat_pivot["variação"] = df_nat_pivot[2024] - df_nat_pivot[1985]
     df_nat_agg = df_nat_pivot.groupby("SIGLA_UF")["variação"].sum().reset_index()
     fig2 = px.bar(df_nat_agg, x="SIGLA_UF", y="variação", title="Perda Total de Vegetação Nativa (ha)", labels={"variação": "Perda (ha)"})
     st.plotly_chart(fig2, use_container_width=True)
 
     # 3. Evolução da cobertura agrícola por estado
-    st.markdown("### 3. Evolução da Cobertura Agrícola (1985–2023)")
+    st.markdown("### 3. Evolução da Cobertura Agrícola (1985–2024)")
     agro = ["Soja", "Pastagem", "Agricultura (Outros)", "Cana-de-açúcar"]
-    df_agro = df_estado[df_estado["nome_classe"].isin(agro) & df_estado["ano"].isin([1985, 2023])]
+    df_agro = df_estado[df_estado["nome_classe"].isin(agro) & df_estado["ano"].isin([1985, 2024])]
     df_agro_pivot = df_agro.pivot_table(index=["SIGLA_UF", "nome_classe"], columns="ano", values="area_ha", aggfunc="sum").fillna(0)
-    df_agro_pivot["crescimento"] = df_agro_pivot[2023] - df_agro_pivot[1985]
+    df_agro_pivot["crescimento"] = df_agro_pivot[2024] - df_agro_pivot[1985]
     fig3 = px.bar(df_agro_pivot.reset_index(), x="SIGLA_UF", y="crescimento", color="nome_classe", title="Crescimento de Cobertura Agrícola por Estado")
     st.plotly_chart(fig3, use_container_width=True)
 
@@ -415,7 +415,7 @@ if cidade != "Todos":
                 c.setFont("Helvetica", 11)
                 y_pos = height-250
                 sumario_items = [
-                    "1. Mapas com Localização (1985 e 2023)",
+                    "1. Mapas com Localização (1985 e 2024)",
                     "2. Evolução Temporal da Cobertura",
                     "3. Distribuição por Classes",
                     "4. Análise de Participação Percentual",
@@ -433,7 +433,7 @@ if cidade != "Todos":
                 texto_intro = [
                     "Este relatório apresenta uma visão abrangente da dinâmica de uso e cobertura",
                     "do solo para o município selecionado. Foram considerados dados do MapBiomas",
-                    "de 1985 a 2023, com foco em variações de área, indicadores de antropização",
+                    "de 1985 a 2024, com foco em variações de área, indicadores de antropização",
                     "e alertas ambientais. Os mapas destacam a posição geográfica do município",
                     "em diferentes anos, permitindo rápida referência espacial."
                 ]
@@ -443,11 +443,11 @@ if cidade != "Todos":
                 
                 c.showPage()
                 
-                # Página 2 e 3 - Mapas com pin (1985 e 2023)
+                # Página 2 e 3 - Mapas com pin (1985 e 2024)
                 coord_path = "coordenadas/municipios_coord.csv"
                 df_coord = pd.read_csv(coord_path)
                 
-                for ano in ["1985", "2023"]:
+                for ano in ["1985", "2024"]:
                     try:
                         png_path = f"municipios_shapefile/municipios_{ano}.png"
                         pgw_path = f"municipios_shapefile/municipios_{ano}.pgw"
@@ -545,13 +545,13 @@ if cidade != "Todos":
                 
                 if not df_mun_filtered.empty:
                     total_area_1985 = df_mun_filtered[df_mun_filtered["ano"] == 1985]["area_ha"].sum()
-                    total_area_2023 = df_mun_filtered[df_mun_filtered["ano"] == 2023]["area_ha"].sum()
+                    total_area_2024 = df_mun_filtered[df_mun_filtered["ano"] == 2024]["area_ha"].sum()
                     
                     c.setFont("Helvetica", 11)
                     y_pos = height-100
                     stats_text = [
                         f"Área total registrada em 1985: {total_area_1985:,.0f} ha",
-                        f"Área total registrada em 2023: {total_area_2023:,.0f} ha",
+                        f"Área total registrada em 2024: {total_area_2024:,.0f} ha",
                         f"Período analisado: {df_mun_filtered['ano'].min()} - {df_mun_filtered['ano'].max()}",
                         f"Classes de cobertura identificadas: {df_mun_filtered['nome_classe'].nunique()}",
                         f"Anos com dados disponíveis: {len(df_mun_filtered['ano'].unique())}"
