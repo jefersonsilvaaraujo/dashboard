@@ -113,6 +113,13 @@ sudo nano /etc/apache2/sites-available/000-default-le-ssl.conf
 ```
 
 ```apache
+
+RewriteEngine On
+
+RewriteCond %{HTTP:Upgrade} websocket [NC]
+RewriteCond %{HTTP:Connection} upgrade [NC]
+RewriteRule ^/dashboard/(.*) ws://127.0.0.1:8501/dashboard/$1 [P,L]
+
 ProxyPreserveHost On
 
 ProxyPass /dashboard http://localhost:8501/dashboard
