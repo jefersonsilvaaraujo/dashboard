@@ -7,6 +7,8 @@ import tempfile
 from datetime import datetime
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
+from reportlab.lib.colors import HexColor
+from reportlab.lib.utils import ImageReader
 from plotly.io import write_image
 import os
 
@@ -24,7 +26,10 @@ def geo_to_pixel(lon, lat, pgw):
     return x, y
 
 def marcar_com_pin(cd_mun, rotulo, base_image, df_coord, pgw):
-    imagem_marcada = base_image.copy()
+    # Mapa sobre fundo branco (o PNG tem fundo transparente e cores indexadas)
+    base_rgba = base_image.convert("RGBA")
+    imagem_marcada = Image.new("RGB", base_rgba.size, "white")
+    imagem_marcada.paste(base_rgba, mask=base_rgba)
     draw = ImageDraw.Draw(imagem_marcada)
 
     linha = df_coord[df_coord["CD_MUN"] == cd_mun]
@@ -74,6 +79,7 @@ cidade = st.sidebar.selectbox("Escolha um município:", opcoes_municipios, index
 cd_mun = municipios_por_rotulo[cidade] if cidade != "Todos" else None
 anos = sorted(df["ano"].unique())
 ANO_INICIAL, ANO_FINAL = anos[0], anos[-1]
+ANOS_MAPAS = (1985, 2024)  # anos com mapas gerados por processamento/mapas.py
 intervalo_anos = st.sidebar.slider("Selecione o intervalo de anos:", min_value=min(anos), max_value=max(anos), value=(min(anos), max(anos)))
 
 classes_disponiveis = sorted(df["nome_classe"].unique())
@@ -107,13 +113,13 @@ if cidade == "Todos":
 else:
     st.subheader(f"Análise para {cidade}")
 
-    # Mostrar mapas de 1985 e 2024
-    st.markdown("#### Localização do Município no Mapa (Comparativo 1985 vs 2024)")
+    # Mostrar mapas da região de estudo
+    st.markdown(f"#### Localização do Município no Mapa (Comparativo {ANOS_MAPAS[0]} vs {ANOS_MAPAS[1]})")
     col1, col2 = st.columns(2)
 
     df_coord = pd.read_csv(caminho("coordenadas", "municipios_coord.csv"))
 
-    for ano, col in zip(["1985", "2024"], [col1, col2]):
+    for ano, col in zip(ANOS_MAPAS, [col1, col2]):
         png_path = caminho("municipios_shapefile", f"municipios_{ano}.png")
         pgw_path = caminho("municipios_shapefile", f"municipios_{ano}.pgw")
 
@@ -131,10 +137,56 @@ else:
             imagem_marcada.save(buffer, format="PNG")
             buffer.seek(0)
 
-            col.image(buffer, caption=f"{cidade} em {ano}", use_container_width=True)
+            col.image(buffer, caption=f"Região de estudo em {ano}", use_container_width=True)
 
         except Exception as e:
             col.warning(f"Erro ao carregar mapa de {ano}: {e}")
+
+    # Uso e cobertura do próprio município nos mesmos anos
+    st.markdown(f"#### Uso e Cobertura do Município ({ANOS_MAPAS[0]} vs {ANOS_MAPAS[1]})")
+    col1, col2 = st.columns(2)
+    for ano, col in zip(ANOS_MAPAS, [col1, col2]):
+        mapa_municipio = caminho("mapas_municipios", f"{cd_mun}_{ano}.png")
+        if os.path.exists(mapa_municipio):
+            col.image(mapa_municipio, caption=f"{cidade} em {ano}", use_container_width=True)
+        else:
+            col.warning(f"Mapa de {ano} não encontrado. Rode processamento/mapas.py.")
+
+    # Legenda: classes presentes no município em algum dos dois anos, da maior para a menor área
+    df_mapas = df[(df["CD_MUN"] == cd_mun) & df["ano"].isin(ANOS_MAPAS)]
+    classes_mapa = (
+        df_mapas.groupby(["nome_classe", "cor_rgb"])["area_ha"].max()
+        .sort_values(ascending=False).reset_index()
+    )
+    itens_legenda = "".join(
+        f"<span style='display:inline-flex;align-items:center;margin:0 14px 6px 0'>"
+        f"<span style='width:12px;height:12px;background:{cor};border:1px solid #888;margin-right:5px'></span>"
+        f"{nome}</span>"
+        for nome, cor in zip(classes_mapa["nome_classe"], classes_mapa["cor_rgb"])
+    )
+    st.markdown(f"<div style='font-size:0.85rem'>{itens_legenda}</div>", unsafe_allow_html=True)
+
+    # Diferença entre os dois anos em indicadores-resumo
+    def area_em(ano, filtro):
+        return df_mapas.loc[(df_mapas["ano"] == ano) & filtro, "area_ha"].sum()
+
+    def variacao(inicial, final):
+        return f"{(final - inicial) / inicial * 100:+.1f}% desde {ANOS_MAPAS[0]}" if inicial > 0 else None
+
+    def hectares(valor):
+        return f"{valor:,.0f} ha".replace(",", ".")
+
+    nativa = [area_em(ano, df_mapas["nome_classe"].isin(classes_nativas)) for ano in ANOS_MAPAS]
+    antropica = [area_em(ano, df_mapas["tipo"] == "Antrópico") for ano in ANOS_MAPAS]
+    total = [area_em(ano, df_mapas["area_ha"] > 0) for ano in ANOS_MAPAS]
+    indice = [a / t * 100 if t > 0 else 0 for a, t in zip(antropica, total)]
+
+    m1, m2, m3 = st.columns(3)
+    m1.metric(f"Vegetação nativa em {ANOS_MAPAS[1]}", hectares(nativa[1]), variacao(*nativa))
+    m2.metric(f"Área antrópica em {ANOS_MAPAS[1]}", hectares(antropica[1]), variacao(*antropica), delta_color="inverse")
+    m3.metric(f"Índice de antropização em {ANOS_MAPAS[1]}", f"{indice[1]:.1f}%",
+              f"{indice[1] - indice[0]:+.1f} p.p. desde {ANOS_MAPAS[0]}", delta_color="inverse")
+    st.caption("Mapas: MapBiomas Coleção 10 (raster 30 m). Áreas e indicadores: estatísticas da Coleção 10.1.")
 
 # Abas principais
 abas = st.tabs(["Evolução Temporal", "Distribuição Anual", "Participação Percentual", "Análise por Década", "Comparação Entre Anos", "Análises Especiais", "Análises por Estados" ])
@@ -411,7 +463,7 @@ if cidade != "Todos":
                 c.setFont("Helvetica", 11)
                 y_pos = height-250
                 sumario_items = [
-                    "1. Mapas com Localização (1985 e 2024)",
+                    f"1. Mapas com Localização e Uso do Município ({ANOS_MAPAS[0]} e {ANOS_MAPAS[1]})",
                     "2. Evolução Temporal da Cobertura",
                     "3. Distribuição por Classes",
                     "4. Análise de Participação Percentual",
@@ -439,10 +491,10 @@ if cidade != "Todos":
                 
                 c.showPage()
                 
-                # Página 2 e 3 - Mapas com pin (1985 e 2024)
+                # Página 2 e 3 - Mapas da região com pin
                 df_coord = pd.read_csv(caminho("coordenadas", "municipios_coord.csv"))
 
-                for ano in ["1985", "2024"]:
+                for ano in ANOS_MAPAS:
                     try:
                         png_path = caminho("municipios_shapefile", f"municipios_{ano}.png")
                         pgw_path = caminho("municipios_shapefile", f"municipios_{ano}.pgw")
@@ -481,9 +533,44 @@ if cidade != "Todos":
                     except Exception as e:
                         c.setFont("Helvetica", 10)
                         c.drawString(50, height-100, f"Erro ao processar mapa de {ano}: {str(e)}")
-                    
+
                     c.showPage()
-                
+
+                # Página 4 - Uso e cobertura do município, lado a lado
+                c.setFont("Helvetica-Bold", 14)
+                c.drawString(50, height-50, f"Uso e Cobertura de {cidade} ({ANOS_MAPAS[0]} e {ANOS_MAPAS[1]})")
+                largura_mapa = (width - 120) / 2
+                altura_maxima = 0
+                for i, ano in enumerate(ANOS_MAPAS):
+                    mapa_municipio = caminho("mapas_municipios", f"{cd_mun}_{ano}.png")
+                    x = 50 + i * (largura_mapa + 20)
+                    if os.path.exists(mapa_municipio):
+                        mapa_rgba = Image.open(mapa_municipio).convert("RGBA")
+                        mapa_branco = Image.new("RGB", mapa_rgba.size, "white")
+                        mapa_branco.paste(mapa_rgba, mask=mapa_rgba)
+                        escala = min(largura_mapa / mapa_branco.width, 520 / mapa_branco.height)
+                        largura_img, altura_mapa = mapa_branco.width * escala, mapa_branco.height * escala
+                        altura_maxima = max(altura_maxima, altura_mapa)
+                        c.drawImage(ImageReader(mapa_branco), x, height-90-altura_mapa, width=largura_img, height=altura_mapa)
+                        c.setFont("Helvetica", 11)
+                        c.drawString(x, height-75, str(ano))
+                    else:
+                        c.setFont("Helvetica", 10)
+                        c.drawString(x, height-100, f"Mapa de {ano} não encontrado")
+
+                # Legenda das classes presentes no município
+                c.setFont("Helvetica", 9)
+                y_legenda = height-115-altura_maxima
+                for i, (nome, cor) in enumerate(zip(classes_mapa["nome_classe"], classes_mapa["cor_rgb"])):
+                    coluna, linha_legenda = i % 3, i // 3
+                    x = 50 + coluna * 170
+                    y = y_legenda - linha_legenda * 15
+                    c.setFillColor(HexColor(cor))
+                    c.rect(x, y, 9, 9, fill=1, stroke=1)
+                    c.setFillColor(HexColor("#000000"))
+                    c.drawString(x + 14, y + 1, nome)
+                c.showPage()
+
                 # Função auxiliar para adicionar gráficos
                 def adicionar_grafico_pdf(fig, titulo, c, width, height):
                     try:

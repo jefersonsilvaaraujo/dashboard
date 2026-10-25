@@ -23,9 +23,10 @@ dashboard/
 ├── coordenadas/
 │   └── municipios_coord.csv                  # código IBGE, UF, área e centroide (gerado)
 ├── municipios_shapefile/
-│   ├── municipios_1985.png / .pgw
+│   ├── municipios_1985.png / .pgw            # mapa da região de estudo (gerado)
 │   └── municipios_2024.png / .pgw
-└── processamento/                            # scripts que geram os CSVs acima
+├── mapas_municipios/                         # <CD_MUN>_<ano>.png, uso e cobertura de cada município (gerado)
+└── processamento/                            # scripts que geram os arquivos acima
 ```
 
 Os municípios são identificados pelo código IBGE (`CD_MUN`). No seletor do painel o nome aparece com a UF, pois há homônimos na área de estudo (ex.: Pau D'Arco no PA e no TO).
@@ -38,13 +39,17 @@ O app lê apenas os CSVs agregados. Eles são gerados pelos scripts em `processa
 |---|---|
 | `municipios_base/50km_todosMun.shp` | Limites municipais da área de estudo (IBGE, SIRGAS 2000) |
 | `mapbiomas_col10/MAPBIOMAS_BRAZIL-COVERAGE_STATISTICS-COL.10.1-MUNICIPALITIES_STATES_BIOMES.xlsx` | [MapBiomas, estatísticas da Coleção 10.1](https://doi.org/10.58053/MapBiomas/SJZOLT) |
+| `mapbiomas_col10/rasters/brazil_coverage_{ano}.tif` (1985 e 2024) | [MapBiomas, rasters anuais da Coleção 10](https://storage.googleapis.com/mapbiomas-public/initiatives/brasil/collection_10/lulc/coverage/) |
 | `municipios_base/area_estudo.csv` (opcional) | Lista de `CD_MUN` para restringir a área de estudo |
 
 ```bash
 pip install -r processamento/requirements.txt
 python processamento/municipios.py
 python processamento/mapbiomas_col10.py
+python processamento/mapas.py
 ```
+
+Os mapas usam os rasters da Coleção 10 (não há rasters públicos da 10.1); para 1985 e 2024 as áreas por classe diferem menos de 0,1% das estatísticas da Coleção 10.1.
 
 Indicadores derivados da legenda oficial:
 

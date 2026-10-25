@@ -19,6 +19,11 @@ MAPBIOMAS_XLSX = (
 MAPBIOMAS_ABA = "COVERAGE_10.1"
 MAPBIOMAS_ABA_LEGENDA = "LEGEND_CODE"
 
+# Rasters anuais de cobertura do MapBiomas Coleção 10 (Brasil inteiro, ~750 MB/ano)
+# https://storage.googleapis.com/mapbiomas-public/initiatives/brasil/collection_10/lulc/coverage/
+MAPBIOMAS_RASTER = DADOS_DIR / "mapbiomas_col10" / "rasters" / "brazil_coverage_{ano}.tif"
+ANOS_MAPAS = (1985, 2024)
+
 # Lista opcional com os municípios da área de estudo (CSV com a coluna CD_MUN).
 # Se o arquivo não existir, todos os municípios do shapefile são usados.
 AREA_ESTUDO_CSV = DADOS_DIR / "municipios_base" / "area_estudo.csv"
@@ -27,3 +32,5 @@ AREA_ESTUDO_CSV = DADOS_DIR / "municipios_base" / "area_estudo.csv"
 MUNICIPIOS_CSV = PROJETO_DIR / "coordenadas" / "municipios_coord.csv"
 COBERTURA_CSV = PROJETO_DIR / "historico" / "estatisticas_coverage_historico.csv"
 LEGENDA_CSV = PROJETO_DIR / "historico" / "legenda_mapbiomas.csv"
+MAPA_REGIAO_PNG = PROJETO_DIR / "municipios_shapefile" / "municipios_{ano}.png"
+MAPAS_MUNICIPIOS_DIR = PROJETO_DIR / "mapas_municipios"
