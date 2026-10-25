@@ -1,6 +1,6 @@
 # 🌱 Painel Interativo da Cobertura do Solo - MapBiomas
 
-Este painel interativo desenvolvido em **Python com Streamlit** tem como objetivo permitir a **análise da dinâmica de uso e cobertura do solo** em municípios da fronteira Cerrado-Amazônia, com base nos dados do projeto **MapBiomas** (séries históricas de 1985 a 2024).
+Este painel interativo desenvolvido em **Python com Streamlit** tem como objetivo permitir a **análise da dinâmica de uso e cobertura do solo** em municípios da fronteira Cerrado-Amazônia, com base nos dados do projeto **MapBiomas** (Coleção 10.1, séries históricas de 1985 a 2024).
 
 ## 🔍 Funcionalidades
 
@@ -9,22 +9,47 @@ Este painel interativo desenvolvido em **Python com Streamlit** tem como objetiv
 - Comparação entre dois anos selecionados
 - Cálculo do Índice de Antropização
 - Alertas automáticos de perda de vegetação nativa
-- Exibição de mapas com marcador geográfico (1985 e 2023)
+- Exibição de mapas com marcador geográfico (1985 e 2024)
 - Geração de relatório PDF completo com gráficos e mapas
 
-## 🗂 Estrutura de diretórios esperada
+## 🗂 Estrutura de diretórios
 
 ```
 dashboard/
 ├── app.py
-├── estatisticas_coverage_historico.csv
-├── municipios_coord.csv
-└── municipios_shapefile/
-    ├── municipios_1985.png
-    ├── municipios_1985.pgw
-    ├── municipios_2024.png
-    ├── municipios_2024.pgw
+├── historico/
+│   ├── estatisticas_coverage_historico.csv   # cobertura por município, ano e classe (gerado)
+│   └── legenda_mapbiomas.csv                 # nome, cor, grupo e tipo de cada classe (gerado)
+├── coordenadas/
+│   └── municipios_coord.csv                  # código IBGE, UF, área e centroide (gerado)
+├── municipios_shapefile/
+│   ├── municipios_1985.png / .pgw
+│   └── municipios_2024.png / .pgw
+└── processamento/                            # scripts que geram os CSVs acima
 ```
+
+Os municípios são identificados pelo código IBGE (`CD_MUN`). No seletor do painel o nome aparece com a UF, pois há homônimos na área de estudo (ex.: Pau D'Arco no PA e no TO).
+
+## 🔄 Atualização dos dados
+
+O app lê apenas os CSVs agregados. Eles são gerados pelos scripts em `processamento/` a partir dos dados brutos, que **não são versionados** e ficam na pasta-mãe do projeto (ou no caminho definido na variável de ambiente `MESTRADO_DADOS`):
+
+| Arquivo esperado | Fonte |
+|---|---|
+| `municipios_base/50km_todosMun.shp` | Limites municipais da área de estudo (IBGE, SIRGAS 2000) |
+| `mapbiomas_col10/MAPBIOMAS_BRAZIL-COVERAGE_STATISTICS-COL.10.1-MUNICIPALITIES_STATES_BIOMES.xlsx` | [MapBiomas, estatísticas da Coleção 10.1](https://doi.org/10.58053/MapBiomas/SJZOLT) |
+| `municipios_base/area_estudo.csv` (opcional) | Lista de `CD_MUN` para restringir a área de estudo |
+
+```bash
+pip install -r processamento/requirements.txt
+python processamento/municipios.py
+python processamento/mapbiomas_col10.py
+```
+
+Indicadores derivados da legenda oficial:
+
+- **Vegetação nativa**: classes dos grupos *Floresta* e *Vegetação Herbácea e Arbustiva*.
+- **Índice de antropização**: área das classes de tipo *Antrópico* dividida pela área total.
 
 ## 🛠 Requisitos
 
