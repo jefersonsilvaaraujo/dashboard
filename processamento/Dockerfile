@@ -7,6 +7,11 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
 
+# libexpat: exigida pelo GDAL embutido no rasterio
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libexpat1 \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY processamento/requirements.txt /tmp/requirements.txt
 RUN pip install -r /tmp/requirements.txt
 
