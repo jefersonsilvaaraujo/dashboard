@@ -10,6 +10,7 @@ Este painel interativo desenvolvido em **Python com Streamlit** tem como objetiv
 - Cálculo do Índice de Antropização
 - Alertas automáticos de perda de vegetação nativa
 - Mapas da região de estudo com marcador do município e mapas de uso e cobertura do próprio município (1985 e 2024)
+- Focos de calor do INPE (2003–2025): série anual, sazonalidade, ranking de municípios, intensidade do fogo (FRP), condições do tempo e mapa dos focos
 - Geração de relatório PDF completo com gráficos e mapas
 
 ## 🏗 Arquitetura
@@ -39,6 +40,10 @@ As portas são publicadas apenas em `127.0.0.1`; o acesso público passa pelo Ap
 | `mapbiomas.cobertura` | Área (ha) por município, ano e classe |
 | `mapbiomas.vw_cobertura_municipio` | Visão lida pelo app; deriva o percentual de ocupação e filtra a área de estudo |
 | `ref.vw_municipio` | Municípios da área de estudo com UF e coordenadas do centroide |
+| `queimadas.foco` | Focos de calor (ponto, data/hora UTC, bioma, município). O município é o polígono que contém o ponto, calculado no PostGIS. Índices: (município, data), BRIN de data e GiST espacial |
+| `queimadas.foco_atributo` | FRP, chuva, dias sem chuva e risco de fogo, quando a fonte oferece (FRP: 2003–2007 e 2015–2024; demais: 2015–2024) |
+| `queimadas.mv_focos_municipio_mes` | Agregado mensal por município (view materializada, recalculada a cada carga) |
+| `queimadas.vw_focos_municipio_mes` | Agregado mensal da área de estudo, lido pelo app |
 
 Princípios adotados: chaves estrangeiras e restrições `CHECK` em todas as tabelas; valores derivados (percentual, centroide) calculados pelo banco em vez de armazenados; cargas em transação única (o painel nunca vê dados pela metade); usuário do app sem permissão de escrita e com tempo-limite de consulta.
 
@@ -78,14 +83,19 @@ Os dados brutos **não são versionados** e ficam na pasta-mãe do projeto (`MES
 | `municipios_base/50km_todosMun.shp` | Limites municipais da área de estudo (IBGE, SIRGAS 2000) |
 | `mapbiomas_col10/MAPBIOMAS_BRAZIL-COVERAGE_STATISTICS-COL.10.1-MUNICIPALITIES_STATES_BIOMES.xlsx` | [MapBiomas, estatísticas da Coleção 10.1](https://doi.org/10.58053/MapBiomas/SJZOLT) |
 | `mapbiomas_col10/rasters/brazil_coverage_{ano}.tif` (1985 e 2024) | [MapBiomas, rasters anuais da Coleção 10](https://storage.googleapis.com/mapbiomas-public/initiatives/brasil/collection_10/lulc/coverage/) |
+| `queimadas_inpe/focos_br_ref_2003_2025/focos_br_ref_{ano}.zip` | [INPE, focos anuais do satélite de referência](https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/anual/Brasil_sat_ref/) |
+| `queimadas_inpe/focos_qmd_inpe_*/focos_qmd_inpe_*.shp` | Exportações do [BDQueimadas](https://terrabrasilis.dpi.inpe.br/queimadas/bdqueimadas/) com FRP, chuva, dias sem chuva e risco de fogo |
 | `municipios_base/area_estudo.csv` (opcional) | Lista de `CD_MUN` que define a área de estudo |
 
 ```bash
-docker compose run --rm etl                               # banco
+docker compose run --rm etl                               # banco (todas as fontes) e CSV mensal de focos
+docker compose run --rm etl python queimadas.py           # só os focos de calor
 docker compose run --rm etl python municipios.py          # CSV de municípios
 docker compose run --rm etl python mapbiomas_col10.py     # CSVs de cobertura e legenda
 docker compose run --rm etl python mapas.py               # mapas PNG
 ```
+
+Focos de calor: os atributos dos shapefiles são ligados aos focos por data/hora e coordenadas (todos os registros dos shapefiles encontram seu foco). Valores −999 e fora da faixa física (FRP negativo, dias sem chuva acima de 120, risco fora de 0–1) são tratados como ausentes. O mapa de pontos dos focos só aparece com o banco; no modo CSV o painel usa o agregado mensal.
 
 Os mapas usam os rasters da Coleção 10 (não há rasters públicos da 10.1); para 1985 e 2024 as áreas por classe diferem menos de 0,1% das estatísticas da Coleção 10.1.
 
@@ -123,7 +133,7 @@ pip install -r requirements-dev.txt
 pytest testes
 ```
 
-Os testes verificam que banco e CSVs têm os mesmos dados e que o painel mostra os mesmos indicadores nas duas fontes.
+Os testes verificam que banco e CSVs têm os mesmos dados, que o painel mostra os mesmos indicadores nas duas fontes e que a contagem de focos de 2024 confere com a validação independente (51.628 focos).
 
 ## 🌐 Publicação em servidor
 

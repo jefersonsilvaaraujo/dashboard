@@ -27,11 +27,11 @@ def _engine():
     return create_engine("postgresql+psycopg://", pool_pre_ping=True, pool_size=2, max_overflow=2)
 
 
-def _consultar(sql):
+def _consultar(sql, parametros=None):
     from sqlalchemy import text
 
     with _engine().connect() as conexao:
-        return pd.read_sql(text(sql), conexao)
+        return pd.read_sql(text(sql), conexao, params=parametros)
 
 
 @st.cache_data(ttl=CACHE_SEGUNDOS, show_spinner="Carregando dados de cobertura...")
@@ -56,6 +56,44 @@ def carregar_legenda():
             " FROM mapbiomas.classe ORDER BY classe_id"
         )
     return pd.read_csv(_csv("historico", "legenda_mapbiomas.csv"))
+
+
+@st.cache_data(ttl=CACHE_SEGUNDOS, show_spinner=False)
+def carregar_focos_mensais():
+    """Focos de calor por município, ano e mês (só meses com focos), com médias de
+    FRP, chuva, dias sem chuva e risco de fogo quando disponíveis."""
+    if USA_BANCO:
+        return _consultar(
+            'SELECT cd_mun AS "CD_MUN", nm_mun AS "NM_MUN", sigla_uf AS "SIGLA_UF", ano, mes, focos,'
+            " focos_com_frp, frp_medio, frp_maximo, precipitacao_media, dias_sem_chuva_medio, risco_fogo_medio"
+            " FROM queimadas.vw_focos_municipio_mes ORDER BY cd_mun, ano, mes"
+        )
+    return pd.read_csv(_csv("historico", "focos_municipio_mensal.csv"), sep=";", decimal=",")
+
+
+@st.cache_data(ttl=CACHE_SEGUNDOS, show_spinner="Carregando focos...")
+def carregar_focos_pontos(ano, cd_mun=None):
+    """Localização dos focos de um ano (de um município ou de toda a área de estudo).
+
+    Só disponível com o banco; no modo CSV devolve None.
+    """
+    if not USA_BANCO:
+        return None
+    sql = (
+        "SELECT ST_Y(f.geom) AS latitude, ST_X(f.geom) AS longitude,"
+        " (f.data_hora AT TIME ZONE 'UTC')::date AS data, a.frp"
+        " FROM queimadas.foco f"
+        " JOIN ref.municipio m USING (cd_mun)"
+        " LEFT JOIN queimadas.foco_atributo a USING (foco_id)"
+        " WHERE m.area_estudo"
+        "   AND f.data_hora >= make_timestamptz(:ano, 1, 1, 0, 0, 0, 'UTC')"
+        "   AND f.data_hora <  make_timestamptz(:ano + 1, 1, 1, 0, 0, 0, 'UTC')"
+    )
+    parametros = {"ano": int(ano)}
+    if cd_mun is not None:  # usa o índice (cd_mun, data_hora); sem município, o BRIN de data_hora
+        sql += " AND f.cd_mun = :cd_mun"
+        parametros["cd_mun"] = int(cd_mun)
+    return _consultar(sql, parametros)
 
 
 @st.cache_data(ttl=CACHE_SEGUNDOS, show_spinner=False)

@@ -12,6 +12,8 @@ from reportlab.lib.utils import ImageReader
 import logging
 import os
 
+import numpy as np
+
 import dados
 
 log = logging.getLogger("dashboard")
@@ -193,7 +195,7 @@ else:
     st.caption("Mapas: MapBiomas Coleção 10 (raster 30 m). Áreas e indicadores: estatísticas da Coleção 10.1.")
 
 # Abas principais
-abas = st.tabs(["Evolução Temporal", "Distribuição Anual", "Participação Percentual", "Análise por Década", "Comparação Entre Anos", "Análises Especiais", "Análises por Estados" ])
+abas = st.tabs(["Evolução Temporal", "Distribuição Anual", "Participação Percentual", "Análise por Década", "Comparação Entre Anos", "Análises Especiais", "Análises por Estados", "Queimadas"])
 
 with abas[0]:
     st.markdown("#### Gráfico de Linha")
@@ -306,7 +308,8 @@ with abas[4]:
 # Estatísticas descritivas
 st.markdown("### Estatísticas Descritivas")
 # Convertido para texto: a tabela mistura números e nomes na mesma coluna
-estatisticas = df_filtrado.describe(include="all").astype(str).replace("nan", "")
+estatisticas = df_filtrado.describe(include="all")
+estatisticas = estatisticas.astype(object).where(estatisticas.notna(), "").astype(str)
 st.dataframe(estatisticas, width="stretch")
 
 # Tabela interativa
@@ -443,6 +446,133 @@ with abas[6]:
     fig_uf7 = px.bar(df_alt_max, x="SIGLA_UF", y="alteracao", color="decada", title="Década com Maior Alteração por Estado", labels={"alteracao": "Mudança Total (ha)"})
     st.plotly_chart(fig_uf7, width="stretch")
 
+with abas[7]:
+    st.markdown("### Focos de Calor")
+    MESES = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"]
+
+    focos = dados.carregar_focos_mensais()
+    municipios_ref = dados.carregar_municipios()
+    anos_focos = sorted(focos["ano"].unique())
+    periodo_focos = st.slider("Período dos focos:", min_value=int(anos_focos[0]), max_value=int(anos_focos[-1]),
+                              value=(int(anos_focos[0]), int(anos_focos[-1])), key="periodo_focos")
+    anos_periodo = list(range(periodo_focos[0], periodo_focos[1] + 1))
+    focos_periodo = focos[focos["ano"].between(*periodo_focos)]
+
+    if cidade != "Todos":
+        focos_sel = focos_periodo[focos_periodo["CD_MUN"] == cd_mun]
+        area_sel = municipios_ref.loc[municipios_ref["CD_MUN"] == cd_mun, "AREA_KM2"].sum()
+    else:
+        focos_sel = focos_periodo
+        area_sel = municipios_ref["AREA_KM2"].sum()
+
+    # Meses e anos sem foco não aparecem nos dados; completados com zero
+    focos_por_ano = focos_sel.groupby("ano")["focos"].sum().reindex(anos_periodo, fill_value=0)
+    total_focos = int(focos_por_ano.sum())
+
+    # Densidade anual (focos por 1.000 km² por ano), comparada com a média da área de estudo
+    densidade = total_focos / area_sel * 1000 / len(anos_periodo)
+    densidade_area = focos_periodo["focos"].sum() / municipios_ref["AREA_KM2"].sum() * 1000 / len(anos_periodo)
+
+    m1, m2, m3, m4 = st.columns(4)
+    m1.metric("Focos no período", f"{total_focos:,}".replace(",", "."),
+              chart_data=focos_por_ano.tolist(), chart_type="bar")
+    m2.metric("Média anual", f"{focos_por_ano.mean():,.0f}".replace(",", "."))
+    m3.metric("Ano com mais focos", str(focos_por_ano.idxmax()),
+              f"{int(focos_por_ano.max()):,} focos".replace(",", "."), delta_color="off", delta_arrow="off")
+    m4.metric("Focos por 1.000 km² por ano", f"{densidade:.1f}".replace(".", ","),
+              f"{(densidade / densidade_area - 1) * 100:+.0f}% vs. área de estudo" if cidade != "Todos" else None,
+              delta_color="inverse")
+
+    fig_q1 = px.bar(focos_por_ano.reset_index(), x="ano", y="focos",
+                    labels={"ano": "Ano", "focos": "Focos de calor"}, title="Focos de Calor por Ano",
+                    color_discrete_sequence=["#d4271e"])
+    st.plotly_chart(fig_q1, width="stretch")
+
+    # Sazonalidade: ano x mês
+    matriz = (
+        focos_sel.groupby(["ano", "mes"])["focos"].sum().unstack(fill_value=0)
+        .reindex(index=anos_periodo, columns=range(1, 13), fill_value=0)
+    )
+    matriz.columns = MESES
+    fig_q2 = px.imshow(matriz, aspect="auto", color_continuous_scale="YlOrRd",
+                       labels={"x": "Mês", "y": "Ano", "color": "Focos"}, title="Focos por Mês e Ano")
+    st.plotly_chart(fig_q2, width="stretch")
+
+    if cidade == "Todos":
+        ranking = (
+            focos_periodo.groupby(["NM_MUN", "SIGLA_UF"], as_index=False)["focos"].sum()
+            .nlargest(15, "focos").sort_values("focos")
+        )
+        ranking["municipio"] = ranking["NM_MUN"] + " (" + ranking["SIGLA_UF"] + ")"
+        fig_q3 = px.bar(ranking, x="focos", y="municipio", orientation="h",
+                        labels={"focos": "Focos de calor", "municipio": ""},
+                        title=f"Municípios com Mais Focos ({periodo_focos[0]}–{periodo_focos[1]})",
+                        color_discrete_sequence=["#d4271e"])
+        st.plotly_chart(fig_q3, width="stretch")
+
+        por_uf = focos_periodo.groupby(["ano", "SIGLA_UF"], as_index=False)["focos"].sum()
+        fig_q4 = px.line(por_uf, x="ano", y="focos", color="SIGLA_UF", markers=True,
+                         color_discrete_sequence=px.colors.qualitative.Set1,
+                         labels={"ano": "Ano", "focos": "Focos de calor", "SIGLA_UF": "UF"},
+                         title="Focos de Calor por Estado")
+        st.plotly_chart(fig_q4, width="stretch")
+    else:
+        posicao = (focos_periodo.groupby("CD_MUN")["focos"].sum()
+                   .reindex(municipios_ref["CD_MUN"], fill_value=0).rank(ascending=False, method="min"))
+        st.caption(f"{cidade} é o {int(posicao[cd_mun])}º de {len(posicao)} municípios da área de estudo "
+                   f"em número de focos no período.")
+
+    # Intensidade (FRP) e condições do tempo, onde a fonte oferece esses atributos
+    st.markdown("#### Intensidade do Fogo e Condições do Tempo")
+    def media_ponderada(coluna, peso):
+        valido = focos_sel.dropna(subset=[coluna])
+        soma = (valido[coluna] * valido[peso]).groupby(valido["ano"]).sum()
+        return (soma / valido.groupby("ano")[peso].sum()).reindex(anos_periodo)
+
+    clima = pd.DataFrame({
+        "FRP médio (MW)": media_ponderada("frp_medio", "focos_com_frp"),
+        "Risco de fogo médio (0–1)": media_ponderada("risco_fogo_medio", "focos"),
+        "Dias sem chuva (média)": media_ponderada("dias_sem_chuva_medio", "focos"),
+    }, index=anos_periodo).rename_axis("ano").reset_index()
+    c1, c2, c3 = st.columns(3)
+    for coluna, col in zip(clima.columns[1:], [c1, c2, c3]):
+        fig_clima = px.line(clima, x="ano", y=coluna, markers=True, title=coluna, labels={"ano": "Ano", coluna: ""})
+        fig_clima.update_layout(height=300, margin=dict(t=40, b=10))
+        col.plotly_chart(fig_clima, width="stretch")
+    st.caption("O FRP (potência radiativa do fogo) está disponível em 2003–2007 e 2015–2024; risco de fogo e "
+               "dias sem chuva, em 2015–2024. Anos sem o atributo aparecem como lacuna.")
+
+    # Mapa dos focos de um ano
+    st.markdown("#### Localização dos Focos")
+    ano_mapa = st.selectbox("Ano do mapa:", options=anos_periodo[::-1], key="ano_mapa_focos")
+    pontos = dados.carregar_focos_pontos(ano_mapa, cd_mun)
+    if pontos is None:
+        st.caption("O mapa dos focos está disponível quando o painel usa o banco PostgreSQL (docker compose).")
+    elif pontos.empty:
+        st.caption(f"Nenhum foco em {ano_mapa}.")
+    else:
+        pontos["mes"] = pd.to_datetime(pontos["data"]).dt.month.map(dict(enumerate(MESES, start=1)))
+        centro = {"lat": pontos["latitude"].mean(), "lon": pontos["longitude"].mean()}
+        if cidade != "Todos":
+            # Zoom pela extensão dos focos: cada nível de zoom dobra a escala (360° no nível 0)
+            extensao = max(pontos["latitude"].max() - pontos["latitude"].min(),
+                           pontos["longitude"].max() - pontos["longitude"].min(), 0.05)
+            zoom = min(max(np.log2(360 / (extensao * 1.6)), 3), 11)
+            fig_q5 = px.scatter_map(pontos, lat="latitude", lon="longitude", color="mes",
+                                    category_orders={"mes": MESES}, hover_data={"data": True, "frp": True},
+                                    labels={"mes": "Mês", "frp": "FRP (MW)", "data": "Data"},
+                                    center=centro, zoom=zoom, height=550, map_style="carto-positron",
+                                    title=f"Focos de Calor em {ano_mapa} ({len(pontos)} focos)")
+        else:
+            fig_q5 = px.density_map(pontos, lat="latitude", lon="longitude", radius=4,
+                                    color_continuous_scale="YlOrRd",
+                                    center=centro, zoom=4.3, height=550, map_style="carto-positron",
+                                    title=f"Densidade de Focos de Calor em {ano_mapa} ({len(pontos):,} focos)".replace(",", "."))
+        st.plotly_chart(fig_q5, width="stretch")
+
+    st.caption("Fonte: INPE/BDQueimadas, focos do satélite de referência (AQUA, passagem da tarde). "
+               "Datas em UTC; município definido pelo polígono que contém o foco.")
+
 st.sidebar.markdown("---")
 
 # Botão para gerar relatório em PDF
@@ -475,7 +605,8 @@ if cidade != "Todos":
                     "4. Análise de Participação Percentual",
                     "5. Análise por Décadas",
                     "6. Comparação Entre Anos",
-                    "7. Análises Especiais"
+                    "7. Análises Especiais",
+                    "8. Focos de Calor"
                 ]
                 for item in sumario_items:
                     c.drawString(70, y_pos, item)
@@ -625,6 +756,12 @@ if cidade != "Todos":
                 
                 if 'fig_comp' in locals():
                     adicionar_grafico_pdf(fig_comp, f"Comparação da Cobertura entre {ano_comp1} e {ano_comp2}", c, width, height)
+
+                if 'fig_q1' in locals():
+                    adicionar_grafico_pdf(fig_q1, f"Focos de Calor por Ano ({periodo_focos[0]}–{periodo_focos[1]})", c, width, height)
+
+                if 'fig_q2' in locals():
+                    adicionar_grafico_pdf(fig_q2, "Focos de Calor por Mês e Ano", c, width, height)
                 
                 # Página final com estatísticas
                 c.setFont("Helvetica-Bold", 14)

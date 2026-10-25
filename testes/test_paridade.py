@@ -90,6 +90,21 @@ def test_municipios(banco):
     pd.testing.assert_frame_equal(csv, bd, check_dtype=False, atol=1e-9, rtol=0)
 
 
+def test_focos_mensais(banco):
+    csv = pd.read_csv(PROJETO / "historico" / "focos_municipio_mensal.csv", sep=";", decimal=",")
+    bd = ler(banco, 'SELECT cd_mun AS "CD_MUN", nm_mun AS "NM_MUN", sigla_uf AS "SIGLA_UF", ano, mes, focos,'
+                    " focos_com_frp, frp_medio, frp_maximo, precipitacao_media, dias_sem_chuva_medio, risco_fogo_medio"
+                    " FROM queimadas.vw_focos_municipio_mes ORDER BY cd_mun, ano, mes")
+    pd.testing.assert_frame_equal(csv, bd, check_dtype=False, atol=1e-4, rtol=0)
+
+
+def test_focos_2024_conferem_com_contagem_independente(banco):
+    # 51.628 focos em 2024 na área de estudo, contados com geopandas direto do arquivo do INPE
+    # (validação feita na Fase 2). O ano de 2024 é fechado; o número não deve mudar.
+    total = ler(banco, "SELECT sum(focos) AS n FROM queimadas.vw_focos_municipio_mes WHERE ano = 2024")["n"][0]
+    assert total == 51628
+
+
 ROTEIRO_APP = r"""
 import json, sys
 from streamlit.testing.v1 import AppTest
@@ -159,7 +174,10 @@ def test_app_mostra_o_mesmo_nas_duas_fontes(banco):
 
     for municipio, resultado in pelo_banco.items():
         assert resultado["excecoes"] == [], f"{municipio}: {resultado['excecoes']}"
-        assert resultado["graficos"] > 0
+        assert pelo_csv[municipio]["excecoes"] == [], f"{municipio} (CSV): {pelo_csv[municipio]['excecoes']}"
+        # O mapa de pontos dos focos só existe com o banco, então o total de gráficos difere
+        assert resultado["graficos"] > 0 and pelo_csv[municipio]["graficos"] > 0
+        del resultado["graficos"], pelo_csv[municipio]["graficos"]
     for municipio in pelo_csv:
         assert equivalentes(pelo_banco[municipio], pelo_csv[municipio]), (
             f"{municipio}:\n  banco: {pelo_banco[municipio]}\n  csv:   {pelo_csv[municipio]}"
