@@ -7,8 +7,16 @@ import tempfile
 from datetime import datetime
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
+from reportlab.lib.colors import HexColor
+from reportlab.lib.utils import ImageReader
 from plotly.io import write_image
 import os
+
+# Caminhos relativos a este arquivo, para o app funcionar a partir de qualquer pasta
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+def caminho(*partes):
+    return os.path.join(base_dir, *partes)
 
 # Funções auxiliares
 def geo_to_pixel(lon, lat, pgw):
@@ -17,13 +25,14 @@ def geo_to_pixel(lon, lat, pgw):
     y = int((lat - F) / E)
     return x, y
 
-def marcar_com_pin(nome_municipio, base_image, df_coord, pgw):
-    imagem_marcada = base_image.copy()
+def marcar_com_pin(cd_mun, rotulo, base_image, df_coord, pgw):
+    # Mapa sobre fundo branco (o PNG tem fundo transparente e cores indexadas)
+    base_rgba = base_image.convert("RGBA")
+    imagem_marcada = Image.new("RGB", base_rgba.size, "white")
+    imagem_marcada.paste(base_rgba, mask=base_rgba)
     draw = ImageDraw.Draw(imagem_marcada)
 
-    nome_municipio = nome_municipio.strip().lower()
-    df_coord["nome_normalizado"] = df_coord["nome_municipio"].str.strip().str.lower()
-    linha = df_coord[df_coord["nome_normalizado"] == nome_municipio]
+    linha = df_coord[df_coord["CD_MUN"] == cd_mun]
 
     if not linha.empty:
         lon, lat = linha.iloc[0][["longitude", "latitude"]]
@@ -33,53 +42,44 @@ def marcar_com_pin(nome_municipio, base_image, df_coord, pgw):
         draw.line((x, y, x, y + haste), fill="red", width=3)
         draw.ellipse((x - raio, y - raio, x + raio, y + raio), fill="red", outline="black", width=1)
         fonte = ImageFont.load_default()
-        draw.text((x + 10, y - 5), nome_municipio.title(), fill="black", font=fonte)
+        draw.text((x + 10, y - 5), rotulo, fill="black", font=fonte)
 
     return imagem_marcada
 
+def indice_antropizacao(dados, por):
+    """Percentual da área em classes antrópicas sobre a área total."""
+    total = dados.groupby(por)["area_ha"].sum()
+    antropica = dados[dados["tipo"] == "Antrópico"].groupby(por)["area_ha"].sum()
+    return (antropica.reindex(total.index, fill_value=0) / total * 100).rename("índice").reset_index()
+
 # Carregar dados
-import os
-base_dir = os.path.dirname(os.path.abspath(__file__))
-csv_path = "historico/estatisticas_coverage_historico.csv"
-df = pd.read_csv(csv_path, sep=";", decimal=",")
+df = pd.read_csv(caminho("historico", "estatisticas_coverage_historico.csv"), sep=";", decimal=",")
 
 df["decada"] = (df["ano"] // 10) * 10
 
-# Legenda MapBiomas
-cores_mapbiomas = {
-    3:  ("Formação Florestal", "#006400"),
-    4:  ("Formação Savânica", "#DAA520"),
-    5:  ("Mangue", "#8B4513"),
-    6:  ("Floresta Alagável", "#00BFFF"),
-    9:  ("Silvicultura", "#A52A2A"),
-    11: ("Área Úmida Natural", "#B0C4DE"),
-    12: ("Campo Natural", "#D2B48C"),
-    15: ("Pastagem", "#F5DEB3"),
-    18: ("Agricultura (Outros)", "#F4A460"),
-    19: ("Lavoura Temporária", "#FFA500"),
-    20: ("Cana-de-açúcar", "#B22222"),
-    21: ("Mosaico de Usos", "#FFDEAD"),
-    23: ("Praia e Duna", "#EEE8AA"),
-    24: ("Área Urbana", "#FF0000"),
-    25: ("Outras Áreas Não Vegetadas", "#8B0000"),
-    29: ("Afloramento Rochoso", "#A9A9A9"),
-    30: ("Mineração", "#808000"),
-    31: ("Aquicultura", "#1E90FF"),
-    39: ("Soja", "#FFA07A")
-}
-legenda_df = pd.DataFrame([
-    {"classe_cobertura": k, "nome_classe": v[0], "cor_rgb": v[1]}
-    for k, v in cores_mapbiomas.items()
-])
+# Legenda MapBiomas Coleção 10.1 (gerada por processamento/mapbiomas_col10.py)
+legenda_df = pd.read_csv(caminho("historico", "legenda_mapbiomas.csv"))
 
 df = df.merge(legenda_df, on="classe_cobertura", how="left")
-df = df.dropna(subset=["nome_classe"])
+df["nome_classe"] = df["nome_classe"].fillna("Classe " + df["classe_cobertura"].astype(str))
+df["cor_rgb"] = df["cor_rgb"].fillna("#999999")
+mapa_cores = dict(zip(df["nome_classe"], df["cor_rgb"]))
+
+classes_nativas = legenda_df.loc[legenda_df["grupo"].isin(["Floresta", "Vegetação Herbácea e Arbustiva"]), "nome_classe"].tolist()
+classes_agropecuarias = legenda_df.loc[legenda_df["grupo"] == "Agropecuária", "nome_classe"].tolist()
+
+# Município identificado pelo código IBGE; o rótulo leva a UF para separar homônimos
+df["rotulo_mun"] = df["NM_MUN"] + " (" + df["SIGLA_UF"] + ")"
+municipios_por_rotulo = df.drop_duplicates("CD_MUN").set_index("rotulo_mun")["CD_MUN"]
 
 # Sidebar
 st.sidebar.title("Filtros")
-opcoes_municipios = ["Todos"] + sorted(df["NM_MUN"].unique())
+opcoes_municipios = ["Todos"] + sorted(municipios_por_rotulo.index)
 cidade = st.sidebar.selectbox("Escolha um município:", opcoes_municipios, index=0)
+cd_mun = municipios_por_rotulo[cidade] if cidade != "Todos" else None
 anos = sorted(df["ano"].unique())
+ANO_INICIAL, ANO_FINAL = anos[0], anos[-1]
+ANOS_MAPAS = (1985, 2024)  # anos com mapas gerados por processamento/mapas.py
 intervalo_anos = st.sidebar.slider("Selecione o intervalo de anos:", min_value=min(anos), max_value=max(anos), value=(min(anos), max(anos)))
 
 classes_disponiveis = sorted(df["nome_classe"].unique())
@@ -99,33 +99,36 @@ classes_selecionadas = st.sidebar.multiselect("Filtrar por classe de cobertura (
 # Filtro geral
 df_filtrado = df[(df["ano"] >= intervalo_anos[0]) & (df["ano"] <= intervalo_anos[1])]
 if cidade != "Todos":
-    df_filtrado = df_filtrado[df_filtrado["NM_MUN"] == cidade]
+    df_filtrado = df_filtrado[df_filtrado["CD_MUN"] == cd_mun]
 df_filtrado = df_filtrado[df_filtrado["nome_classe"].isin(classes_selecionadas)]
+
+# Série anual por classe (soma os municípios quando "Todos" está selecionado)
+df_serie = df_filtrado.groupby(["ano", "nome_classe"], as_index=False)["area_ha"].sum()
 
 # Título e subtítulo
 st.title("Painel Interativo da Cobertura do Solo - MapBiomas")
+st.caption(f"Fonte: MapBiomas Brasil, Coleção 10.1 ({ANO_INICIAL}–{ANO_FINAL})")
 if cidade == "Todos":
     st.subheader("Análise Geral para Todos os Municípios")
 else:
     st.subheader(f"Análise para {cidade}")
 
-    # Mostrar mapas de 1985 e 2024
-    st.markdown("#### Localização do Município no Mapa (Comparativo 1985 vs 2024)")
+    # Mostrar mapas da região de estudo
+    st.markdown(f"#### Localização do Município no Mapa (Comparativo {ANOS_MAPAS[0]} vs {ANOS_MAPAS[1]})")
     col1, col2 = st.columns(2)
 
-    coord_path = "coordenadas/municipios_coord.csv"
-    df_coord = pd.read_csv(coord_path)
+    df_coord = pd.read_csv(caminho("coordenadas", "municipios_coord.csv"))
 
-    for ano, col in zip(["1985", "2024"], [col1, col2]):
-        png_path = f"municipios_shapefile/municipios_{ano}.png"
-        pgw_path = f"municipios_shapefile/municipios_{ano}.pgw"
+    for ano, col in zip(ANOS_MAPAS, [col1, col2]):
+        png_path = caminho("municipios_shapefile", f"municipios_{ano}.png")
+        pgw_path = caminho("municipios_shapefile", f"municipios_{ano}.pgw")
 
         try:
             image = Image.open(png_path)
             with open(pgw_path) as f:
                 pgw = list(map(float, f.readlines()))
 
-            imagem_marcada = marcar_com_pin(cidade, image, df_coord, pgw)
+            imagem_marcada = marcar_com_pin(cd_mun, cidade, image, df_coord, pgw)
             largura_desejada = 800
             altura_desejada = int(imagem_marcada.height * (largura_desejada / imagem_marcada.width))
             imagem_marcada = imagem_marcada.resize((largura_desejada, altura_desejada))
@@ -134,10 +137,56 @@ else:
             imagem_marcada.save(buffer, format="PNG")
             buffer.seek(0)
 
-            col.image(buffer, caption=f"{cidade} em {ano}", use_container_width=True)
+            col.image(buffer, caption=f"Região de estudo em {ano}", use_container_width=True)
 
         except Exception as e:
             col.warning(f"Erro ao carregar mapa de {ano}: {e}")
+
+    # Uso e cobertura do próprio município nos mesmos anos
+    st.markdown(f"#### Uso e Cobertura do Município ({ANOS_MAPAS[0]} vs {ANOS_MAPAS[1]})")
+    col1, col2 = st.columns(2)
+    for ano, col in zip(ANOS_MAPAS, [col1, col2]):
+        mapa_municipio = caminho("mapas_municipios", f"{cd_mun}_{ano}.png")
+        if os.path.exists(mapa_municipio):
+            col.image(mapa_municipio, caption=f"{cidade} em {ano}", use_container_width=True)
+        else:
+            col.warning(f"Mapa de {ano} não encontrado. Rode processamento/mapas.py.")
+
+    # Legenda: classes presentes no município em algum dos dois anos, da maior para a menor área
+    df_mapas = df[(df["CD_MUN"] == cd_mun) & df["ano"].isin(ANOS_MAPAS)]
+    classes_mapa = (
+        df_mapas.groupby(["nome_classe", "cor_rgb"])["area_ha"].max()
+        .sort_values(ascending=False).reset_index()
+    )
+    itens_legenda = "".join(
+        f"<span style='display:inline-flex;align-items:center;margin:0 14px 6px 0'>"
+        f"<span style='width:12px;height:12px;background:{cor};border:1px solid #888;margin-right:5px'></span>"
+        f"{nome}</span>"
+        for nome, cor in zip(classes_mapa["nome_classe"], classes_mapa["cor_rgb"])
+    )
+    st.markdown(f"<div style='font-size:0.85rem'>{itens_legenda}</div>", unsafe_allow_html=True)
+
+    # Diferença entre os dois anos em indicadores-resumo
+    def area_em(ano, filtro):
+        return df_mapas.loc[(df_mapas["ano"] == ano) & filtro, "area_ha"].sum()
+
+    def variacao(inicial, final):
+        return f"{(final - inicial) / inicial * 100:+.1f}% desde {ANOS_MAPAS[0]}" if inicial > 0 else None
+
+    def hectares(valor):
+        return f"{valor:,.0f} ha".replace(",", ".")
+
+    nativa = [area_em(ano, df_mapas["nome_classe"].isin(classes_nativas)) for ano in ANOS_MAPAS]
+    antropica = [area_em(ano, df_mapas["tipo"] == "Antrópico") for ano in ANOS_MAPAS]
+    total = [area_em(ano, df_mapas["area_ha"] > 0) for ano in ANOS_MAPAS]
+    indice = [a / t * 100 if t > 0 else 0 for a, t in zip(antropica, total)]
+
+    m1, m2, m3 = st.columns(3)
+    m1.metric(f"Vegetação nativa em {ANOS_MAPAS[1]}", hectares(nativa[1]), variacao(*nativa))
+    m2.metric(f"Área antrópica em {ANOS_MAPAS[1]}", hectares(antropica[1]), variacao(*antropica), delta_color="inverse")
+    m3.metric(f"Índice de antropização em {ANOS_MAPAS[1]}", f"{indice[1]:.1f}%",
+              f"{indice[1] - indice[0]:+.1f} p.p. desde {ANOS_MAPAS[0]}", delta_color="inverse")
+    st.caption("Mapas: MapBiomas Coleção 10 (raster 30 m). Áreas e indicadores: estatísticas da Coleção 10.1.")
 
 # Abas principais
 abas = st.tabs(["Evolução Temporal", "Distribuição Anual", "Participação Percentual", "Análise por Década", "Comparação Entre Anos", "Análises Especiais", "Análises por Estados" ])
@@ -145,11 +194,11 @@ abas = st.tabs(["Evolução Temporal", "Distribuição Anual", "Participação P
 with abas[0]:
     st.markdown("#### Gráfico de Linha")
     fig1 = px.line(
-        df_filtrado,
+        df_serie,
         x="ano",
         y="area_ha",
         color="nome_classe",
-        color_discrete_map={row.nome_classe: row.cor_rgb for _, row in legenda_df.iterrows()},
+        color_discrete_map=mapa_cores,
         labels={"ano": "Ano", "area_ha": "Área (ha)", "nome_classe": "Classe de Cobertura"},
         title="Evolução da Cobertura do Solo"
     )
@@ -158,11 +207,11 @@ with abas[0]:
 
     st.markdown("#### Gráfico de Área Acumulada")
     fig_area = px.area(
-        df_filtrado,
+        df_serie,
         x="ano",
         y="area_ha",
         color="nome_classe",
-        color_discrete_map={row.nome_classe: row.cor_rgb for _, row in legenda_df.iterrows()},
+        color_discrete_map=mapa_cores,
         labels={"ano": "Ano", "area_ha": "Área (ha)", "nome_classe": "Classe de Cobertura"},
         title="Área Acumulada por Classe ao Longo do Tempo"
     )
@@ -171,12 +220,12 @@ with abas[0]:
 
     st.markdown("#### Gráfico de Dispersão por Ano")
     fig_scatter = px.scatter(
-        df_filtrado,
+        df_serie,
         x="ano",
         y="area_ha",
         color="nome_classe",
         size="area_ha",
-        color_discrete_map={row.nome_classe: row.cor_rgb for _, row in legenda_df.iterrows()},
+        color_discrete_map=mapa_cores,
         labels={"ano": "Ano", "area_ha": "Área (ha)"},
         title="Dispersão das Áreas por Classe e Ano"
     )
@@ -191,7 +240,7 @@ with abas[1]:
         x="nome_classe",
         y="area_ha",
         color="nome_classe",
-        color_discrete_map={row.nome_classe: row.cor_rgb for _, row in legenda_df.iterrows()},
+        color_discrete_map=mapa_cores,
         title=f"Distribuição da Cobertura em {ano_analise}"
     )
     fig2.update_layout(xaxis_title="Classe", yaxis_title="Área (ha)", showlegend=False)
@@ -205,7 +254,7 @@ with abas[2]:
         names="nome_classe",
         values="area_ha",
         color="nome_classe",
-        color_discrete_map={row.nome_classe: row.cor_rgb for _, row in legenda_df.iterrows()},
+        color_discrete_map=mapa_cores,
         title=f"Participação Percentual das Classes em {ano_percentual}"
     )
     st.plotly_chart(fig3, use_container_width=True)
@@ -218,7 +267,7 @@ with abas[3]:
         y="area_ha",
         color="nome_classe",
         barmode="stack",
-        color_discrete_map={row.nome_classe: row.cor_rgb for _, row in legenda_df.iterrows()},
+        color_discrete_map=mapa_cores,
         title="Distribuição da Cobertura por Década"
     )
     fig_dec.update_layout(xaxis_title="Década", yaxis_title="Área (ha)", legend_title="Classe de Cobertura")
@@ -263,35 +312,36 @@ with abas[5]:
 
     # 1. Alerta de perda crítica de vegetação nativa
     if cidade != "Todos":
-        df_mun = df[df["NM_MUN"] == cidade]
-        df_comp = df_mun[df_mun["ano"].isin([1985, 2024])].pivot(index="nome_classe", columns="ano", values="area_ha").fillna(0)
-        vegetacao_nativa = ["Formação Florestal", "Formação Savânica"]
-        uso_antropico = ["Pastagem", "Soja", "Agricultura (Outros)", "Área Urbana"]
-
-        perda_total = df_comp.loc[vegetacao_nativa].sum(axis=1).sum() - df_comp.loc[vegetacao_nativa][2024].sum()
-        perda_percentual = (perda_total / df_comp.loc[vegetacao_nativa][1985].sum()) * 100 if df_comp.loc[vegetacao_nativa][1985].sum() > 0 else 0
+        df_mun = df[(df["CD_MUN"] == cd_mun) & df["nome_classe"].isin(classes_nativas)]
+        area_nativa = df_mun.groupby("ano")["area_ha"].sum()
+        nativa_inicial = area_nativa.get(ANO_INICIAL, 0)
+        nativa_final = area_nativa.get(ANO_FINAL, 0)
+        perda_percentual = (nativa_inicial - nativa_final) / nativa_inicial * 100 if nativa_inicial > 0 else 0
 
         if perda_percentual > 30:
-            st.warning(f"⚠️ Alerta: {cidade} perdeu mais de 30% de sua vegetação nativa entre 1985 e 2024 ({perda_percentual:.2f}%).")
+            st.warning(f"⚠️ Alerta: {cidade} perdeu mais de 30% de sua vegetação nativa entre {ANO_INICIAL} e {ANO_FINAL} ({perda_percentual:.2f}%).")
 
     # 2. Ranking de crescimento e perda por classe
-    st.markdown("#### Ranking de Variação por Classe (1985–2024)")
-    df_var = df[df["ano"].isin([1985, 2024])]
+    st.markdown(f"#### Ranking de Variação por Classe ({ANO_INICIAL}–{ANO_FINAL})")
+    df_var = df[df["ano"].isin([ANO_INICIAL, ANO_FINAL])]
     if cidade != "Todos":
-        df_var = df_var[df_var["NM_MUN"] == cidade]
-    df_pivot = df_var.pivot_table(index="nome_classe", columns="ano", values="area_ha", aggfunc="sum").fillna(0)
-    df_pivot["variação"] = df_pivot[2024] - df_pivot[1985]
+        df_var = df_var[df_var["CD_MUN"] == cd_mun]
+    df_pivot = (
+        df_var.pivot_table(index="nome_classe", columns="ano", values="area_ha", aggfunc="sum")
+        .reindex(columns=[ANO_INICIAL, ANO_FINAL]).fillna(0)
+    )
+    df_pivot["variação"] = df_pivot[ANO_FINAL] - df_pivot[ANO_INICIAL]
     top_ganhos = df_pivot.sort_values("variação", ascending=False).head(5)
     top_perdas = df_pivot.sort_values("variação").head(5)
 
     col1, col2 = st.columns(2)
     col1.markdown("**Maiores Ganhos**")
-    col1.dataframe(top_ganhos[[1985, 2024, "variação"]].round(2))
+    col1.dataframe(top_ganhos[[ANO_INICIAL, ANO_FINAL, "variação"]].round(2))
     col2.markdown("**Maiores Perdas**")
-    col2.dataframe(top_perdas[[1985, 2024, "variação"]].round(2))
+    col2.dataframe(top_perdas[[ANO_INICIAL, ANO_FINAL, "variação"]].round(2))
 
-    # 3. Gráfico de mudança líquida 1985–2024
-    st.markdown("#### Variação Líquida por Classe (1985–2024)")
+    # 3. Gráfico de mudança líquida
+    st.markdown(f"#### Variação Líquida por Classe ({ANO_INICIAL}–{ANO_FINAL})")
     fig_dif = px.bar(df_pivot.reset_index(), x="nome_classe", y="variação",
                      title="Mudança Líquida de Área (ha) por Classe",
                      color="variação",
@@ -309,12 +359,8 @@ with abas[5]:
 
     # 5. Índice de Antropização
     st.markdown("#### Índice de Antropização por Ano")
-    antropicas = ["Pastagem", "Soja", "Agricultura (Outros)", "Área Urbana", "Mineração", "Cana-de-açúcar"]
-    df_ant = df_filtrado.copy()
-    df_ant["tipo"] = df_ant["nome_classe"].apply(lambda x: "Antropizado" if x in antropicas else "Natural")
-    df_idx = df_ant.groupby(["ano", "tipo"])["area_ha"].sum().unstack().fillna(0)
-    df_idx["índice"] = (df_idx["Antropizado"] / (df_idx["Antropizado"] + df_idx["Natural"])) * 100
-    fig_ant = px.line(df_idx.reset_index(), x="ano", y="índice", title="Índice de Antropização ao Longo do Tempo",
+    df_idx = indice_antropizacao(df_filtrado, "ano")
+    fig_ant = px.line(df_idx, x="ano", y="índice", title="Índice de Antropização ao Longo do Tempo",
                       labels={"índice": "% Área Antropizada"})
     st.plotly_chart(fig_ant, use_container_width=True)
 
@@ -327,53 +373,53 @@ with abas[6]:
 
     # 1. Quantidade de municípios por estado
     st.markdown("### 1. Quantidade de Municípios por Estado")
-    df_mun = df_estado.groupby("SIGLA_UF")["NM_MUN"].nunique().reset_index(name="Quantidade de Municípios")
+    df_mun = df_estado.groupby("SIGLA_UF")["CD_MUN"].nunique().reset_index(name="Quantidade de Municípios")
     st.dataframe(df_mun)
-    fig1 = px.bar(df_mun, x="SIGLA_UF", y="Quantidade de Municípios", title="Quantidade de Municípios por Estado")
-    st.plotly_chart(fig1, use_container_width=True)
+    fig_uf1 = px.bar(df_mun, x="SIGLA_UF", y="Quantidade de Municípios", title="Quantidade de Municípios por Estado")
+    st.plotly_chart(fig_uf1, use_container_width=True)
 
     # 2. Perda de vegetação nativa por estado
-    st.markdown("### 2. Perda de Vegetação Nativa por Estado (1985–2024)")
-    nativas = ["Formação Florestal", "Formação Savânica"]
-    df_nat = df_estado[df_estado["nome_classe"].isin(nativas) & df_estado["ano"].isin([1985, 2024])]
-    df_nat_pivot = df_nat.pivot_table(index=["SIGLA_UF", "nome_classe"], columns="ano", values="area_ha", aggfunc="sum").fillna(0)
-    df_nat_pivot["variação"] = df_nat_pivot[2024] - df_nat_pivot[1985]
+    st.markdown(f"### 2. Perda de Vegetação Nativa por Estado ({ANO_INICIAL}–{ANO_FINAL})")
+    df_nat = df_estado[df_estado["nome_classe"].isin(classes_nativas) & df_estado["ano"].isin([ANO_INICIAL, ANO_FINAL])]
+    df_nat_pivot = (
+        df_nat.pivot_table(index=["SIGLA_UF", "nome_classe"], columns="ano", values="area_ha", aggfunc="sum")
+        .reindex(columns=[ANO_INICIAL, ANO_FINAL]).fillna(0)
+    )
+    df_nat_pivot["variação"] = df_nat_pivot[ANO_FINAL] - df_nat_pivot[ANO_INICIAL]
     df_nat_agg = df_nat_pivot.groupby("SIGLA_UF")["variação"].sum().reset_index()
-    fig2 = px.bar(df_nat_agg, x="SIGLA_UF", y="variação", title="Perda Total de Vegetação Nativa (ha)", labels={"variação": "Perda (ha)"})
-    st.plotly_chart(fig2, use_container_width=True)
+    fig_uf2 = px.bar(df_nat_agg, x="SIGLA_UF", y="variação", title="Perda Total de Vegetação Nativa (ha)", labels={"variação": "Perda (ha)"})
+    st.plotly_chart(fig_uf2, use_container_width=True)
 
-    # 3. Evolução da cobertura agrícola por estado
-    st.markdown("### 3. Evolução da Cobertura Agrícola (1985–2024)")
-    agro = ["Soja", "Pastagem", "Agricultura (Outros)", "Cana-de-açúcar"]
-    df_agro = df_estado[df_estado["nome_classe"].isin(agro) & df_estado["ano"].isin([1985, 2024])]
-    df_agro_pivot = df_agro.pivot_table(index=["SIGLA_UF", "nome_classe"], columns="ano", values="area_ha", aggfunc="sum").fillna(0)
-    df_agro_pivot["crescimento"] = df_agro_pivot[2024] - df_agro_pivot[1985]
-    fig3 = px.bar(df_agro_pivot.reset_index(), x="SIGLA_UF", y="crescimento", color="nome_classe", title="Crescimento de Cobertura Agrícola por Estado")
-    st.plotly_chart(fig3, use_container_width=True)
+    # 3. Evolução da cobertura agropecuária por estado
+    st.markdown(f"### 3. Evolução da Cobertura Agropecuária ({ANO_INICIAL}–{ANO_FINAL})")
+    df_agro = df_estado[df_estado["nome_classe"].isin(classes_agropecuarias) & df_estado["ano"].isin([ANO_INICIAL, ANO_FINAL])]
+    df_agro_pivot = (
+        df_agro.pivot_table(index=["SIGLA_UF", "nome_classe"], columns="ano", values="area_ha", aggfunc="sum")
+        .reindex(columns=[ANO_INICIAL, ANO_FINAL]).fillna(0)
+    )
+    df_agro_pivot["crescimento"] = df_agro_pivot[ANO_FINAL] - df_agro_pivot[ANO_INICIAL]
+    fig_uf3 = px.bar(df_agro_pivot.reset_index(), x="SIGLA_UF", y="crescimento", color="nome_classe",
+                     color_discrete_map=mapa_cores, title="Crescimento da Cobertura Agropecuária por Estado")
+    st.plotly_chart(fig_uf3, use_container_width=True)
 
     # 4. Urbanização por estado
     st.markdown("### 4. Urbanização por Estado ao Longo do Tempo")
-    df_urb = df_estado[df_estado["nome_classe"] == "Área Urbana"]
+    df_urb = df_estado[df_estado["classe_cobertura"] == 24]
     df_urb_agg = df_urb.groupby(["ano", "SIGLA_UF"])["area_ha"].sum().reset_index()
-    fig4 = px.line(df_urb_agg, x="ano", y="area_ha", color="SIGLA_UF", title="Evolução da Área Urbana por Estado")
-    st.plotly_chart(fig4, use_container_width=True)
+    fig_uf4 = px.line(df_urb_agg, x="ano", y="area_ha", color="SIGLA_UF", title="Evolução da Área Urbanizada por Estado")
+    st.plotly_chart(fig_uf4, use_container_width=True)
 
     # 5. Índice médio de antropização por estado
     st.markdown("### 5. Índice Médio de Antropização por Estado")
-    antropicas = ["Pastagem", "Soja", "Agricultura (Outros)", "Área Urbana", "Mineração", "Cana-de-açúcar"]
-    df_ant = df_estado.copy()
-    df_ant["tipo"] = df_ant["nome_classe"].apply(lambda x: "Antropizado" if x in antropicas else "Natural")
-    df_idx = df_ant.groupby(["SIGLA_UF", "ano", "tipo"])["area_ha"].sum().unstack().fillna(0)
-    df_idx["índice"] = (df_idx["Antropizado"] / (df_idx["Antropizado"] + df_idx["Natural"])) * 100
-    df_idx_reset = df_idx.reset_index()
-    fig5 = px.line(df_idx_reset, x="ano", y="índice", color="SIGLA_UF", title="Índice de Antropização por Estado")
-    st.plotly_chart(fig5, use_container_width=True)
+    df_idx_reset = indice_antropizacao(df_estado, ["SIGLA_UF", "ano"])
+    fig_uf5 = px.line(df_idx_reset, x="ano", y="índice", color="SIGLA_UF", title="Índice de Antropização por Estado")
+    st.plotly_chart(fig_uf5, use_container_width=True)
 
     # 6. Diversidade de classes por estado
     st.markdown("### 6. Diversidade de Classes por Estado")
     df_div = df_estado.groupby(["SIGLA_UF", "ano"])["nome_classe"].nunique().reset_index(name="n_classes")
-    fig6 = px.line(df_div, x="ano", y="n_classes", color="SIGLA_UF", title="Número de Classes de Uso e Cobertura por Estado")
-    st.plotly_chart(fig6, use_container_width=True)
+    fig_uf6 = px.line(df_div, x="ano", y="n_classes", color="SIGLA_UF", title="Número de Classes de Uso e Cobertura por Estado")
+    st.plotly_chart(fig_uf6, use_container_width=True)
 
     # 7. Década de maior alteração por estado
     st.markdown("### 7. Década com Maior Alteração de Uso e Cobertura por Estado")
@@ -385,9 +431,11 @@ with abas[6]:
         .reset_index(name="alteracao")
     )
 
-    df_alt_max = df_alt_diff.groupby("SIGLA_UF").agg({"decada": "first", "alteracao": "max"}).reset_index()
-    fig7 = px.bar(df_alt_max, x="SIGLA_UF", y="alteracao", color="decada", title="Década com Maior Alteração por Estado", labels={"alteracao": "Mudança Total (ha)"})
-    st.plotly_chart(fig7, use_container_width=True)
+    # Linha da década com a maior alteração em cada estado
+    df_alt_max = df_alt_diff.loc[df_alt_diff.groupby("SIGLA_UF")["alteracao"].idxmax()].reset_index(drop=True)
+    df_alt_max["decada"] = df_alt_max["decada"].astype(str)
+    fig_uf7 = px.bar(df_alt_max, x="SIGLA_UF", y="alteracao", color="decada", title="Década com Maior Alteração por Estado", labels={"alteracao": "Mudança Total (ha)"})
+    st.plotly_chart(fig_uf7, use_container_width=True)
 
 st.sidebar.markdown("---")
 
@@ -415,7 +463,7 @@ if cidade != "Todos":
                 c.setFont("Helvetica", 11)
                 y_pos = height-250
                 sumario_items = [
-                    "1. Mapas com Localização (1985 e 2024)",
+                    f"1. Mapas com Localização e Uso do Município ({ANOS_MAPAS[0]} e {ANOS_MAPAS[1]})",
                     "2. Evolução Temporal da Cobertura",
                     "3. Distribuição por Classes",
                     "4. Análise de Participação Percentual",
@@ -433,7 +481,7 @@ if cidade != "Todos":
                 texto_intro = [
                     "Este relatório apresenta uma visão abrangente da dinâmica de uso e cobertura",
                     "do solo para o município selecionado. Foram considerados dados do MapBiomas",
-                    "de 1985 a 2024, com foco em variações de área, indicadores de antropização",
+                    f"(Coleção 10.1) de {ANO_INICIAL} a {ANO_FINAL}, com foco em variações de área, indicadores de antropização",
                     "e alertas ambientais. Os mapas destacam a posição geográfica do município",
                     "em diferentes anos, permitindo rápida referência espacial."
                 ]
@@ -443,21 +491,20 @@ if cidade != "Todos":
                 
                 c.showPage()
                 
-                # Página 2 e 3 - Mapas com pin (1985 e 2024)
-                coord_path = "coordenadas/municipios_coord.csv"
-                df_coord = pd.read_csv(coord_path)
-                
-                for ano in ["1985", "2024"]:
+                # Página 2 e 3 - Mapas da região com pin
+                df_coord = pd.read_csv(caminho("coordenadas", "municipios_coord.csv"))
+
+                for ano in ANOS_MAPAS:
                     try:
-                        png_path = f"municipios_shapefile/municipios_{ano}.png"
-                        pgw_path = f"municipios_shapefile/municipios_{ano}.pgw"
-                        
+                        png_path = caminho("municipios_shapefile", f"municipios_{ano}.png")
+                        pgw_path = caminho("municipios_shapefile", f"municipios_{ano}.pgw")
+
                         if os.path.exists(png_path) and os.path.exists(pgw_path):
                             image = Image.open(png_path)
                             with open(pgw_path, 'r') as f:
                                 pgw = [float(line.strip()) for line in f.readlines()]
-                            
-                            imagem_marcada = marcar_com_pin(cidade, image, df_coord, pgw)
+
+                            imagem_marcada = marcar_com_pin(cd_mun, cidade, image, df_coord, pgw)
                             
                             # Redimensionar imagem para caber na página
                             max_width = 500
@@ -471,14 +518,14 @@ if cidade != "Todos":
                             # Salvar imagem temporária
                             with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as tmp_file:
                                 imagem_marcada.save(tmp_file.name, format="PNG")
-                                
+
                                 # Adicionar ao PDF
                                 c.setFont("Helvetica-Bold", 14)
                                 c.drawString(50, height-50, f"Localização de {cidade} em {ano}")
                                 c.drawImage(tmp_file.name, 50, height-500, width=new_width, height=new_height)
-                                
-                                # Limpar arquivo temporário
-                                os.unlink(tmp_file.name)
+
+                            # Limpar arquivo temporário (fora do "with": no Windows não se apaga arquivo aberto)
+                            os.unlink(tmp_file.name)
                         else:
                             c.setFont("Helvetica", 12)
                             c.drawString(50, height-100, f"Mapa de {ano} não encontrado")
@@ -486,9 +533,44 @@ if cidade != "Todos":
                     except Exception as e:
                         c.setFont("Helvetica", 10)
                         c.drawString(50, height-100, f"Erro ao processar mapa de {ano}: {str(e)}")
-                    
+
                     c.showPage()
-                
+
+                # Página 4 - Uso e cobertura do município, lado a lado
+                c.setFont("Helvetica-Bold", 14)
+                c.drawString(50, height-50, f"Uso e Cobertura de {cidade} ({ANOS_MAPAS[0]} e {ANOS_MAPAS[1]})")
+                largura_mapa = (width - 120) / 2
+                altura_maxima = 0
+                for i, ano in enumerate(ANOS_MAPAS):
+                    mapa_municipio = caminho("mapas_municipios", f"{cd_mun}_{ano}.png")
+                    x = 50 + i * (largura_mapa + 20)
+                    if os.path.exists(mapa_municipio):
+                        mapa_rgba = Image.open(mapa_municipio).convert("RGBA")
+                        mapa_branco = Image.new("RGB", mapa_rgba.size, "white")
+                        mapa_branco.paste(mapa_rgba, mask=mapa_rgba)
+                        escala = min(largura_mapa / mapa_branco.width, 520 / mapa_branco.height)
+                        largura_img, altura_mapa = mapa_branco.width * escala, mapa_branco.height * escala
+                        altura_maxima = max(altura_maxima, altura_mapa)
+                        c.drawImage(ImageReader(mapa_branco), x, height-90-altura_mapa, width=largura_img, height=altura_mapa)
+                        c.setFont("Helvetica", 11)
+                        c.drawString(x, height-75, str(ano))
+                    else:
+                        c.setFont("Helvetica", 10)
+                        c.drawString(x, height-100, f"Mapa de {ano} não encontrado")
+
+                # Legenda das classes presentes no município
+                c.setFont("Helvetica", 9)
+                y_legenda = height-115-altura_maxima
+                for i, (nome, cor) in enumerate(zip(classes_mapa["nome_classe"], classes_mapa["cor_rgb"])):
+                    coluna, linha_legenda = i % 3, i // 3
+                    x = 50 + coluna * 170
+                    y = y_legenda - linha_legenda * 15
+                    c.setFillColor(HexColor(cor))
+                    c.rect(x, y, 9, 9, fill=1, stroke=1)
+                    c.setFillColor(HexColor("#000000"))
+                    c.drawString(x + 14, y + 1, nome)
+                c.showPage()
+
                 # Função auxiliar para adicionar gráficos
                 def adicionar_grafico_pdf(fig, titulo, c, width, height):
                     try:
@@ -496,7 +578,7 @@ if cidade != "Todos":
                         c.drawString(50, height-50, titulo)
                         
                         # Exportar gráfico como imagem
-                        img_bytes = fig.to_image(format="png", engine="kaleido", width=600, height=400)
+                        img_bytes = fig.to_image(format="png", width=600, height=400)
                         
                         with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as tmp_file:
                             tmp_file.write(img_bytes)
@@ -504,9 +586,9 @@ if cidade != "Todos":
                             
                             # Adicionar ao PDF
                             c.drawImage(tmp_file.name, 50, height-500, width=500, height=350)
-                            
-                            # Limpar arquivo temporário
-                            os.unlink(tmp_file.name)
+
+                        # Limpar arquivo temporário (fora do "with": no Windows não se apaga arquivo aberto)
+                        os.unlink(tmp_file.name)
                             
                     except Exception as e:
                         c.setFont("Helvetica", 10)
@@ -541,17 +623,17 @@ if cidade != "Todos":
                 c.drawString(50, height-50, "Resumo Estatístico")
                 
                 # Calcular algumas estatísticas básicas
-                df_mun_filtered = df_filtrado[df_filtrado["NM_MUN"] == cidade] if cidade != "Todos" else df_filtrado
-                
+                df_mun_filtered = df_filtrado[df_filtrado["CD_MUN"] == cd_mun]
+
                 if not df_mun_filtered.empty:
-                    total_area_1985 = df_mun_filtered[df_mun_filtered["ano"] == 1985]["area_ha"].sum()
-                    total_area_2024 = df_mun_filtered[df_mun_filtered["ano"] == 2024]["area_ha"].sum()
-                    
+                    total_area_inicial = df_mun_filtered[df_mun_filtered["ano"] == ANO_INICIAL]["area_ha"].sum()
+                    total_area_final = df_mun_filtered[df_mun_filtered["ano"] == ANO_FINAL]["area_ha"].sum()
+
                     c.setFont("Helvetica", 11)
                     y_pos = height-100
                     stats_text = [
-                        f"Área total registrada em 1985: {total_area_1985:,.0f} ha",
-                        f"Área total registrada em 2024: {total_area_2024:,.0f} ha",
+                        f"Área total registrada em {ANO_INICIAL}: {total_area_inicial:,.0f} ha",
+                        f"Área total registrada em {ANO_FINAL}: {total_area_final:,.0f} ha",
                         f"Período analisado: {df_mun_filtered['ano'].min()} - {df_mun_filtered['ano'].max()}",
                         f"Classes de cobertura identificadas: {df_mun_filtered['nome_classe'].nunique()}",
                         f"Anos com dados disponíveis: {len(df_mun_filtered['ano'].unique())}"

@@ -1,0 +1,32 @@
+classe_cobertura,nome_classe,cor_rgb,grupo,tipo
+0,Não Observado,#d9d9d9,Não observado,Não observado
+3,Formação Florestal,#1f8d49,Floresta,Natural
+4,Formação Savânica,#7dc975,Floresta,Natural
+5,Mangue,#04381d,Floresta,Natural
+6,Floresta Alagável,#026975,Floresta,Natural
+9,Silvicultura,#7a5900,Agropecuária,Antrópico
+11,Campo Alagado e Área Pantanosa,#519799,Vegetação Herbácea e Arbustiva,Natural
+12,Formação Campestre,#d6bc74,Vegetação Herbácea e Arbustiva,Natural
+13,Outras Formações não Florestais,#d89f5c,Vegetação Herbácea e Arbustiva,Natural
+15,Pastagem,#edde8e,Agropecuária,Antrópico
+20,Cana,#db7093,Agropecuária,Antrópico
+21,Mosaico de Usos,#ffefc3,Agropecuária,Antrópico
+23,"Praia, Duna e Areal",#ffa07a,Área não Vegetada,Natural
+24,Área Urbanizada,#d4271e,Área não Vegetada,Antrópico
+25,Outras Áreas não Vegetadas,#db4d4f,Área não Vegetada,Natural ou Antrópico
+29,Afloramento Rochoso,#ffaa5f,Vegetação Herbácea e Arbustiva,Natural
+30,Mineração,#9c0027,Área não Vegetada,Antrópico
+31,Aquicultura,#091077,Corpo D'água,Antrópico
+32,Apicum,#fc8114,Vegetação Herbácea e Arbustiva,Natural
+33,"Rio, Lago e Oceano",#2532e4,Corpo D'água,Natural
+35,Dendê,#9065d0,Agropecuária,Antrópico
+39,Soja,#f5b3c8,Agropecuária,Antrópico
+40,Arroz,#c71585,Agropecuária,Antrópico
+41,Outras Lavouras Temporárias,#f54ca9,Agropecuária,Antrópico
+46,Café,#d68fe2,Agropecuária,Antrópico
+47,Citrus,#9932cc,Agropecuária,Antrópico
+48,Outras Lavouras Perenes,#e6ccff,Agropecuária,Antrópico
+49,Restinga Arbórea,#02d659,Floresta,Natural
+50,Restinga Herbácea,#ad5100,Vegetação Herbácea e Arbustiva,Natural
+62,Algodão (beta),#ff69b4,Agropecuária,Antrópico
+75,Usina Fotovoltaica (beta),#c12100,Área não Vegetada,Antrópico
