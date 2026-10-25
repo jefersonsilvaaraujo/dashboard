@@ -71,6 +71,19 @@ def carregar_focos_mensais():
     return pd.read_csv(_csv("historico", "focos_municipio_mensal.csv"), sep=";", decimal=",")
 
 
+@st.cache_data(ttl=CACHE_SEGUNDOS, show_spinner=False)
+def carregar_prodes():
+    """Área (ha) de cada classe PRODES por município e bioma (CD_MUN, NM_MUN, SIGLA_UF,
+    bioma, classe_id, rotulo, tipo, ano, area_ha)."""
+    if USA_BANCO:
+        return _consultar(
+            'SELECT cd_mun AS "CD_MUN", nm_mun AS "NM_MUN", sigla_uf AS "SIGLA_UF", bioma,'
+            " classe_id, rotulo, tipo, ano, area_ha"
+            " FROM prodes.vw_area_classe_municipio ORDER BY cd_mun, bioma, classe_id"
+        )
+    return pd.read_csv(_csv("historico", "prodes_area_classe_municipio.csv"), sep=";", decimal=",")
+
+
 @st.cache_data(ttl=CACHE_SEGUNDOS, show_spinner="Carregando focos...")
 def carregar_focos_pontos(ano, cd_mun=None):
     """Localização dos focos de um ano (de um município ou de toda a área de estudo).

@@ -105,6 +105,29 @@ def test_focos_2024_conferem_com_contagem_independente(banco):
     assert total == 51628
 
 
+def test_prodes(banco):
+    csv = pd.read_csv(PROJETO / "historico" / "prodes_area_classe_municipio.csv", sep=";", decimal=",")
+    bd = ler(banco, 'SELECT cd_mun AS "CD_MUN", nm_mun AS "NM_MUN", sigla_uf AS "SIGLA_UF", bioma,'
+                    " classe_id, rotulo, tipo, ano, area_ha"
+                    " FROM prodes.vw_area_classe_municipio ORDER BY cd_mun, bioma, classe_id")
+    pd.testing.assert_frame_equal(csv, bd, check_dtype=False, atol=1e-4, rtol=0)
+
+
+def test_prodes_cobre_a_area_oficial_dos_municipios(banco):
+    # A soma das classes PRODES de cada município deve reproduzir a sua área oficial (IBGE).
+    # Pode faltar área onde o limite municipal inclui mar ou passa da fronteira do Brasil
+    # no raster (ex.: litoral do MA, fronteira com a Bolívia), mas nunca sobrar.
+    RAPOSA = 2109452  # 13% do limite municipal é mar
+    razao = ler(banco, "SELECT a.cd_mun, sum(a.area_ha) / (m.area_km2 * 100) AS razao"
+                       " FROM prodes.area_classe a JOIN ref.municipio m USING (cd_mun)"
+                       " GROUP BY a.cd_mun, m.area_km2").set_index("cd_mun")["razao"]
+
+    assert (razao <= 1.001).all(), f"Área PRODES acima da oficial: {razao[razao > 1.001].to_dict()}"
+    assert abs(razao.median() - 1) < 0.0001, f"Viés sistemático na área dos pixels: mediana {razao.median():.5f}"
+    abaixo = razao.drop(RAPOSA)
+    assert (abaixo >= 0.98).all(), f"Área PRODES muito abaixo da oficial: {abaixo[abaixo < 0.98].to_dict()}"
+
+
 ROTEIRO_APP = r"""
 import json, sys
 from streamlit.testing.v1 import AppTest

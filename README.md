@@ -11,6 +11,7 @@ Este painel interativo desenvolvido em **Python com Streamlit** tem como objetiv
 - Alertas automáticos de perda de vegetação nativa
 - Mapas da região de estudo com marcador do município e mapas de uso e cobertura do próprio município (1985 e 2024)
 - Focos de calor do INPE (2003–2025): série anual, sazonalidade, ranking de municípios, intensidade do fogo (FRP), condições do tempo e mapa dos focos
+- Desmatamento PRODES por município e bioma (acumulado, série anual 2008–2025, ranking) e comparação com a perda de vegetação nativa do MapBiomas
 - Geração de relatório PDF completo com gráficos e mapas
 
 ## 🏗 Arquitetura
@@ -44,6 +45,10 @@ As portas são publicadas apenas em `127.0.0.1`; o acesso público passa pelo Ap
 | `queimadas.foco_atributo` | FRP, chuva, dias sem chuva e risco de fogo, quando a fonte oferece (FRP: 2003–2007 e 2015–2024; demais: 2015–2024) |
 | `queimadas.mv_focos_municipio_mes` | Agregado mensal por município (view materializada, recalculada a cada carga) |
 | `queimadas.vw_focos_municipio_mes` | Agregado mensal da área de estudo, lido pelo app |
+| `ref.bioma` | Biomas do IBGE 1:250.000 (2019), com índice espacial |
+| `prodes.classe` | Legenda do PRODES: desmatamento por ano (dAAAA), resíduos (rAAAA), hidrografia e vegetação nativa |
+| `prodes.area_classe` | Área (ha) de cada classe PRODES por município e bioma |
+| `prodes.vw_area_classe_municipio` | Área por classe da área de estudo, lida pelo app |
 
 Princípios adotados: chaves estrangeiras e restrições `CHECK` em todas as tabelas; valores derivados (percentual, centroide) calculados pelo banco em vez de armazenados; cargas em transação única (o painel nunca vê dados pela metade); usuário do app sem permissão de escrita e com tempo-limite de consulta.
 
@@ -85,17 +90,22 @@ Os dados brutos **não são versionados** e ficam na pasta-mãe do projeto (`MES
 | `mapbiomas_col10/rasters/brazil_coverage_{ano}.tif` (1985 e 2024) | [MapBiomas, rasters anuais da Coleção 10](https://storage.googleapis.com/mapbiomas-public/initiatives/brasil/collection_10/lulc/coverage/) |
 | `queimadas_inpe/focos_br_ref_2003_2025/focos_br_ref_{ano}.zip` | [INPE, focos anuais do satélite de referência](https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/anual/Brasil_sat_ref/) |
 | `queimadas_inpe/focos_qmd_inpe_*/focos_qmd_inpe_*.shp` | Exportações do [BDQueimadas](https://terrabrasilis.dpi.inpe.br/queimadas/bdqueimadas/) com FRP, chuva, dias sem chuva e risco de fogo |
+| `desmatamento_prodes/prodes_brasil_2025/prodes_brasil_2025_v20261020.tif` (+ `.qml`) | [INPE/TerraBrasilis, PRODES Brasil](https://terrabrasilis.dpi.inpe.br/downloads/) |
+| `biomas_ibge/lm_bioma_250.shp` | [IBGE, Biomas 1:250.000 (2019)](https://geoftp.ibge.gov.br/informacoes_ambientais/estudos_ambientais/biomas/vetores/) |
 | `municipios_base/area_estudo.csv` (opcional) | Lista de `CD_MUN` que define a área de estudo |
 
 ```bash
 docker compose run --rm etl                               # banco (todas as fontes) e CSV mensal de focos
 docker compose run --rm etl python queimadas.py           # só os focos de calor
+docker compose run --rm etl python prodes.py              # só o PRODES (~5 min)
 docker compose run --rm etl python municipios.py          # CSV de municípios
 docker compose run --rm etl python mapbiomas_col10.py     # CSVs de cobertura e legenda
 docker compose run --rm etl python mapas.py               # mapas PNG
 ```
 
 Focos de calor: os atributos dos shapefiles são ligados aos focos por data/hora e coordenadas (todos os registros dos shapefiles encontram seu foco). Valores −999 e fora da faixa física (FRP negativo, dias sem chuva acima de 120, risco fora de 0–1) são tratados como ausentes. O mapa de pontos dos focos só aparece com o banco; no modo CSV o painel usa o agregado mensal.
+
+PRODES: a área de cada classe é somada por município e bioma (interseção calculada no PostGIS) a partir do raster de ~10 m, com a área de cada pixel calculada no elipsoide GRS80 conforme a latitude; a soma das classes de cada município coincide com a área oficial do IBGE. O ano PRODES AAAA vai de agosto de AAAA−1 a julho de AAAA. As classes d2000 a d2007 acumulam o desmatamento anterior à série anual; até 2012 a vegetação não florestal (Cerrado, Pantanal e áreas não florestais da Amazônia) era mapeada a cada dois anos, então anos pares desse período somam dois anos nessas áreas.
 
 Os mapas usam os rasters da Coleção 10 (não há rasters públicos da 10.1); para 1985 e 2024 as áreas por classe diferem menos de 0,1% das estatísticas da Coleção 10.1.
 
@@ -133,7 +143,7 @@ pip install -r requirements-dev.txt
 pytest testes
 ```
 
-Os testes verificam que banco e CSVs têm os mesmos dados, que o painel mostra os mesmos indicadores nas duas fontes e que a contagem de focos de 2024 confere com a validação independente (51.628 focos).
+Os testes verificam que banco e CSVs têm os mesmos dados, que o painel mostra os mesmos indicadores nas duas fontes, que a contagem de focos de 2024 confere com a validação independente (51.628 focos) e que a área PRODES de cada município coincide com a área oficial.
 
 ## 🌐 Publicação em servidor
 

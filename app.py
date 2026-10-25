@@ -195,7 +195,7 @@ else:
     st.caption("Mapas: MapBiomas Coleção 10 (raster 30 m). Áreas e indicadores: estatísticas da Coleção 10.1.")
 
 # Abas principais
-abas = st.tabs(["Evolução Temporal", "Distribuição Anual", "Participação Percentual", "Análise por Década", "Comparação Entre Anos", "Análises Especiais", "Análises por Estados", "Queimadas"])
+abas = st.tabs(["Evolução Temporal", "Distribuição Anual", "Participação Percentual", "Análise por Década", "Comparação Entre Anos", "Análises Especiais", "Análises por Estados", "Queimadas", "Desmatamento (PRODES)"])
 
 with abas[0]:
     st.markdown("#### Gráfico de Linha")
@@ -573,6 +573,148 @@ with abas[7]:
     st.caption("Fonte: INPE/BDQueimadas, focos do satélite de referência (AQUA, passagem da tarde). "
                "Datas em UTC; município definido pelo polígono que contém o foco.")
 
+with abas[8]:
+    st.markdown("### Desmatamento (PRODES)")
+    CORES_BIOMA = {"Amazônia": "#1f8d49", "Cerrado": "#d6bc74", "Pantanal": "#519799"}
+    ANO_LIMITE_BASE = 2007  # d2000..d2007 acumulam o desmatamento anterior à série anual
+
+    prodes = dados.carregar_prodes()
+    if cidade != "Todos":
+        prodes_sel = prodes[prodes["CD_MUN"] == cd_mun]
+    else:
+        prodes_sel = prodes
+
+    area_total = prodes_sel["area_ha"].sum()
+    desmatado = prodes_sel[prodes_sel["tipo"].isin(["desmatamento", "residuo"])]
+    anual = prodes_sel[(prodes_sel["tipo"] == "desmatamento") & (prodes_sel["ano"] > ANO_LIMITE_BASE)]
+    # Anos da série completa (não só do município, que pode não ter desmatamento em algum ano)
+    anos_prodes = sorted(int(a) for a in prodes.loc[(prodes["tipo"] == "desmatamento")
+                                                    & (prodes["ano"] > ANO_LIMITE_BASE), "ano"].unique())
+    periodo_prodes = st.slider("Período (anos PRODES):", min_value=anos_prodes[0], max_value=anos_prodes[-1],
+                               value=(anos_prodes[0], anos_prodes[-1]), key="periodo_prodes")
+    anos_sel = list(range(periodo_prodes[0], periodo_prodes[1] + 1))
+
+    def hectares_fmt(valor):
+        """Formato compacto para caber no indicador (ex.: 743,5 mil ha)."""
+        if valor >= 1e6:
+            texto = f"{valor / 1e6:.1f} milhões ha"
+        elif valor >= 1e4:
+            texto = f"{valor / 1e3:.1f} mil ha"
+        else:
+            texto = f"{valor:,.0f} ha".replace(",", "_")
+        return texto.replace(".", ",").replace("_", ".")
+
+    def hectares_exato(valor):
+        return f"{valor:,.0f} ha".replace(",", ".")
+
+    def percentual(valor):
+        return f"{valor / area_total * 100:.1f}% da área".replace(".", ",") if area_total > 0 else None
+
+    desm_periodo = anual[anual["ano"].between(*periodo_prodes)]
+    por_ano = desm_periodo.groupby("ano")["area_ha"].sum().reindex(anos_sel, fill_value=0)
+    nativa = prodes_sel.loc[prodes_sel["tipo"] == "vegetacao_nativa", "area_ha"].sum()
+
+    m1, m2 = st.columns(2)
+    m3, m4 = st.columns(2)
+    m1.metric("Desmatamento acumulado", hectares_fmt(desmatado["area_ha"].sum()), percentual(desmatado["area_ha"].sum()),
+              delta_color="off", delta_arrow="off", help=hectares_exato(desmatado["area_ha"].sum()))
+    m2.metric("Vegetação nativa remanescente", hectares_fmt(nativa), percentual(nativa),
+              delta_color="off", delta_arrow="off", help=hectares_exato(nativa))
+    m3.metric(f"Desmatamento {periodo_prodes[0]}–{periodo_prodes[1]}", hectares_fmt(por_ano.sum()),
+              chart_data=por_ano.tolist(), chart_type="bar", help=hectares_exato(por_ano.sum()))
+    m4.metric("Ano com maior desmatamento", str(int(por_ano.idxmax())) if por_ano.sum() > 0 else "–",
+              hectares_fmt(por_ano.max()), delta_color="off", delta_arrow="off",
+              help="Até 2012, nos anos pares, a vegetação não florestal soma dois anos de desmatamento.")
+
+    if cidade != "Todos":
+        biomas_mun = prodes_sel.groupby("bioma")["area_ha"].sum() / area_total * 100
+        st.caption("Área do município por bioma: " + ", ".join(
+            f"{nome} {valor:.1f}%".replace(".", ",") for nome, valor in biomas_mun.sort_values(ascending=False).items()))
+
+    # Série anual por bioma, com os resíduos à parte
+    serie = desm_periodo.groupby(["ano", "bioma"], as_index=False)["area_ha"].sum()
+    residuos = prodes_sel[(prodes_sel["tipo"] == "residuo") & prodes_sel["ano"].between(*periodo_prodes)]
+    residuos = residuos.groupby("ano", as_index=False)["area_ha"].sum().assign(bioma="Resíduo (detectado no ano)")
+    fig_p1 = px.bar(pd.concat([serie, residuos]), x="ano", y="area_ha", color="bioma",
+                    color_discrete_map={**CORES_BIOMA, "Resíduo (detectado no ano)": "#9c9c9c"},
+                    labels={"ano": "Ano PRODES", "area_ha": "Desmatamento (ha)", "bioma": ""},
+                    title="Desmatamento Anual por Bioma (PRODES)")
+    if periodo_prodes[0] <= 2012:
+        fig_p1.add_vrect(x0=periodo_prodes[0] - 0.5, x1=min(2012, periodo_prodes[1]) + 0.5,
+                         fillcolor="gray", opacity=0.12, line_width=0,
+                         annotation_text="parte da área mapeada a cada 2 anos", annotation_position="top left")
+    st.plotly_chart(fig_p1, width="stretch")
+    st.caption("Ano PRODES AAAA = agosto de AAAA−1 a julho de AAAA. Até 2012 a vegetação não florestal "
+               "(Cerrado, Pantanal e áreas não florestais da Amazônia) era mapeada a cada dois anos, "
+               "concentrando dois anos nos anos pares; de 2013 em diante a série é anual em toda a área. "
+               "Resíduos são desmatamentos antigos identificados somente no ano indicado.")
+
+    # Composição da área
+    composicao = pd.DataFrame({
+        "categoria": [f"Desmatado até {ANO_LIMITE_BASE}", f"Desmatado {ANO_LIMITE_BASE + 1}–{int(prodes['ano'].max())}",
+                      "Resíduos", "Vegetação nativa", "Hidrografia"],
+        "area_ha": [
+            prodes_sel.loc[(prodes_sel["tipo"] == "desmatamento") & (prodes_sel["ano"] <= ANO_LIMITE_BASE), "area_ha"].sum(),
+            prodes_sel.loc[(prodes_sel["tipo"] == "desmatamento") & (prodes_sel["ano"] > ANO_LIMITE_BASE), "area_ha"].sum(),
+            prodes_sel.loc[prodes_sel["tipo"] == "residuo", "area_ha"].sum(),
+            nativa,
+            prodes_sel.loc[prodes_sel["tipo"] == "hidrografia", "area_ha"].sum(),
+        ],
+    })
+    fig_p2 = px.pie(composicao, names="categoria", values="area_ha", hole=0.45,
+                    color="categoria", title="Composição da Área segundo o PRODES",
+                    color_discrete_sequence=["#8c510a", "#d8b365", "#9c9c9c", "#1f8d49", "#2532e4"])
+    fig_p2.update_traces(sort=False)
+
+    col_a, col_b = st.columns(2)
+    col_a.plotly_chart(fig_p2, width="stretch")
+
+    if cidade == "Todos":
+        por_bioma = desm_periodo.groupby("bioma")["area_ha"].sum().sort_values(ascending=False)
+        col_b.markdown(f"**Desmatamento por bioma ({periodo_prodes[0]}–{periodo_prodes[1]})**")
+        col_b.dataframe(
+            pd.DataFrame({"Desmatamento (ha)": por_bioma.round(0).map(hectares_exato),
+                          "Participação": (por_bioma / por_bioma.sum() * 100).map(lambda v: f"{v:.1f}%".replace(".", ","))}),
+            width="stretch",
+        )
+
+        ranking_prodes = (
+            desm_periodo.groupby(["NM_MUN", "SIGLA_UF"], as_index=False)["area_ha"].sum()
+            .nlargest(15, "area_ha").sort_values("area_ha")
+        )
+        ranking_prodes["municipio"] = ranking_prodes["NM_MUN"] + " (" + ranking_prodes["SIGLA_UF"] + ")"
+        fig_p3 = px.bar(ranking_prodes, x="area_ha", y="municipio", orientation="h",
+                        labels={"area_ha": "Desmatamento (ha)", "municipio": ""},
+                        title=f"Municípios com Mais Desmatamento ({periodo_prodes[0]}–{periodo_prodes[1]})",
+                        color_discrete_sequence=["#8c510a"])
+        st.plotly_chart(fig_p3, width="stretch")
+    else:
+        todos_desm = prodes[(prodes["tipo"] == "desmatamento") & prodes["ano"].between(*periodo_prodes)]
+        posicao_prodes = todos_desm.groupby("CD_MUN")["area_ha"].sum().rank(ascending=False, method="min")
+        if cd_mun in posicao_prodes.index:
+            col_b.metric("Posição no ranking de desmatamento do período",
+                         f"{int(posicao_prodes[cd_mun])}º de {prodes['CD_MUN'].nunique()}")
+
+    # PRODES x MapBiomas: desmatamento bruto x redução líquida da vegetação nativa
+    st.markdown("#### PRODES x MapBiomas")
+    cobertura_sel = df if cidade == "Todos" else df[df["CD_MUN"] == cd_mun]
+    nativa_mb = cobertura_sel[cobertura_sel["nome_classe"].isin(classes_nativas)].groupby("ano")["area_ha"].sum()
+    reducao_mb = (nativa_mb.shift(1) - nativa_mb).rename("MapBiomas: redução líquida da vegetação nativa")
+    comparacao = pd.concat([
+        por_ano.rename("PRODES: desmatamento (bruto)"),
+        reducao_mb.reindex(anos_sel),
+    ], axis=1).rename_axis("ano").reset_index().melt(id_vars="ano", var_name="fonte", value_name="area_ha")
+    fig_p4 = px.line(comparacao, x="ano", y="area_ha", color="fonte", markers=True,
+                     color_discrete_sequence=["#8c510a", "#1f8d49"],
+                     labels={"ano": "Ano", "area_ha": "Área (ha)", "fonte": ""},
+                     title="Desmatamento PRODES x Redução de Vegetação Nativa MapBiomas")
+    st.plotly_chart(fig_p4, width="stretch")
+    st.caption("O PRODES mede a supressão bruta da vegetação nativa (uma área desmatada permanece desmatada). "
+               "No MapBiomas a variação é líquida: a regeneração compensa parte das perdas. Os anos também "
+               "diferem: o ano PRODES vai de agosto a julho; o mapa MapBiomas representa o ano civil.")
+    st.caption("Fonte: INPE/PRODES Brasil 2025, raster de ~10 m; biomas IBGE 1:250.000 (2019). "
+               "Áreas calculadas por município e bioma.")
+
 st.sidebar.markdown("---")
 
 # Botão para gerar relatório em PDF
@@ -606,7 +748,8 @@ if cidade != "Todos":
                     "5. Análise por Décadas",
                     "6. Comparação Entre Anos",
                     "7. Análises Especiais",
-                    "8. Focos de Calor"
+                    "8. Focos de Calor",
+                    "9. Desmatamento (PRODES)"
                 ]
                 for item in sumario_items:
                     c.drawString(70, y_pos, item)
@@ -762,6 +905,12 @@ if cidade != "Todos":
 
                 if 'fig_q2' in locals():
                     adicionar_grafico_pdf(fig_q2, "Focos de Calor por Mês e Ano", c, width, height)
+
+                if 'fig_p1' in locals():
+                    adicionar_grafico_pdf(fig_p1, f"Desmatamento Anual (PRODES, {periodo_prodes[0]}–{periodo_prodes[1]})", c, width, height)
+
+                if 'fig_p4' in locals():
+                    adicionar_grafico_pdf(fig_p4, "Desmatamento PRODES x Redução de Vegetação Nativa MapBiomas", c, width, height)
                 
                 # Página final com estatísticas
                 c.setFont("Helvetica-Bold", 14)
