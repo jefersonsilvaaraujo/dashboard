@@ -6,6 +6,7 @@ Uso (pelo docker-compose):  docker compose run --rm etl
 """
 import mapbiomas_col10
 import municipios
+import queimadas
 from banco import aplicar_migracoes, conectar
 
 
@@ -14,6 +15,8 @@ def main():
         aplicar_migracoes(conexao)
         municipios.carregar_no_banco(conexao)
         mapbiomas_col10.carregar_no_banco(conexao)
+        queimadas.carregar_no_banco(conexao)
+        queimadas.exportar_csv(conexao)
 
 
 if __name__ == "__main__":

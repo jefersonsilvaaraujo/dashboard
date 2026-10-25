@@ -5,6 +5,7 @@ PGUSER, PGPASSWORD), definidas pelo docker-compose no serviço etl.
 """
 import hashlib
 import os
+from pathlib import Path
 
 import psycopg
 
@@ -43,10 +44,23 @@ def sha256(caminho):
     return digest.hexdigest()
 
 
-def registrar_carga(conexao, fonte, arquivo, registros, versao=None, referencia=None):
-    """Registra a proveniência de uma carga e devolve o carga_id."""
+def registrar_carga(conexao, fonte, arquivos, registros, versao=None, referencia=None):
+    """Registra a proveniência de uma carga e devolve o carga_id.
+
+    `arquivos` é um caminho ou uma lista de caminhos; para vários arquivos o hash
+    registrado combina os hashes individuais (em ordem de nome).
+    """
+    if isinstance(arquivos, (list, tuple)):
+        arquivos = sorted(arquivos)
+        pasta_comum = Path(os.path.commonpath([a.parent for a in arquivos]))
+        nome = f"{pasta_comum.name} ({len(arquivos)} arquivos)"
+        combinado = "".join(f"{a.name}:{sha256(a)}\n" for a in arquivos)
+        hash_carga = hashlib.sha256(combinado.encode()).hexdigest()
+    else:
+        nome, hash_carga = arquivos.name, sha256(arquivos)
+
     return conexao.execute(
         "INSERT INTO ref.carga (fonte, versao, referencia, arquivo, sha256, registros)"
         " VALUES (%s, %s, %s, %s, %s, %s) RETURNING carga_id",
-        (fonte, versao, referencia, arquivo.name, sha256(arquivo), registros),
+        (fonte, versao, referencia, nome, hash_carga, registros),
     ).fetchone()[0]

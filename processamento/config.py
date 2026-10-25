@@ -24,6 +24,13 @@ MAPBIOMAS_ABA_LEGENDA = "LEGEND_CODE"
 MAPBIOMAS_RASTER = DADOS_DIR / "mapbiomas_col10" / "rasters" / "brazil_coverage_{ano}.tif"
 ANOS_MAPAS = (1985, 2024)
 
+# Focos de calor do INPE, satélite de referência, um zip por ano (2003 em diante)
+# https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/anual/Brasil_sat_ref/
+FOCOS_DIR = DADOS_DIR / "queimadas_inpe" / "focos_br_ref_2003_2025"
+FOCOS_SATELITE = "AQUA_M-T"
+# Shapefiles anuais do BDQueimadas, com FRP, chuva, dias sem chuva e risco de fogo
+FOCOS_ATRIBUTOS_DIR = DADOS_DIR / "queimadas_inpe"
+
 # Lista opcional com os municípios da área de estudo (CSV com a coluna CD_MUN).
 # Se o arquivo não existir, todos os municípios do shapefile são usados.
 AREA_ESTUDO_CSV = DADOS_DIR / "municipios_base" / "area_estudo.csv"
@@ -32,5 +39,6 @@ AREA_ESTUDO_CSV = DADOS_DIR / "municipios_base" / "area_estudo.csv"
 MUNICIPIOS_CSV = PROJETO_DIR / "coordenadas" / "municipios_coord.csv"
 COBERTURA_CSV = PROJETO_DIR / "historico" / "estatisticas_coverage_historico.csv"
 LEGENDA_CSV = PROJETO_DIR / "historico" / "legenda_mapbiomas.csv"
+FOCOS_MENSAIS_CSV = PROJETO_DIR / "historico" / "focos_municipio_mensal.csv"
 MAPA_REGIAO_PNG = PROJETO_DIR / "municipios_shapefile" / "municipios_{ano}.png"
 MAPAS_MUNICIPIOS_DIR = PROJETO_DIR / "mapas_municipios"
