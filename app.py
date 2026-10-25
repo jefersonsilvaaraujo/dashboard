@@ -9,8 +9,12 @@ from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from reportlab.lib.colors import HexColor
 from reportlab.lib.utils import ImageReader
-from plotly.io import write_image
+import logging
 import os
+
+import dados
+
+log = logging.getLogger("dashboard")
 
 # Caminhos relativos a este arquivo, para o app funcionar a partir de qualquer pasta
 base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -53,12 +57,12 @@ def indice_antropizacao(dados, por):
     return (antropica.reindex(total.index, fill_value=0) / total * 100).rename("índice").reset_index()
 
 # Carregar dados
-df = pd.read_csv(caminho("historico", "estatisticas_coverage_historico.csv"), sep=";", decimal=",")
+df = dados.carregar_cobertura()
 
 df["decada"] = (df["ano"] // 10) * 10
 
 # Legenda MapBiomas Coleção 10.1 (gerada por processamento/mapbiomas_col10.py)
-legenda_df = pd.read_csv(caminho("historico", "legenda_mapbiomas.csv"))
+legenda_df = dados.carregar_legenda()
 
 df = df.merge(legenda_df, on="classe_cobertura", how="left")
 df["nome_classe"] = df["nome_classe"].fillna("Classe " + df["classe_cobertura"].astype(str))
@@ -117,7 +121,7 @@ else:
     st.markdown(f"#### Localização do Município no Mapa (Comparativo {ANOS_MAPAS[0]} vs {ANOS_MAPAS[1]})")
     col1, col2 = st.columns(2)
 
-    df_coord = pd.read_csv(caminho("coordenadas", "municipios_coord.csv"))
+    df_coord = dados.carregar_municipios()
 
     for ano, col in zip(ANOS_MAPAS, [col1, col2]):
         png_path = caminho("municipios_shapefile", f"municipios_{ano}.png")
@@ -137,7 +141,7 @@ else:
             imagem_marcada.save(buffer, format="PNG")
             buffer.seek(0)
 
-            col.image(buffer, caption=f"Região de estudo em {ano}", use_container_width=True)
+            col.image(buffer, caption=f"Região de estudo em {ano}", width="stretch")
 
         except Exception as e:
             col.warning(f"Erro ao carregar mapa de {ano}: {e}")
@@ -148,7 +152,7 @@ else:
     for ano, col in zip(ANOS_MAPAS, [col1, col2]):
         mapa_municipio = caminho("mapas_municipios", f"{cd_mun}_{ano}.png")
         if os.path.exists(mapa_municipio):
-            col.image(mapa_municipio, caption=f"{cidade} em {ano}", use_container_width=True)
+            col.image(mapa_municipio, caption=f"{cidade} em {ano}", width="stretch")
         else:
             col.warning(f"Mapa de {ano} não encontrado. Rode processamento/mapas.py.")
 
@@ -203,7 +207,7 @@ with abas[0]:
         title="Evolução da Cobertura do Solo"
     )
     fig1.update_layout(legend_title="Classe de Cobertura", hovermode="x unified")
-    st.plotly_chart(fig1, use_container_width=True)
+    st.plotly_chart(fig1, width="stretch")
 
     st.markdown("#### Gráfico de Área Acumulada")
     fig_area = px.area(
@@ -216,7 +220,7 @@ with abas[0]:
         title="Área Acumulada por Classe ao Longo do Tempo"
     )
     fig_area.update_layout(legend_title="Classe de Cobertura")
-    st.plotly_chart(fig_area, use_container_width=True)
+    st.plotly_chart(fig_area, width="stretch")
 
     st.markdown("#### Gráfico de Dispersão por Ano")
     fig_scatter = px.scatter(
@@ -230,7 +234,7 @@ with abas[0]:
         title="Dispersão das Áreas por Classe e Ano"
     )
     fig_scatter.update_layout(legend_title="Classe de Cobertura")
-    st.plotly_chart(fig_scatter, use_container_width=True)
+    st.plotly_chart(fig_scatter, width="stretch")
 
 with abas[1]:
     ano_analise = st.selectbox("Selecione o ano para análise detalhada:", options=anos, index=len(anos)-1, key="ano_distribuicao")
@@ -244,7 +248,7 @@ with abas[1]:
         title=f"Distribuição da Cobertura em {ano_analise}"
     )
     fig2.update_layout(xaxis_title="Classe", yaxis_title="Área (ha)", showlegend=False)
-    st.plotly_chart(fig2, use_container_width=True)
+    st.plotly_chart(fig2, width="stretch")
 
 with abas[2]:
     ano_percentual = st.selectbox("Selecione o ano para o gráfico de participação percentual:", options=anos, index=len(anos)-1, key="ano_percentual")
@@ -257,7 +261,7 @@ with abas[2]:
         color_discrete_map=mapa_cores,
         title=f"Participação Percentual das Classes em {ano_percentual}"
     )
-    st.plotly_chart(fig3, use_container_width=True)
+    st.plotly_chart(fig3, width="stretch")
 
 with abas[3]:
     df_decada = df_filtrado.groupby(["decada", "nome_classe"], as_index=False)["area_ha"].sum()
@@ -271,7 +275,7 @@ with abas[3]:
         title="Distribuição da Cobertura por Década"
     )
     fig_dec.update_layout(xaxis_title="Década", yaxis_title="Área (ha)", legend_title="Classe de Cobertura")
-    st.plotly_chart(fig_dec, use_container_width=True)
+    st.plotly_chart(fig_dec, width="stretch")
 
 with abas[4]:
     st.markdown("### Comparação Entre Anos")
@@ -284,7 +288,7 @@ with abas[4]:
     df_diff = pd.DataFrame({"Ano 1": df_ano1, "Ano 2": df_ano2})
     df_diff["Variação Absoluta"] = df_diff["Ano 2"] - df_diff["Ano 1"]
     df_diff["Variação Percentual"] = ((df_diff["Ano 2"] - df_diff["Ano 1"]) / df_diff["Ano 1"]) * 100
-    st.dataframe(df_diff.fillna(0).round(2), use_container_width=True)
+    st.dataframe(df_diff.fillna(0).round(2), width="stretch")
 
     df_plot = df_diff.fillna(0).reset_index()
     df_melt = df_plot.melt(id_vars="nome_classe", value_vars=["Ano 1", "Ano 2"], var_name="Ano", value_name="Área (ha)")
@@ -297,15 +301,17 @@ with abas[4]:
         title=f"Comparação da Cobertura do Solo entre {ano_comp1} e {ano_comp2}"
     )
     fig_comp.update_layout(xaxis_title="Classe de Cobertura", yaxis_title="Área (ha)")
-    st.plotly_chart(fig_comp, use_container_width=True)
+    st.plotly_chart(fig_comp, width="stretch")
 
 # Estatísticas descritivas
 st.markdown("### Estatísticas Descritivas")
-st.dataframe(df_filtrado.describe(include="all"), use_container_width=True)
+# Convertido para texto: a tabela mistura números e nomes na mesma coluna
+estatisticas = df_filtrado.describe(include="all").astype(str).replace("nan", "")
+st.dataframe(estatisticas, width="stretch")
 
 # Tabela interativa
 st.markdown("### Dados Filtrados")
-st.dataframe(df_filtrado.reset_index(drop=True), use_container_width=True)
+st.dataframe(df_filtrado.reset_index(drop=True), width="stretch")
 
 with abas[5]:
     st.markdown("### Análises Especiais")
@@ -336,9 +342,9 @@ with abas[5]:
 
     col1, col2 = st.columns(2)
     col1.markdown("**Maiores Ganhos**")
-    col1.dataframe(top_ganhos[[ANO_INICIAL, ANO_FINAL, "variação"]].round(2))
+    col1.dataframe(top_ganhos[[ANO_INICIAL, ANO_FINAL, "variação"]].round(2).rename(columns=str))
     col2.markdown("**Maiores Perdas**")
-    col2.dataframe(top_perdas[[ANO_INICIAL, ANO_FINAL, "variação"]].round(2))
+    col2.dataframe(top_perdas[[ANO_INICIAL, ANO_FINAL, "variação"]].round(2).rename(columns=str))
 
     # 3. Gráfico de mudança líquida
     st.markdown(f"#### Variação Líquida por Classe ({ANO_INICIAL}–{ANO_FINAL})")
@@ -347,7 +353,7 @@ with abas[5]:
                      color="variação",
                      color_continuous_scale="RdYlGn")
     fig_dif.update_layout(xaxis_title="Classe", yaxis_title="Área (ha)", showlegend=False)
-    st.plotly_chart(fig_dif, use_container_width=True)
+    st.plotly_chart(fig_dif, width="stretch")
 
     # 4. Ano de maior alteração
     st.markdown("#### Ano de Maior Alteração de Cobertura")
@@ -362,7 +368,7 @@ with abas[5]:
     df_idx = indice_antropizacao(df_filtrado, "ano")
     fig_ant = px.line(df_idx, x="ano", y="índice", title="Índice de Antropização ao Longo do Tempo",
                       labels={"índice": "% Área Antropizada"})
-    st.plotly_chart(fig_ant, use_container_width=True)
+    st.plotly_chart(fig_ant, width="stretch")
 
 with abas[6]:
     st.markdown("Análises por Estado")
@@ -376,7 +382,7 @@ with abas[6]:
     df_mun = df_estado.groupby("SIGLA_UF")["CD_MUN"].nunique().reset_index(name="Quantidade de Municípios")
     st.dataframe(df_mun)
     fig_uf1 = px.bar(df_mun, x="SIGLA_UF", y="Quantidade de Municípios", title="Quantidade de Municípios por Estado")
-    st.plotly_chart(fig_uf1, use_container_width=True)
+    st.plotly_chart(fig_uf1, width="stretch")
 
     # 2. Perda de vegetação nativa por estado
     st.markdown(f"### 2. Perda de Vegetação Nativa por Estado ({ANO_INICIAL}–{ANO_FINAL})")
@@ -388,7 +394,7 @@ with abas[6]:
     df_nat_pivot["variação"] = df_nat_pivot[ANO_FINAL] - df_nat_pivot[ANO_INICIAL]
     df_nat_agg = df_nat_pivot.groupby("SIGLA_UF")["variação"].sum().reset_index()
     fig_uf2 = px.bar(df_nat_agg, x="SIGLA_UF", y="variação", title="Perda Total de Vegetação Nativa (ha)", labels={"variação": "Perda (ha)"})
-    st.plotly_chart(fig_uf2, use_container_width=True)
+    st.plotly_chart(fig_uf2, width="stretch")
 
     # 3. Evolução da cobertura agropecuária por estado
     st.markdown(f"### 3. Evolução da Cobertura Agropecuária ({ANO_INICIAL}–{ANO_FINAL})")
@@ -400,26 +406,26 @@ with abas[6]:
     df_agro_pivot["crescimento"] = df_agro_pivot[ANO_FINAL] - df_agro_pivot[ANO_INICIAL]
     fig_uf3 = px.bar(df_agro_pivot.reset_index(), x="SIGLA_UF", y="crescimento", color="nome_classe",
                      color_discrete_map=mapa_cores, title="Crescimento da Cobertura Agropecuária por Estado")
-    st.plotly_chart(fig_uf3, use_container_width=True)
+    st.plotly_chart(fig_uf3, width="stretch")
 
     # 4. Urbanização por estado
     st.markdown("### 4. Urbanização por Estado ao Longo do Tempo")
     df_urb = df_estado[df_estado["classe_cobertura"] == 24]
     df_urb_agg = df_urb.groupby(["ano", "SIGLA_UF"])["area_ha"].sum().reset_index()
     fig_uf4 = px.line(df_urb_agg, x="ano", y="area_ha", color="SIGLA_UF", title="Evolução da Área Urbanizada por Estado")
-    st.plotly_chart(fig_uf4, use_container_width=True)
+    st.plotly_chart(fig_uf4, width="stretch")
 
     # 5. Índice médio de antropização por estado
     st.markdown("### 5. Índice Médio de Antropização por Estado")
     df_idx_reset = indice_antropizacao(df_estado, ["SIGLA_UF", "ano"])
     fig_uf5 = px.line(df_idx_reset, x="ano", y="índice", color="SIGLA_UF", title="Índice de Antropização por Estado")
-    st.plotly_chart(fig_uf5, use_container_width=True)
+    st.plotly_chart(fig_uf5, width="stretch")
 
     # 6. Diversidade de classes por estado
     st.markdown("### 6. Diversidade de Classes por Estado")
     df_div = df_estado.groupby(["SIGLA_UF", "ano"])["nome_classe"].nunique().reset_index(name="n_classes")
     fig_uf6 = px.line(df_div, x="ano", y="n_classes", color="SIGLA_UF", title="Número de Classes de Uso e Cobertura por Estado")
-    st.plotly_chart(fig_uf6, use_container_width=True)
+    st.plotly_chart(fig_uf6, width="stretch")
 
     # 7. Década de maior alteração por estado
     st.markdown("### 7. Década com Maior Alteração de Uso e Cobertura por Estado")
@@ -435,7 +441,7 @@ with abas[6]:
     df_alt_max = df_alt_diff.loc[df_alt_diff.groupby("SIGLA_UF")["alteracao"].idxmax()].reset_index(drop=True)
     df_alt_max["decada"] = df_alt_max["decada"].astype(str)
     fig_uf7 = px.bar(df_alt_max, x="SIGLA_UF", y="alteracao", color="decada", title="Década com Maior Alteração por Estado", labels={"alteracao": "Mudança Total (ha)"})
-    st.plotly_chart(fig_uf7, use_container_width=True)
+    st.plotly_chart(fig_uf7, width="stretch")
 
 st.sidebar.markdown("---")
 
@@ -492,7 +498,7 @@ if cidade != "Todos":
                 c.showPage()
                 
                 # Página 2 e 3 - Mapas da região com pin
-                df_coord = pd.read_csv(caminho("coordenadas", "municipios_coord.csv"))
+                df_coord = dados.carregar_municipios()
 
                 for ano in ANOS_MAPAS:
                     try:
@@ -532,7 +538,8 @@ if cidade != "Todos":
                             
                     except Exception as e:
                         c.setFont("Helvetica", 10)
-                        c.drawString(50, height-100, f"Erro ao processar mapa de {ano}: {str(e)}")
+                        log.exception("Falha ao inserir o mapa de %s no PDF", ano)
+                        c.drawString(50, height-100, f"Mapa de {ano} indisponível neste relatório.")
 
                     c.showPage()
 
@@ -592,7 +599,8 @@ if cidade != "Todos":
                             
                     except Exception as e:
                         c.setFont("Helvetica", 10)
-                        c.drawString(50, height-100, f"Erro ao gerar gráfico: {str(e)}")
+                        log.exception("Falha ao gerar o gráfico '%s' no PDF", titulo)
+                        c.drawString(50, height-100, "Gráfico indisponível neste relatório.")
                     
                     c.showPage()
                 
