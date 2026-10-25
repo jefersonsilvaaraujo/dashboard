@@ -9,44 +9,82 @@ Este painel interativo desenvolvido em **Python com Streamlit** tem como objetiv
 - Comparação entre dois anos selecionados
 - Cálculo do Índice de Antropização
 - Alertas automáticos de perda de vegetação nativa
-- Exibição de mapas com marcador geográfico (1985 e 2024)
+- Mapas da região de estudo com marcador do município e mapas de uso e cobertura do próprio município (1985 e 2024)
 - Geração de relatório PDF completo com gráficos e mapas
 
-## 🗂 Estrutura de diretórios
+## 🏗 Arquitetura
 
 ```
-dashboard/
-├── app.py
-├── historico/
-│   ├── estatisticas_coverage_historico.csv   # cobertura por município, ano e classe (gerado)
-│   └── legenda_mapbiomas.csv                 # nome, cor, grupo e tipo de cada classe (gerado)
-├── coordenadas/
-│   └── municipios_coord.csv                  # código IBGE, UF, área e centroide (gerado)
-├── municipios_shapefile/
-│   ├── municipios_1985.png / .pgw            # mapa da região de estudo (gerado)
-│   └── municipios_2024.png / .pgw
-├── mapas_municipios/                         # <CD_MUN>_<ano>.png, uso e cobertura de cada município (gerado)
-└── processamento/                            # scripts que geram os arquivos acima
+                 ┌──────────────────────────── docker compose ───────────────────────────┐
+dados brutos ──► │  etl (processamento/)  ──►  db (PostgreSQL 17 + PostGIS)  ──►  app (Streamlit) │ ──► Apache ──► usuário
+(fora do Git)    └──────────────────────────────────────────────────────────────────────┘
 ```
+
+| Serviço | Papel |
+|---|---|
+| `db` | PostgreSQL com PostGIS. Esquema versionado em `db/migrations/`. |
+| `app` | O painel. Conecta com um usuário **somente leitura** e guarda as consultas em cache. |
+| `etl` | Processamento sob demanda: aplica as migrações e carrega os dados no banco. |
+
+As portas são publicadas apenas em `127.0.0.1`; o acesso público passa pelo Apache.
+
+### Banco de dados
+
+| Objeto | Conteúdo |
+|---|---|
+| `ref.carga` | Proveniência de cada carga: fonte, versão, DOI/URL, hash SHA-256 do arquivo e data |
+| `ref.uf` | Unidades da federação (código IBGE) |
+| `ref.municipio` | Municípios com polígono (SIRGAS 2000, índice espacial GiST), área oficial, centroide calculado pelo banco e a marca `area_estudo` |
+| `mapbiomas.classe` | Legenda oficial: nome, cor, grupo e tipo (natural/antrópico) |
+| `mapbiomas.cobertura` | Área (ha) por município, ano e classe |
+| `mapbiomas.vw_cobertura_municipio` | Visão lida pelo app; deriva o percentual de ocupação e filtra a área de estudo |
+| `ref.vw_municipio` | Municípios da área de estudo com UF e coordenadas do centroide |
+
+Princípios adotados: chaves estrangeiras e restrições `CHECK` em todas as tabelas; valores derivados (percentual, centroide) calculados pelo banco em vez de armazenados; cargas em transação única (o painel nunca vê dados pela metade); usuário do app sem permissão de escrita e com tempo-limite de consulta.
 
 Os municípios são identificados pelo código IBGE (`CD_MUN`). No seletor do painel o nome aparece com a UF, pois há homônimos na área de estudo (ex.: Pau D'Arco no PA e no TO).
 
+## 🐳 Como executar (Docker)
+
+Pré-requisito: Docker com Compose.
+
+```bash
+cp .env.example .env        # e defina as senhas
+docker compose up -d --build
+docker compose run --rm etl  # aplica as migrações e carrega os dados
+```
+
+Acesse `http://localhost:8501`. O comando do `etl` pode ser repetido sempre que os dados mudarem: ele é idempotente e substitui os dados de forma atômica. O painel guarda as consultas em cache por 1 hora; para ver uma carga nova na hora, reinicie com `docker compose restart app`.
+
+Para conectar o QGIS ou outro cliente ao banco local: `localhost:5432`, banco e usuário definidos no `.env`.
+
+### Sem Docker
+
+Sem as variáveis `PGHOST`/`PGUSER`/`PGPASSWORD`/`PGDATABASE`, o painel lê os CSVs de `historico/` e `coordenadas/`:
+
+```bash
+python -m venv venv
+venv\Scripts\activate          # Linux: source venv/bin/activate
+pip install -r requirements.txt
+streamlit run app.py
+```
+
 ## 🔄 Atualização dos dados
 
-O app lê apenas os CSVs agregados. Eles são gerados pelos scripts em `processamento/` a partir dos dados brutos, que **não são versionados** e ficam na pasta-mãe do projeto (ou no caminho definido na variável de ambiente `MESTRADO_DADOS`):
+Os dados brutos **não são versionados** e ficam na pasta-mãe do projeto (`MESTRADO_DADOS_HOST` no `.env`):
 
 | Arquivo esperado | Fonte |
 |---|---|
 | `municipios_base/50km_todosMun.shp` | Limites municipais da área de estudo (IBGE, SIRGAS 2000) |
 | `mapbiomas_col10/MAPBIOMAS_BRAZIL-COVERAGE_STATISTICS-COL.10.1-MUNICIPALITIES_STATES_BIOMES.xlsx` | [MapBiomas, estatísticas da Coleção 10.1](https://doi.org/10.58053/MapBiomas/SJZOLT) |
 | `mapbiomas_col10/rasters/brazil_coverage_{ano}.tif` (1985 e 2024) | [MapBiomas, rasters anuais da Coleção 10](https://storage.googleapis.com/mapbiomas-public/initiatives/brasil/collection_10/lulc/coverage/) |
-| `municipios_base/area_estudo.csv` (opcional) | Lista de `CD_MUN` para restringir a área de estudo |
+| `municipios_base/area_estudo.csv` (opcional) | Lista de `CD_MUN` que define a área de estudo |
 
 ```bash
-pip install -r processamento/requirements.txt
-python processamento/municipios.py
-python processamento/mapbiomas_col10.py
-python processamento/mapas.py
+docker compose run --rm etl                               # banco
+docker compose run --rm etl python municipios.py          # CSV de municípios
+docker compose run --rm etl python mapbiomas_col10.py     # CSVs de cobertura e legenda
+docker compose run --rm etl python mapas.py               # mapas PNG
 ```
 
 Os mapas usam os rasters da Coleção 10 (não há rasters públicos da 10.1); para 1985 e 2024 as áreas por classe diferem menos de 0,1% das estatísticas da Coleção 10.1.
@@ -56,178 +94,46 @@ Indicadores derivados da legenda oficial:
 - **Vegetação nativa**: classes dos grupos *Floresta* e *Vegetação Herbácea e Arbustiva*.
 - **Índice de antropização**: área das classes de tipo *Antrópico* dividida pela área total.
 
-## 🛠 Requisitos
+## 🗂 Estrutura de diretórios
 
-- Python 3.8+
-- Pip
+```
+dashboard/
+├── app.py                    # painel
+├── dados.py                  # acesso aos dados (PostgreSQL ou CSV)
+├── Dockerfile                # imagem do painel
+├── docker-compose.yml
+├── .env.example
+├── db/
+│   ├── init/                 # usuário somente leitura do app (criação do banco)
+│   └── migrations/           # esquema versionado, aplicado pelo etl
+├── processamento/            # ETL: migrações, cargas, CSVs e mapas
+├── testes/                   # paridade entre banco e CSVs
+├── historico/                # CSVs de cobertura e legenda (gerados)
+├── coordenadas/              # CSV de municípios (gerado)
+├── municipios_shapefile/     # mapas da região de estudo (gerados)
+└── mapas_municipios/         # mapas de cada município (gerados)
+```
 
-### Bibliotecas Python
+## ✅ Testes
+
+Com o banco no ar e carregado:
 
 ```bash
-pip install streamlit pandas plotly Pillow reportlab
+pip install -r requirements-dev.txt
+pytest testes
 ```
 
----
+Os testes verificam que banco e CSVs têm os mesmos dados e que o painel mostra os mesmos indicadores nas duas fontes.
 
-## 💻 Como executar localmente
+## 🌐 Publicação em servidor
 
-1. **Clone o repositório:**
-
-```bash
-git clone https://github.com/seuusuario/dashboard.git
-cd dashboard
-```
-
-2. **(Opcional) Crie e ative um ambiente virtual:**
-
-```bash
-python3 -m venv venv
-source venv/bin/activate
-```
-
-3. **Instale as dependências:**
-
-```bash
-pip install -r requirements.txt
-```
-
-4. **Execute a aplicação:**
-
-```bash
-streamlit run app.py
-```
-
-5. **Acesse no navegador:**
-
-```
-http://localhost:8501
-```
-
----
-
-## 📄 Geração de Relatório
-
-- Ao selecionar um município, é possível gerar um **relatório PDF completo** com gráficos, indicadores e mapas.
-- O botão de geração do relatório está disponível no painel lateral (sidebar).
-
----
-
-## 🌐 Publicação em Servidor
-
-A aplicação pode ser hospedada em uma VPS com **Apache ou Nginx** como proxy reverso.
-Recomenda-se executar a aplicação como serviço systemd utilizando um usuário próprio (ex: `streamlituser`).
-
----
+Veja [manual_streamlit_vps.md](manual_streamlit_vps.md).
 
 ## 📋 Licença
 
 Este projeto é distribuído sob licença livre para fins acadêmicos e científicos.
 
----
-
 ## 🙋‍♂️ Autor
 
-[Jeferson Silva (Jef EAD)](https://jefead.com.br)  
+[Jeferson Silva (Jef EAD)](https://jefead.com.br)
 Desenvolvido como parte de um projeto de pesquisa sobre predição de risco ambiental com Machine Learning.
-
-
-## 🚀 Implantação em Servidor (VPS com Apache)
-
-### 1. Pré-requisitos
-
-- VPS com Apache2 instalado e ativo
-- Python 3.8+ e pip
-- Sistema operacional Linux (Ubuntu recomendado)
-- A aplicação deve estar clonada em `/opt/dashboard/`
-
-### 2. Criar um usuário para a aplicação
-
-```bash
-sudo adduser streamlituser
-sudo usermod -aG sudo streamlituser
-```
-
-### 3. Instalar dependências no ambiente do usuário
-
-```bash
-sudo su - streamlituser
-cd /opt/dashboard
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-```
-
-### 4. Criar serviço systemd para executar o Streamlit
-
-```bash
-sudo nano /etc/systemd/system/streamlit_dashboard.service
-```
-
-Conteúdo do arquivo:
-
-```
-[Unit]
-Description=Streamlit Dashboard - JefEAD
-After=network.target
-
-[Service]
-User=streamlituser
-WorkingDirectory=/opt/dashboard
-ExecStart=/opt/dashboard/venv/bin/streamlit run app.py --server.port=8501 --server.headless=true
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-```
-
-Ative o serviço:
-
-```bash
-sudo systemctl daemon-reexec
-sudo systemctl daemon-reload
-sudo systemctl enable streamlit_dashboard
-sudo systemctl start streamlit_dashboard
-```
-
-Verifique com:
-
-```bash
-sudo systemctl status streamlit_dashboard
-```
-
-### 5. Configurar proxy reverso no Apache
-
-Ative os módulos:
-
-```bash
-sudo a2enmod proxy
-sudo a2enmod proxy_http
-```
-
-Edite seu arquivo de host virtual:
-
-```bash
-sudo nano /etc/apache2/sites-available/jefead.com.br.conf
-```
-
-Inclua:
-
-```
-<VirtualHost *:80>
-    ServerName jefead.com.br
-
-    ProxyPreserveHost On
-    ProxyPass /dashboard http://localhost:8501/
-    ProxyPassReverse /dashboard http://localhost:8501/
-</VirtualHost>
-```
-
-Reinicie o Apache:
-
-```bash
-sudo systemctl reload apache2
-```
-
----
-
-Essas configurações garantem que a aplicação continue funcionando sem afetar outros serviços como WordPress ou Moodle.

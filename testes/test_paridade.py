@@ -1,0 +1,166 @@
+"""Paridade entre as duas fontes de dados do painel: PostgreSQL e CSVs.
+
+O painel lendo do banco deve mostrar exatamente o que mostrava lendo dos CSVs.
+Requer o banco no ar e carregado:
+
+    docker compose up -d db
+    docker compose run --rm etl
+    pytest testes
+
+Sem as variáveis PG*, o teste usa o .env do projeto (usuário somente leitura do app).
+"""
+import json
+import os
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+import pandas as pd
+import pytest
+
+PROJETO = Path(__file__).resolve().parent.parent
+MUNICIPIOS_TESTE = ["Cabixi (RO)", "Pau D'Arco (PA)", "Pau D'Arco (TO)", "Campos de Júlio (MT)", "Raposa (MA)"]
+
+
+def ambiente_banco():
+    """Variáveis PG* do ambiente ou, na falta delas, derivadas do .env."""
+    if os.environ.get("PGHOST"):
+        return {k: v for k, v in os.environ.items() if k.startswith("PG")}
+    env_arquivo = PROJETO / ".env"
+    if not env_arquivo.exists():
+        pytest.skip("Sem PGHOST e sem .env: banco indisponível")
+    valores = dict(
+        linha.split("=", 1) for linha in env_arquivo.read_text(encoding="utf-8").splitlines()
+        if "=" in linha and not linha.lstrip().startswith("#")
+    )
+    return {
+        "PGHOST": "localhost",
+        "PGPORT": valores.get("DB_PORTA", "5432"),
+        "PGDATABASE": valores.get("POSTGRES_DB", "dashboard"),
+        "PGUSER": valores.get("APP_DB_USER", "dashboard_app"),
+        "PGPASSWORD": valores["APP_DB_PASSWORD"],
+    }
+
+
+@pytest.fixture(scope="module")
+def banco():
+    from sqlalchemy import create_engine, text
+
+    os.environ.update(ambiente_banco())
+    engine = create_engine("postgresql+psycopg://")
+    with engine.connect() as conexao:
+        conexao.execute(text("SELECT 1"))
+    return engine
+
+
+def ler(banco, sql):
+    from sqlalchemy import text
+
+    with banco.connect() as conexao:
+        return pd.read_sql(text(sql), conexao)
+
+
+def test_cobertura(banco):
+    csv = pd.read_csv(PROJETO / "historico" / "estatisticas_coverage_historico.csv", sep=";", decimal=",")
+    bd = ler(banco, "SELECT cd_mun AS \"CD_MUN\", nm_mun AS \"NM_MUN\", sigla_uf AS \"SIGLA_UF\", ano,"
+                    " classe_cobertura, area_ha, perc_ocupacao FROM mapbiomas.vw_cobertura_municipio")
+    chaves = ["CD_MUN", "ano", "classe_cobertura"]
+    juntos = csv.merge(bd, on=chaves, how="outer", suffixes=("_csv", "_bd"), indicator=True)
+
+    assert (juntos["_merge"] == "both").all(), "Linhas presentes em só uma das fontes"
+    assert (juntos["NM_MUN_csv"] == juntos["NM_MUN_bd"]).all()
+    assert (juntos["SIGLA_UF_csv"] == juntos["SIGLA_UF_bd"]).all()
+    # O CSV guarda 2 casas decimais; o banco guarda o valor completo da fonte
+    assert (juntos["area_ha_csv"] - juntos["area_ha_bd"]).abs().max() <= 0.005
+    assert (juntos["perc_ocupacao_csv"] - juntos["perc_ocupacao_bd"]).abs().max() <= 0.005
+
+
+def test_legenda(banco):
+    csv = pd.read_csv(PROJETO / "historico" / "legenda_mapbiomas.csv")
+    bd = ler(banco, "SELECT classe_id AS classe_cobertura, nome AS nome_classe, cor AS cor_rgb, grupo, tipo"
+                    " FROM mapbiomas.classe ORDER BY classe_id")
+    pd.testing.assert_frame_equal(csv, bd, check_dtype=False)
+
+
+def test_municipios(banco):
+    csv = pd.read_csv(PROJETO / "coordenadas" / "municipios_coord.csv").sort_values("CD_MUN").reset_index(drop=True)
+    bd = ler(banco, "SELECT cd_mun AS \"CD_MUN\", nome AS nome_municipio, sigla_uf AS \"SIGLA_UF\","
+                    " area_km2::float8 AS \"AREA_KM2\", latitude, longitude FROM ref.vw_municipio ORDER BY cd_mun")
+    pd.testing.assert_frame_equal(csv, bd, check_dtype=False, atol=1e-9, rtol=0)
+
+
+ROTEIRO_APP = r"""
+import json, sys
+from streamlit.testing.v1 import AppTest
+resultado = {}
+for municipio in json.loads(sys.argv[1]):
+    at = AppTest.from_file(sys.argv[2], default_timeout=300)
+    at.run()
+    if municipio != "Todos":
+        at.sidebar.selectbox[0].select(municipio).run()
+    resultado[municipio] = {
+        "excecoes": [e.value for e in at.exception],
+        "metricas": [[m.label, m.value, m.delta] for m in at.metric],
+        "alertas": [w.value for w in at.warning],
+        "infos": [i.value for i in at.info],
+        "graficos": len(at.get("plotly_chart")),
+    }
+print("RESULTADO=" + json.dumps(resultado, ensure_ascii=False))
+"""
+
+
+def rodar_app(ambiente):
+    municipios = ["Todos"] + MUNICIPIOS_TESTE
+    saida = subprocess.run(
+        [sys.executable, "-c", ROTEIRO_APP, json.dumps(municipios), str(PROJETO / "app.py")],
+        capture_output=True, text=True, encoding="utf-8", env={**ambiente, "PYTHONUTF8": "1"},
+        cwd=PROJETO, timeout=900,
+    )
+    linha = [l for l in saida.stdout.splitlines() if l.startswith("RESULTADO=")]
+    assert linha, saida.stderr[-3000:]
+    return json.loads(linha[0].removeprefix("RESULTADO="))
+
+
+def numero(token):
+    """Converte '16273.05', '1.253.056' ou '-63.1' em float."""
+    if token.count(".") > 1:  # separador de milhar no formato brasileiro
+        token = token.replace(".", "")
+    return float(token)
+
+
+def equivalentes(a, b):
+    """Igualdade estrutural; números podem diferir só no arredondamento.
+
+    O CSV guarda as áreas com 2 casas decimais e o banco guarda o valor completo,
+    então somas de milhares de linhas podem diferir na última casa exibida.
+    """
+    if isinstance(a, dict) and isinstance(b, dict):
+        return a.keys() == b.keys() and all(equivalentes(a[k], b[k]) for k in a)
+    if isinstance(a, list) and isinstance(b, list):
+        return len(a) == len(b) and all(equivalentes(x, y) for x, y in zip(a, b))
+    if isinstance(a, str) and isinstance(b, str):
+        padrao = r"-?\d[\d.]*"
+        if re.sub(padrao, "#", a) != re.sub(padrao, "#", b):
+            return False
+        return all(
+            abs(numero(x) - numero(y)) <= max(0.1, 1e-4 * abs(numero(x)))
+            for x, y in zip(re.findall(padrao, a), re.findall(padrao, b))
+        )
+    return a == b
+
+
+def test_app_mostra_o_mesmo_nas_duas_fontes(banco):
+    sem_banco = {k: v for k, v in os.environ.items() if not k.startswith("PG")}
+    com_banco = {**sem_banco, **ambiente_banco()}
+
+    pelo_csv = rodar_app(sem_banco)
+    pelo_banco = rodar_app(com_banco)
+
+    for municipio, resultado in pelo_banco.items():
+        assert resultado["excecoes"] == [], f"{municipio}: {resultado['excecoes']}"
+        assert resultado["graficos"] > 0
+    for municipio in pelo_csv:
+        assert equivalentes(pelo_banco[municipio], pelo_csv[municipio]), (
+            f"{municipio}:\n  banco: {pelo_banco[municipio]}\n  csv:   {pelo_csv[municipio]}"
+        )
