@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+from plotly.subplots import make_subplots
 from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
 import tempfile
@@ -196,7 +197,7 @@ else:
     st.caption("Mapas: MapBiomas Coleção 10 (raster 30 m). Áreas e indicadores: estatísticas da Coleção 10.1.")
 
 # Abas principais
-abas = st.tabs(["Evolução Temporal", "Distribuição Anual", "Participação Percentual", "Análise por Década", "Comparação Entre Anos", "Análises Especiais", "Análises por Estados", "Queimadas", "Desmatamento (PRODES)"])
+abas = st.tabs(["Evolução Temporal", "Distribuição Anual", "Participação Percentual", "Análise por Década", "Comparação Entre Anos", "Análises Especiais", "Análises por Estados", "Queimadas", "Desmatamento (PRODES)", "Análise Integrada"])
 
 with abas[0]:
     st.markdown("#### Gráfico de Linha")
@@ -790,6 +791,137 @@ with abas[8]:
     st.caption("Fonte: INPE/PRODES Brasil 2025, raster de ~10 m; biomas IBGE 1:250.000 (2019). "
                "Áreas calculadas por município e bioma.")
 
+with abas[9]:
+    st.markdown("### Análise Integrada")
+    st.caption("Município x ano PRODES (agosto de AAAA−1 a julho de AAAA). Os indicadores MapBiomas de cada ano "
+               "vêm do mapa do ano civil anterior, que retrata a situação no início do ano PRODES.")
+
+    painel = dados.carregar_painel()
+    anos_painel = sorted(int(a) for a in painel["ano"].unique())
+    c_periodo, c_bioma = st.columns([2, 1])
+    periodo_painel = c_periodo.slider("Período (anos PRODES):", min_value=anos_painel[0], max_value=anos_painel[-1],
+                                      value=(2013, anos_painel[-1]), key="periodo_painel",
+                                      help="A partir de 2013 o PRODES é anual em toda a área.")
+    biomas_painel = ["Todos os biomas"] + sorted(painel["bioma_predominante"].dropna().unique())
+    bioma_painel = c_bioma.selectbox("Bioma predominante:", biomas_painel, key="bioma_painel",
+                                     disabled=cidade != "Todos")
+
+    base = painel[painel["ano"].between(*periodo_painel)].copy()
+    if cidade == "Todos" and bioma_painel != "Todos os biomas":
+        base = base[base["bioma_predominante"] == bioma_painel]
+    # Indicadores relativos à área, comparáveis entre municípios de tamanhos diferentes
+    area_ha = base["area_km2"] * 100
+    base["Vegetação natural (% da área)"] = 100 * base["mb_vegetacao_natural_ha"] / area_ha
+    base["Pastagem (% da área)"] = 100 * base["mb_pastagem_ha"] / area_ha
+    base["Soja e lavouras (% da área)"] = 100 * (base["mb_soja_ha"] + base["mb_lavouras_ha"]) / area_ha
+    base["Índice de antropização (%)"] = base["mb_indice_antropizacao"]
+    base["Focos por 1.000 km²"] = base["fq_densidade_focos"]
+    base["Taxa de desmatamento (%)"] = base["pd_taxa_desmatamento"]
+    base["Vizinhos: focos por 1.000 km²"] = base["vz_densidade_focos"]
+    base["Vizinhos: taxa de desmatamento (%)"] = base["vz_taxa_desmatamento"]
+    base["Taxa de desmatamento no ano seguinte (%)"] = base["alvo_taxa_desmatamento_t1"]
+
+    selecao = base[base["cd_mun"] == cd_mun] if cidade != "Todos" else base
+
+    # 1. Série integrada
+    serie_int = selecao.groupby("ano").agg(
+        antropica=("mb_antropica_ha", "sum"), area=("area_km2", "sum"),
+        focos=("fq_focos", "sum"), desmatamento=("pd_desmatamento_ha", "sum"),
+    ).reset_index()
+    serie_int["antropizacao"] = 100 * serie_int["antropica"] / (serie_int["area"] * 100)
+    fig_i1 = make_subplots(rows=3, cols=1, shared_xaxes=True, vertical_spacing=0.06,
+                           subplot_titles=("Índice de antropização (%) — MapBiomas",
+                                           "Focos de calor no ano PRODES",
+                                           "Desmatamento (ha) — PRODES"))
+    fig_i1.add_scatter(x=serie_int["ano"], y=serie_int["antropizacao"], mode="lines+markers",
+                       line_color="#8c510a", name="Antropização", row=1, col=1)
+    fig_i1.add_bar(x=serie_int["ano"], y=serie_int["focos"], marker_color="#d4271e", name="Focos", row=2, col=1)
+    fig_i1.add_bar(x=serie_int["ano"], y=serie_int["desmatamento"], marker_color="#8c510a", name="Desmatamento", row=3, col=1)
+    fig_i1.update_layout(height=650, showlegend=False, title="Série Integrada")
+    st.plotly_chart(fig_i1, width="stretch")
+
+    # 2. Defasagem entre fogo e desmatamento
+    st.markdown("#### Fogo antecede o desmatamento?")
+    defasagens = []
+    painel_ordenado = painel.sort_values(["cd_mun", "ano"])
+    for k in range(-2, 3):
+        # Taxa de desmatamento k anos depois do ano dos focos (k negativo = antes)
+        deslocada = painel_ordenado.groupby("cd_mun")["pd_taxa_desmatamento"].shift(-k)
+        pares = painel_ordenado.assign(desm_k=deslocada)
+        pares = pares[pares["cd_mun"].isin(selecao["cd_mun"]) & pares["ano"].between(*periodo_painel)]
+        pares = pares.dropna(subset=["fq_densidade_focos", "desm_k"])
+        if len(pares) > 3:
+            # DataFrame.corr calcula Spearman sem depender do scipy
+            correlacao = pares[["fq_densidade_focos", "desm_k"]].corr(method="spearman").iloc[0, 1]
+            defasagens.append({"k": k, "correlacao": correlacao, "pares": len(pares)})
+    defasagens = pd.DataFrame(defasagens)
+    if not defasagens.empty:
+        defasagens["quando"] = defasagens["k"].map(
+            {-2: "2 anos antes", -1: "1 ano antes", 0: "mesmo ano", 1: "1 ano depois", 2: "2 anos depois"})
+        fig_i2 = px.bar(defasagens, x="quando", y="correlacao", text_auto=".2f",
+                        hover_data={"pares": True, "k": False},
+                        labels={"quando": "Desmatamento em relação ao ano dos focos", "correlacao": "Correlação de Spearman"},
+                        title="Correlação entre Densidade de Focos e Taxa de Desmatamento por Defasagem",
+                        color_discrete_sequence=["#d4271e"])
+        fig_i2.update_yaxes(range=[min(0, defasagens["correlacao"].min() - 0.05), 1])
+        st.plotly_chart(fig_i2, width="stretch")
+        st.caption("Correlação de postos (Spearman) entre os focos por 1.000 km² de um ano e a taxa de desmatamento "
+                   "PRODES k anos antes ou depois, calculada sobre os pares município x ano da seleção. "
+                   "Correlação não é causalidade: fogo e desmatamento também respondem a fatores comuns (clima, "
+                   "fronteira agrícola)." + (" Para um único município há poucos anos; interprete com cautela."
+                                             if cidade != "Todos" else ""))
+
+    # 3. Correlações entre variáveis
+    VARIAVEIS_CORR = ["Vegetação natural (% da área)", "Pastagem (% da área)", "Soja e lavouras (% da área)",
+                      "Índice de antropização (%)", "Focos por 1.000 km²", "Taxa de desmatamento (%)",
+                      "Vizinhos: focos por 1.000 km²", "Vizinhos: taxa de desmatamento (%)",
+                      "Taxa de desmatamento no ano seguinte (%)"]
+    if cidade == "Todos":
+        st.markdown("#### Correlações entre as Variáveis")
+        matriz_corr = base[VARIAVEIS_CORR].corr(method="spearman")
+        fig_i3 = px.imshow(matriz_corr, text_auto=".2f", color_continuous_scale="RdBu_r", zmin=-1, zmax=1,
+                           aspect="auto", title=f"Correlação de Spearman ({len(base)} pares município x ano)")
+        fig_i3.update_layout(height=600)
+        st.plotly_chart(fig_i3, width="stretch")
+
+    # 4. Municípios: focos x desmatamento no período
+    st.markdown("#### Municípios: Focos x Desmatamento no Período")
+    por_mun = base.groupby(["cd_mun", "nm_mun", "sigla_uf", "bioma_predominante", "area_km2"], as_index=False).agg(
+        focos=("Focos por 1.000 km²", "mean"), taxa=("Taxa de desmatamento (%)", "mean"))
+    por_mun["municipio"] = por_mun["nm_mun"] + " (" + por_mun["sigla_uf"] + ")"
+    fig_i4 = px.scatter(por_mun, x="focos", y="taxa", color="bioma_predominante", size="area_km2", size_max=30,
+                        hover_name="municipio", color_discrete_map=CORES_BIOMA,
+                        labels={"focos": "Focos por 1.000 km² (média anual)", "taxa": "Taxa de desmatamento (% ao ano, média)",
+                                "bioma_predominante": "Bioma predominante", "area_km2": "Área (km²)"},
+                        title=f"Focos x Desmatamento por Município ({periodo_painel[0]}–{periodo_painel[1]})")
+    if cidade != "Todos":
+        destaque = por_mun[por_mun["cd_mun"] == cd_mun]
+        fig_i4.add_scatter(x=destaque["focos"], y=destaque["taxa"], mode="markers+text", text=destaque["municipio"],
+                           textposition="top center", marker={"size": 18, "color": "rgba(0,0,0,0)",
+                                                              "line": {"width": 3, "color": "#111111"}},
+                           showlegend=False, hoverinfo="skip")
+    st.plotly_chart(fig_i4, width="stretch")
+    if cidade != "Todos":
+        st.caption("O círculo preto destaca o município selecionado entre os demais da área de estudo.")
+
+    # 5. Base para modelagem
+    st.markdown("#### Base para Modelagem")
+    st.caption(f"{len(painel):,} linhas ({painel['cd_mun'].nunique()} municípios x {len(anos_painel)} anos PRODES) e "
+               f"{painel.shape[1]} variáveis. Os alvos (`alvo_*`) são do ano seguinte; os demais valores usam apenas "
+               "informação disponível até o fim do ano da linha.".replace(",", "."))
+    d1, d2 = st.columns(2)
+    d1.download_button("Baixar painel (.csv)", painel.to_csv(index=False, sep=";", decimal=","),
+                       file_name="painel_municipio_ano.csv", mime="text/csv")
+    parquet = BytesIO()
+    painel.to_parquet(parquet, index=False)
+    d2.download_button("Baixar painel (.parquet)", parquet.getvalue(),
+                       file_name="painel_municipio_ano.parquet", mime="application/octet-stream")
+    dicionario = caminho("docs", "dicionario_painel.md")
+    if os.path.exists(dicionario):
+        with st.expander("Dicionário de variáveis"):
+            with open(dicionario, encoding="utf-8") as arquivo:
+                st.markdown(arquivo.read())
+
 st.sidebar.markdown("---")
 
 # Botão para gerar relatório em PDF
@@ -824,7 +956,8 @@ if cidade != "Todos":
                     "6. Comparação Entre Anos",
                     "7. Análises Especiais",
                     "8. Focos de Calor",
-                    "9. Desmatamento (PRODES)"
+                    "9. Desmatamento (PRODES)",
+                    "10. Análise Integrada"
                 ]
                 for item in sumario_items:
                     c.drawString(70, y_pos, item)
@@ -986,6 +1119,9 @@ if cidade != "Todos":
 
                 if 'fig_p4' in locals():
                     adicionar_grafico_pdf(fig_p4, "Desmatamento PRODES x Redução de Vegetação Nativa MapBiomas", c, width, height)
+
+                if 'fig_i1' in locals():
+                    adicionar_grafico_pdf(fig_i1, f"Série Integrada ({periodo_painel[0]}–{periodo_painel[1]})", c, width, height)
                 
                 # Página final com estatísticas
                 c.setFont("Helvetica-Bold", 14)

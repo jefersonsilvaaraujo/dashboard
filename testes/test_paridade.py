@@ -128,6 +128,61 @@ def test_prodes_cobre_a_area_oficial_dos_municipios(banco):
     assert (abaixo >= 0.98).all(), f"Área PRODES muito abaixo da oficial: {abaixo[abaixo < 0.98].to_dict()}"
 
 
+def test_painel(banco):
+    csv = pd.read_csv(PROJETO / "historico" / "painel_municipio_ano.csv", sep=";", decimal=",")
+    bd = ler(banco, "SELECT * FROM analise.vw_painel_municipio_ano ORDER BY cd_mun, ano")
+    assert list(csv.columns) == list(bd.columns)
+    pd.testing.assert_frame_equal(csv, bd, check_dtype=False, atol=1e-5, rtol=0)
+
+
+CONSISTENCIA_PAINEL = {
+    "desmatamento igual ao PRODES": """
+        SELECT abs((SELECT sum(pd_desmatamento_ha) FROM analise.mv_painel_base) -
+                   (SELECT sum(a.area_ha) FROM prodes.area_classe a JOIN prodes.classe c USING (classe_id)
+                    JOIN ref.municipio m USING (cd_mun)
+                    WHERE c.tipo = 'desmatamento' AND c.ano >= 2008 AND m.area_estudo)) < 1e-6""",
+    "focos iguais à contagem por data": """
+        SELECT (SELECT sum(fq_focos) FROM analise.mv_painel_base) =
+               (SELECT count(*) FROM queimadas.foco f JOIN ref.municipio m USING (cd_mun)
+                WHERE m.area_estudo AND f.data_hora >= make_timestamptz((SELECT min(ano) FROM analise.mv_painel_base) - 1, 8, 1, 0, 0, 0, 'UTC')
+                  AND f.data_hora < make_timestamptz((SELECT max(ano) FROM analise.mv_painel_base), 8, 1, 0, 0, 0, 'UTC'))""",
+    "MapBiomas do ano anterior": """
+        SELECT NOT EXISTS (
+            SELECT 1 FROM analise.mv_painel_base p
+            JOIN (SELECT c.cd_mun, c.ano + 1 AS ano, sum(c.area_ha) AS natural_ha
+                  FROM mapbiomas.cobertura c JOIN mapbiomas.classe k USING (classe_id)
+                  WHERE k.grupo IN ('Floresta', 'Vegetação Herbácea e Arbustiva') GROUP BY 1, 2) m USING (cd_mun, ano)
+            WHERE abs(p.mb_vegetacao_natural_ha - m.natural_ha) > 1e-6)""",
+    "vegetação nativa contínua entre anos": """
+        SELECT NOT EXISTS (
+            SELECT 1 FROM analise.mv_painel_base a
+            JOIN analise.mv_painel_base b ON b.cd_mun = a.cd_mun AND b.ano = a.ano - 1
+            WHERE abs(a.pd_vegetacao_nativa_inicio_ha - b.pd_vegetacao_nativa_fim_ha) > 1e-6)""",
+    "defasagens e alvos coerentes": """
+        SELECT NOT EXISTS (
+            SELECT 1 FROM analise.vw_painel_municipio_ano a
+            JOIN analise.vw_painel_municipio_ano b ON b.cd_mun = a.cd_mun AND b.ano = a.ano + 1
+            WHERE b.pd_desmatamento_ha_lag1 IS DISTINCT FROM a.pd_desmatamento_ha
+               OR a.alvo_desmatamento_ha_t1 IS DISTINCT FROM b.pd_desmatamento_ha
+               OR b.fq_focos_lag1 IS DISTINCT FROM a.fq_focos)""",
+    "vizinhança simétrica": """
+        SELECT NOT EXISTS (
+            SELECT 1 FROM ref.mv_municipio_vizinho v
+            WHERE NOT EXISTS (SELECT 1 FROM ref.mv_municipio_vizinho w
+                              WHERE w.cd_mun = v.cd_mun_vizinho AND w.cd_mun_vizinho = v.cd_mun))""",
+    "uma linha por município e ano": """
+        SELECT count(*) = count(DISTINCT (cd_mun, ano)) FROM analise.vw_painel_municipio_ano""",
+}
+
+
+@pytest.mark.parametrize("descricao", CONSISTENCIA_PAINEL)
+def test_consistencia_do_painel(banco, descricao):
+    from sqlalchemy import text
+
+    with banco.connect() as conexao:
+        assert conexao.execute(text(CONSISTENCIA_PAINEL[descricao])).scalar(), descricao
+
+
 ROTEIRO_APP = r"""
 import json, sys
 from streamlit.testing.v1 import AppTest

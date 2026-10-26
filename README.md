@@ -12,6 +12,7 @@ Este painel interativo desenvolvido em **Python com Streamlit** tem como objetiv
 - Mapas da região de estudo com marcador do município e mapas de uso e cobertura do próprio município (1985 e 2024)
 - Focos de calor do INPE (2003–2025): série anual, sazonalidade, ranking de municípios, intensidade do fogo (FRP), condições do tempo e mapa dos focos sobre os contornos dos municípios (pontos ou densidade por município)
 - Desmatamento PRODES por município e bioma (acumulado, série anual 2008–2025, ranking) e comparação com a perda de vegetação nativa do MapBiomas
+- Análise integrada município x ano: série combinada, defasagem entre fogo e desmatamento, correlações entre variáveis e dispersão por município, com download do painel (CSV/Parquet) e dicionário de variáveis
 - Geração de relatório PDF completo com gráficos e mapas
 
 ## 🏗 Arquitetura
@@ -51,6 +52,9 @@ As portas são publicadas apenas em `127.0.0.1`; o acesso público passa pelo Ap
 | `prodes.classe` | Legenda do PRODES: desmatamento por ano (dAAAA), resíduos (rAAAA), hidrografia e vegetação nativa |
 | `prodes.area_classe` | Área (ha) de cada classe PRODES por município e bioma |
 | `prodes.vw_area_classe_municipio` | Área por classe da área de estudo, lida pelo app |
+| `ref.mv_municipio_vizinho` | Pares de municípios vizinhos (até ~110 m de distância) |
+| `analise.mv_painel_base` | Município x ano PRODES (2008 em diante) com variáveis MapBiomas, focos e PRODES (view materializada) |
+| `analise.vw_painel_municipio_ano` | Painel completo: base + defasagens, médias móveis, vizinhança e alvos do ano seguinte. Dicionário em [docs/dicionario_painel.md](docs/dicionario_painel.md) |
 
 Princípios adotados: chaves estrangeiras e restrições `CHECK` em todas as tabelas; valores derivados (percentual, centroide) calculados pelo banco em vez de armazenados; cargas em transação única (o painel nunca vê dados pela metade); usuário do app sem permissão de escrita e com tempo-limite de consulta.
 
@@ -100,12 +104,18 @@ Os dados brutos **não são versionados** e ficam na pasta-mãe do projeto (`MES
 docker compose run --rm etl                               # banco (todas as fontes) e CSV mensal de focos
 docker compose run --rm etl python queimadas.py           # só os focos de calor
 docker compose run --rm etl python prodes.py              # só o PRODES (~5 min)
+docker compose run --rm etl python painel.py              # só o painel integrado, CSV e dicionário
+docker compose run --rm etl python ../modelagem/modelo_base.py   # modelo de referência
 docker compose run --rm etl python municipios.py          # CSV de municípios
 docker compose run --rm etl python mapbiomas_col10.py     # CSVs de cobertura e legenda
 docker compose run --rm etl python mapas.py               # mapas PNG
 ```
 
 Focos de calor: os atributos dos shapefiles são ligados aos focos por data/hora e coordenadas (todos os registros dos shapefiles encontram seu foco). Valores −999 e fora da faixa física (FRP negativo, dias sem chuva acima de 120, risco fora de 0–1) são tratados como ausentes. O mapa de pontos dos focos só aparece com o banco; no modo CSV o painel usa o agregado mensal.
+
+Painel integrado: uma linha por município e ano PRODES AAAA (agosto de AAAA−1 a julho de AAAA). As variáveis MapBiomas da linha AAAA vêm do mapa de AAAA−1 (situação no início do ano PRODES), e os focos são contados no próprio ano PRODES; assim nenhuma variável explicativa usa informação do período que os alvos (`alvo_*`, ano seguinte) descrevem.
+
+Modelagem: `modelagem/modelo_base.py` treina um modelo de referência (gradient boosting) para a taxa de desmatamento do ano seguinte, com divisão temporal (configuração escolhida na validação 2018–2019, avaliação única no teste 2020–2024), e o compara com regras simples (persistência e média de 3 anos). Resultados em [modelagem/resultados/relatorio_modelo_base.md](modelagem/resultados/relatorio_modelo_base.md).
 
 PRODES: a área de cada classe é somada por município e bioma (interseção calculada no PostGIS) a partir do raster de ~10 m, com a área de cada pixel calculada no elipsoide GRS80 conforme a latitude; a soma das classes de cada município coincide com a área oficial do IBGE. O ano PRODES AAAA vai de agosto de AAAA−1 a julho de AAAA. As classes d2000 a d2007 acumulam o desmatamento anterior à série anual; até 2012 a vegetação não florestal (Cerrado, Pantanal e áreas não florestais da Amazônia) era mapeada a cada dois anos, então anos pares desse período somam dois anos nessas áreas.
 
@@ -129,7 +139,9 @@ dashboard/
 │   ├── init/                 # usuário somente leitura do app (criação do banco)
 │   └── migrations/           # esquema versionado, aplicado pelo etl
 ├── processamento/            # ETL: migrações, cargas, CSVs e mapas
-├── testes/                   # paridade entre banco e CSVs
+├── modelagem/                # modelo de referência e resultados
+├── docs/                     # dicionário de variáveis do painel (gerado)
+├── testes/                   # paridade entre banco e CSVs e consistência do painel
 ├── historico/                # CSVs de cobertura e legenda (gerados)
 ├── coordenadas/              # CSV de municípios (gerado)
 ├── municipios_shapefile/     # mapas da região de estudo (gerados)
@@ -145,7 +157,7 @@ pip install -r requirements-dev.txt
 pytest testes
 ```
 
-Os testes verificam que banco e CSVs têm os mesmos dados, que o painel mostra os mesmos indicadores nas duas fontes, que a contagem de focos de 2024 confere com a validação independente (51.628 focos) e que a área PRODES de cada município coincide com a área oficial.
+Os testes verificam que banco e CSVs têm os mesmos dados, que o painel mostra os mesmos indicadores nas duas fontes, que a contagem de focos de 2024 confere com a validação independente (51.628 focos) que a área PRODES de cada município coincide com a área oficial e que o painel integrado é consistente com cada fonte (totais, defasagens, alvos e vizinhança).
 
 ## 🌐 Publicação em servidor
 

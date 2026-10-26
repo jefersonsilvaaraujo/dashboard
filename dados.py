@@ -84,6 +84,14 @@ def carregar_prodes():
     return pd.read_csv(_csv("historico", "prodes_area_classe_municipio.csv"), sep=";", decimal=",")
 
 
+@st.cache_data(ttl=CACHE_SEGUNDOS, show_spinner=False)
+def carregar_painel():
+    """Painel integrado município x ano PRODES (ver docs/dicionario_painel.md)."""
+    if USA_BANCO:
+        return _consultar("SELECT * FROM analise.vw_painel_municipio_ano ORDER BY cd_mun, ano")
+    return pd.read_csv(_csv("historico", "painel_municipio_ano.csv"), sep=";", decimal=",")
+
+
 @st.cache_data(ttl=CACHE_SEGUNDOS, show_spinner="Carregando focos...")
 def carregar_focos_pontos(ano, cd_mun=None):
     """Localização dos focos de um ano (de um município ou de toda a área de estudo).

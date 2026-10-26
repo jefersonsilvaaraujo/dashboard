@@ -14,6 +14,7 @@ Dockerfile
 docker-compose.yml
 db/
 processamento/
+modelagem/
 testes/
 historico/*.docx
 historico/estatisticas_coverage_historico_bkp.csv
