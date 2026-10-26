@@ -110,6 +110,25 @@ def carregar_focos_pontos(ano, cd_mun=None):
 
 
 @st.cache_data(ttl=CACHE_SEGUNDOS, show_spinner=False)
+def carregar_contornos():
+    """Contornos (GeoJSON) dos municípios da área de estudo nas escalas municipal e regional,
+    com o retângulo envolvente de cada um, e o limite externo da área de estudo.
+
+    Só disponível com o banco; no modo CSV devolve (None, None).
+    """
+    if not USA_BANCO:
+        return None, None
+    municipios = _consultar(
+        'SELECT cd_mun AS "CD_MUN", nome, sigla_uf, geojson, geojson_regional,'
+        " lon_min, lat_min, lon_max, lat_max FROM ref.vw_municipio_contorno"
+    )
+    area_estudo = _consultar(
+        "SELECT geojson, lon_min, lat_min, lon_max, lat_max FROM ref.mv_area_estudo_contorno"
+    ).iloc[0]
+    return municipios, area_estudo
+
+
+@st.cache_data(ttl=CACHE_SEGUNDOS, show_spinner=False)
 def carregar_municipios():
     """Municípios da área de estudo (CD_MUN, nome_municipio, SIGLA_UF, AREA_KM2, latitude, longitude)."""
     if USA_BANCO:

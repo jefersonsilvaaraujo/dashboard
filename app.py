@@ -9,6 +9,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from reportlab.lib.colors import HexColor
 from reportlab.lib.utils import ImageReader
+import json
 import logging
 import os
 
@@ -542,33 +543,107 @@ with abas[7]:
     st.caption("O FRP (potência radiativa do fogo) está disponível em 2003–2007 e 2015–2024; risco de fogo e "
                "dias sem chuva, em 2015–2024. Anos sem o atributo aparecem como lacuna.")
 
-    # Mapa dos focos de um ano
+    # Mapa dos focos de um ano sobre os contornos dos municípios
     st.markdown("#### Localização dos Focos")
     ano_mapa = st.selectbox("Ano do mapa:", options=anos_periodo[::-1], key="ano_mapa_focos")
     pontos = dados.carregar_focos_pontos(ano_mapa, cd_mun)
+    contornos, area_estudo = dados.carregar_contornos()
+
+    def colecao_geojson(geometrias):
+        return {"type": "FeatureCollection",
+                "features": [{"type": "Feature", "properties": {}, "geometry": json.loads(g)} for g in geometrias]}
+
+    def camada_mapa(geometrias, tipo, cor, largura=1.0, abaixo_dos_pontos=True):
+        camada = {"sourcetype": "geojson", "source": colecao_geojson(geometrias), "type": tipo, "color": cor,
+                  "below": "traces" if abaixo_dos_pontos else ""}
+        if tipo == "line":
+            camada["line"] = {"width": largura}
+        return camada
+
+    def enquadramento(lon_min, lat_min, lon_max, lat_max):
+        """Centro e zoom para mostrar o retângulo; cada nível de zoom dobra a escala (360° no nível 0)."""
+        extensao = max(lat_max - lat_min, lon_max - lon_min, 0.05)
+        centro = {"lat": (lat_min + lat_max) / 2, "lon": (lon_min + lon_max) / 2}
+        return centro, min(max(np.log2(360 / (extensao * 1.1)), 3), 11)
+
     if pontos is None:
         st.caption("O mapa dos focos está disponível quando o painel usa o banco PostgreSQL (docker compose).")
-    elif pontos.empty:
-        st.caption(f"Nenhum foco em {ano_mapa}.")
     else:
         pontos["mes"] = pd.to_datetime(pontos["data"]).dt.month.map(dict(enumerate(MESES, start=1)))
-        centro = {"lat": pontos["latitude"].mean(), "lon": pontos["longitude"].mean()}
         if cidade != "Todos":
-            # Zoom pela extensão dos focos: cada nível de zoom dobra a escala (360° no nível 0)
-            extensao = max(pontos["latitude"].max() - pontos["latitude"].min(),
-                           pontos["longitude"].max() - pontos["longitude"].min(), 0.05)
-            zoom = min(max(np.log2(360 / (extensao * 1.6)), 3), 11)
+            municipio = contornos.set_index("CD_MUN").loc[cd_mun]
+            # Município com folga de 15%; vizinhos são os que aparecem nesse enquadramento
+            folga = 0.15 * max(municipio.lat_max - municipio.lat_min, municipio.lon_max - municipio.lon_min)
+            janela = (municipio.lon_min - folga, municipio.lat_min - folga,
+                      municipio.lon_max + folga, municipio.lat_max + folga)
+            vizinhos = contornos[(contornos["CD_MUN"] != cd_mun)
+                                 & (contornos["lon_max"] >= janela[0]) & (contornos["lon_min"] <= janela[2])
+                                 & (contornos["lat_max"] >= janela[1]) & (contornos["lat_min"] <= janela[3])]
+            centro, zoom = enquadramento(*janela)
             fig_q5 = px.scatter_map(pontos, lat="latitude", lon="longitude", color="mes",
                                     category_orders={"mes": MESES}, hover_data={"data": True, "frp": True},
                                     labels={"mes": "Mês", "frp": "FRP (MW)", "data": "Data"},
-                                    center=centro, zoom=zoom, height=550, map_style="carto-positron",
+                                    center=centro, zoom=zoom, height=600, map_style="carto-positron",
                                     title=f"Focos de Calor em {ano_mapa} ({len(pontos)} focos)")
+            fig_q5.update_traces(marker={"size": 7, "opacity": 0.85})
+            fig_q5.update_layout(map_layers=[
+                camada_mapa(vizinhos["geojson"], "line", "#7a7a7a", largura=1),
+                camada_mapa([municipio.geojson], "fill", "rgba(177, 0, 38, 0.07)"),
+                camada_mapa([municipio.geojson], "line", "#b10026", largura=3),
+            ])
+            legenda_mapa = (f"Contorno vermelho: {cidade}; linhas cinza: municípios vizinhos da área de estudo. "
+                            "Cada ponto é um foco, colorido pelo mês de detecção.")
         else:
-            fig_q5 = px.density_map(pontos, lat="latitude", lon="longitude", radius=4,
-                                    color_continuous_scale="YlOrRd",
-                                    center=centro, zoom=4.3, height=550, map_style="carto-positron",
-                                    title=f"Densidade de Focos de Calor em {ano_mapa} ({len(pontos):,} focos)".replace(",", "."))
+            centro, zoom = enquadramento(area_estudo.lon_min, area_estudo.lat_min,
+                                         area_estudo.lon_max, area_estudo.lat_max)
+            visualizacao = st.radio("Visualização:", ["Focos por município", "Pontos dos focos"],
+                                    horizontal=True, key="visualizacao_mapa_focos")
+            if visualizacao == "Focos por município":
+                # Cada município colorido pela densidade de focos no ano
+                por_municipio = (
+                    focos[focos["ano"] == ano_mapa].groupby("CD_MUN")["focos"].sum()
+                    .reindex(contornos["CD_MUN"], fill_value=0).rename("focos").reset_index()
+                    .merge(municipios_ref[["CD_MUN", "AREA_KM2"]], on="CD_MUN")
+                    .merge(contornos[["CD_MUN", "nome", "sigla_uf"]], on="CD_MUN")
+                )
+                por_municipio["densidade"] = por_municipio["focos"] / por_municipio["AREA_KM2"] * 1000
+                por_municipio["municipio"] = por_municipio["nome"] + " (" + por_municipio["sigla_uf"] + ")"
+                poligonos = {"type": "FeatureCollection", "features": [
+                    {"type": "Feature", "id": int(cd), "properties": {}, "geometry": json.loads(g)}
+                    for cd, g in zip(contornos["CD_MUN"], contornos["geojson_regional"])
+                ]}
+                # Escala até o percentil 95: poucos municípios pequenos e muito queimados não
+                # podem achatar as cores dos demais (os acima ficam na cor máxima)
+                limite_cor = max(por_municipio["densidade"].quantile(0.95), 1)
+                fig_q5 = px.choropleth_map(
+                    por_municipio, geojson=poligonos, locations="CD_MUN", color="densidade",
+                    color_continuous_scale="YlOrRd", range_color=(0, limite_cor), hover_name="municipio",
+                    hover_data={"CD_MUN": False, "focos": True, "densidade": ":.1f"},
+                    labels={"densidade": "Focos por 1.000 km²", "focos": "Focos"},
+                    center=centro, zoom=zoom, height=600, map_style="carto-positron", opacity=0.8,
+                    title=f"Focos de Calor por Município em {ano_mapa} ({len(pontos):,} focos)".replace(",", "."),
+                )
+                fig_q5.update_traces(marker_line_color="rgba(60, 60, 60, 0.6)", marker_line_width=0.5)
+                legenda_mapa = ("Cada município está colorido pela densidade de focos no ano (focos por 1.000 km²); "
+                                "passe o mouse para ver o nome e a contagem. Contorno preto: limite da área de estudo.")
+            else:
+                fig_q5 = px.scatter_map(pontos, lat="latitude", lon="longitude", color="mes",
+                                        category_orders={"mes": MESES}, hover_data={"data": True, "frp": True},
+                                        labels={"mes": "Mês", "frp": "FRP (MW)", "data": "Data"},
+                                        center=centro, zoom=zoom, height=600, map_style="carto-positron",
+                                        title=f"Focos de Calor em {ano_mapa} ({len(pontos):,} focos)".replace(",", "."))
+                fig_q5.update_traces(marker={"size": 4, "opacity": 0.7})
+                fig_q5.update_layout(map_layers=[
+                    camada_mapa(contornos["geojson_regional"], "line", "rgba(60, 60, 60, 0.45)", largura=0.6),
+                ])
+                legenda_mapa = ("Cada ponto é um foco, colorido pelo mês de detecção; linhas cinza: municípios. "
+                                "Contorno preto: limite da área de estudo.")
+            # Limite da área de estudo por cima de tudo
+            fig_q5.update_layout(map_layers=list(fig_q5.layout.map.layers) + [
+                camada_mapa([area_estudo.geojson], "line", "#222222", largura=2.5, abaixo_dos_pontos=False),
+            ])
         st.plotly_chart(fig_q5, width="stretch")
+        st.caption(legenda_mapa if not pontos.empty else f"Nenhum foco em {ano_mapa}. {legenda_mapa}")
 
     st.caption("Fonte: INPE/BDQueimadas, focos do satélite de referência (AQUA, passagem da tarde). "
                "Datas em UTC; município definido pelo polígono que contém o foco.")

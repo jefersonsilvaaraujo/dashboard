@@ -10,7 +10,7 @@ Este painel interativo desenvolvido em **Python com Streamlit** tem como objetiv
 - Cálculo do Índice de Antropização
 - Alertas automáticos de perda de vegetação nativa
 - Mapas da região de estudo com marcador do município e mapas de uso e cobertura do próprio município (1985 e 2024)
-- Focos de calor do INPE (2003–2025): série anual, sazonalidade, ranking de municípios, intensidade do fogo (FRP), condições do tempo e mapa dos focos
+- Focos de calor do INPE (2003–2025): série anual, sazonalidade, ranking de municípios, intensidade do fogo (FRP), condições do tempo e mapa dos focos sobre os contornos dos municípios (pontos ou densidade por município)
 - Desmatamento PRODES por município e bioma (acumulado, série anual 2008–2025, ranking) e comparação com a perda de vegetação nativa do MapBiomas
 - Geração de relatório PDF completo com gráficos e mapas
 
@@ -41,6 +41,8 @@ As portas são publicadas apenas em `127.0.0.1`; o acesso público passa pelo Ap
 | `mapbiomas.cobertura` | Área (ha) por município, ano e classe |
 | `mapbiomas.vw_cobertura_municipio` | Visão lida pelo app; deriva o percentual de ocupação e filtra a área de estudo |
 | `ref.vw_municipio` | Municípios da área de estudo com UF e coordenadas do centroide |
+| `ref.vw_municipio_contorno` | Contornos em GeoJSON para mapas web (escala municipal e regional), a partir da coluna gerada `geom_simplificada` |
+| `ref.mv_area_estudo_contorno` | Limite externo da área de estudo (view materializada, recalculada a cada carga de municípios) |
 | `queimadas.foco` | Focos de calor (ponto, data/hora UTC, bioma, município). O município é o polígono que contém o ponto, calculado no PostGIS. Índices: (município, data), BRIN de data e GiST espacial |
 | `queimadas.foco_atributo` | FRP, chuva, dias sem chuva e risco de fogo, quando a fonte oferece (FRP: 2003–2007 e 2015–2024; demais: 2015–2024) |
 | `queimadas.mv_focos_municipio_mes` | Agregado mensal por município (view materializada, recalculada a cada carga) |
