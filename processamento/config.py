@@ -47,5 +47,7 @@ COBERTURA_CSV = PROJETO_DIR / "historico" / "estatisticas_coverage_historico.csv
 LEGENDA_CSV = PROJETO_DIR / "historico" / "legenda_mapbiomas.csv"
 FOCOS_MENSAIS_CSV = PROJETO_DIR / "historico" / "focos_municipio_mensal.csv"
 PRODES_CSV = PROJETO_DIR / "historico" / "prodes_area_classe_municipio.csv"
+PAINEL_CSV = PROJETO_DIR / "historico" / "painel_municipio_ano.csv"
+DICIONARIO_PAINEL = PROJETO_DIR / "docs" / "dicionario_painel.md"
 MAPA_REGIAO_PNG = PROJETO_DIR / "municipios_shapefile" / "municipios_{ano}.png"
 MAPAS_MUNICIPIOS_DIR = PROJETO_DIR / "mapas_municipios"

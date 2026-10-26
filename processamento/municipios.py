@@ -90,8 +90,9 @@ def carregar_no_banco(conexao):
         # Municípios que saíram do shapefile permanecem (podem ter dados ligados), fora da área de estudo
         conexao.execute("UPDATE ref.municipio SET area_estudo = false WHERE NOT (cd_mun = ANY(%s))",
                         ([int(cd) for cd in gdf["CD_MUN"]],))
-        # Limite externo da área de estudo, derivado dos municípios
+        # Derivados dos municípios: limite externo da área de estudo e pares de vizinhos
         conexao.execute("REFRESH MATERIALIZED VIEW ref.mv_area_estudo_contorno")
+        conexao.execute("REFRESH MATERIALIZED VIEW ref.mv_municipio_vizinho")
     print(f"{len(gdf)} municípios carregados em ref.municipio ({len(area_estudo)} na área de estudo)")
 
 
