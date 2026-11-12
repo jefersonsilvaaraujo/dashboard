@@ -1,0 +1,28 @@
+{
+  "coorte": "focos2003",
+  "contexto": "TO",
+  "target": "C_ha",
+  "bloco": "BASE",
+  "features": [
+    "territorio_area_geodesica_ha",
+    "territorio_lon_referencia",
+    "territorio_lat_referencia"
+  ],
+  "n_treino_inicial": 2013,
+  "n_validacao": 549,
+  "UF_excluida": "TO",
+  "cortes_magnitude_treino": [
+    594.5450614520948,
+    1490.6984272409345,
+    3863.295725182229
+  ],
+  "row_ids_treino_sha256": "a7317350655b4b6ea567fa6501087d35ae5bc61287630250da21d6880ea7039b",
+  "algoritmo": "media_historica",
+  "media": 3128.104601290444,
+  "mediana": 1427.0061423346708,
+  "n_treino_final": 2562,
+  "treino_final_ate": 2017,
+  "refit_exclui2014": true,
+  "arquivos_sha256": {},
+  "tipos_requerem_revisao_skops": {}
+}

@@ -1,0 +1,28 @@
+{
+  "coorte": "principal",
+  "contexto": "MA",
+  "target": "R_pct",
+  "bloco": "BASE",
+  "features": [
+    "territorio_area_geodesica_ha",
+    "territorio_lon_referencia",
+    "territorio_lat_referencia"
+  ],
+  "n_treino_inicial": 4640,
+  "n_validacao": 480,
+  "UF_excluida": "MA",
+  "cortes_magnitude_treino": [
+    1.1484716592937105,
+    2.186935852123205,
+    3.948990370561662
+  ],
+  "row_ids_treino_sha256": "58be318db24b0c8e4210c98ce5ce06a56a11602be9a57a24ba68b41be06162b8",
+  "algoritmo": "mediana_historica",
+  "media": 2.9957118803346874,
+  "mediana": 2.1375818916959473,
+  "n_treino_final": 5120,
+  "treino_final_ate": 2017,
+  "refit_exclui2014": true,
+  "arquivos_sha256": {},
+  "tipos_requerem_revisao_skops": {}
+}

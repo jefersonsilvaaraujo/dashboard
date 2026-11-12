@@ -1,0 +1,28 @@
+{
+  "coorte": "focos2003",
+  "contexto": "PA",
+  "target": "R_pct",
+  "bloco": "BASE",
+  "features": [
+    "territorio_area_geodesica_ha",
+    "territorio_lon_referencia",
+    "territorio_lat_referencia"
+  ],
+  "n_treino_inicial": 2640,
+  "n_validacao": 720,
+  "UF_excluida": "PA",
+  "cortes_magnitude_treino": [
+    1.0737906775596602,
+    2.0902483497382347,
+    3.563913045518187
+  ],
+  "row_ids_treino_sha256": "ee1c7b70fd3648467e769ea4f9fb67196f5ccad2d248d8e33fbdfbb80ac78c93",
+  "algoritmo": "media_historica",
+  "media": 2.544787833974274,
+  "mediana": 2.046474206116734,
+  "n_treino_final": 3360,
+  "treino_final_ate": 2017,
+  "refit_exclui2014": true,
+  "arquivos_sha256": {},
+  "tipos_requerem_revisao_skops": {}
+}

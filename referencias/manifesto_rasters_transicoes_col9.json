@@ -1,0 +1,1355 @@
+{
+  "versao": "transicoes_col9_v1",
+  "colecao": "9",
+  "periodo": [
+    1985,
+    2023
+  ],
+  "base_dados": "D:\\mestrado",
+  "territorio": {
+    "arquivo": "correcao_territorial_255\\resultado_20261107_192346\\municipios_255_ibge_2025.gpkg",
+    "sha256": "743491f51925c252b7d094aa577290bb892161e015ac2e5aa9c6c55ab0d76fe8"
+  },
+  "consolidado": {
+    "arquivo": "cobertura_col9_255_1985_2023_consolidada.csv",
+    "sha256": "8342c8ce79eaceb6fd13a6a2b8ea217b06d4448325667348ae8d205435c56212"
+  },
+  "origem": "Acervo local Col9 aprovado pelo pesquisador; 2002 recomposto de tiles Col9 e validado por amostras GEE.",
+  "limite_proveniencia": "A aprovação e as amostras históricas não equivalem à validação temática de todos os pixels dos 39 anos.",
+  "validacao_2002": {
+    "arquivo": "validacao_final_2002_colecao9.json",
+    "sha256": "080aedb915c7c3fb87f69360591833f2180da9510976d1b6b419c703976f8510",
+    "resultado_c9": {
+      "comparados": 11648,
+      "iguais": 11648,
+      "concordancia_pct": 100.0,
+      "divergencias_mais_comuns": [],
+      "exemplos_divergentes": []
+    }
+  },
+  "rasters": {
+    "1985": {
+      "arquivo": "Mapas-Estudo\\municipios_coverage_1985-040.tif",
+      "sha256": "900fe1fbe28a34da6c1f247b397daf7272c102dfd89b4ae64a88fb6b7ce1f7c5",
+      "bytes": 4081025270,
+      "mtime_ns": 1788381082380000000,
+      "grade": {
+        "crs": "EPSG:4326",
+        "transform": [
+          0.0002694945852358564,
+          0.0,
+          -61.576009296785145,
+          0.0,
+          -0.0002694945852358564,
+          -2.2510882704751074
+        ],
+        "largura": 70260,
+        "altura": 58078,
+        "bandas": 1,
+        "dtype": "uint8",
+        "nodata": null,
+        "blocos": [
+          [
+            1,
+            70260
+          ]
+        ]
+      }
+    },
+    "1986": {
+      "arquivo": "Mapas-Estudo\\municipios_coverage_1986-039.tif",
+      "sha256": "402c7c8c87e153c99fe15292b6c014ce61093f19d63c06d254fb00a5823c1082",
+      "bytes": 4081025270,
+      "mtime_ns": 1788381080610000000,
+      "grade": {
+        "crs": "EPSG:4326",
+        "transform": [
+          0.0002694945852358564,
+          0.0,
+          -61.576009296785145,
+          0.0,
+          -0.0002694945852358564,
+          -2.2510882704751074
+        ],
+        "largura": 70260,
+        "altura": 58078,
+        "bandas": 1,
+        "dtype": "uint8",
+        "nodata": null,
+        "blocos": [
+          [
+            1,
+            70260
+          ]
+        ]
+      }
+    },
+    "1987": {
+      "arquivo": "Mapas-Estudo\\municipios_coverage_1987-038.tif",
+      "sha256": "25a4346e9f146fd34da5919b8be3cc85c0bc54d6704e06c4d54060705b1279fd",
+      "bytes": 4081025270,
+      "mtime_ns": 1788381081620000000,
+      "grade": {
+        "crs": "EPSG:4326",
+        "transform": [
+          0.0002694945852358564,
+          0.0,
+          -61.576009296785145,
+          0.0,
+          -0.0002694945852358564,
+          -2.2510882704751074
+        ],
+        "largura": 70260,
+        "altura": 58078,
+        "bandas": 1,
+        "dtype": "uint8",
+        "nodata": null,
+        "blocos": [
+          [
+            1,
+            70260
+          ]
+        ]
+      }
+    },
+    "1988": {
+      "arquivo": "Mapas-Estudo\\municipios_coverage_1988-037.tif",
+      "sha256": "34c9ff1efdcf29469d919505247c915fd9840cee690a0df653cacbb48259e0d6",
+      "bytes": 4081025270,
+      "mtime_ns": 1788381080170000000,
+      "grade": {
+        "crs": "EPSG:4326",
+        "transform": [
+          0.0002694945852358564,
+          0.0,
+          -61.576009296785145,
+          0.0,
+          -0.0002694945852358564,
+          -2.2510882704751074
+        ],
+        "largura": 70260,
+        "altura": 58078,
+        "bandas": 1,
+        "dtype": "uint8",
+        "nodata": null,
+        "blocos": [
+          [
+            1,
+            70260
+          ]
+        ]
+      }
+    },
+    "1989": {
+      "arquivo": "Mapas-Estudo\\municipios_coverage_1989-036.tif",
+      "sha256": "b47f0b53e3ab40261d6baf4215b33e266a46aedb16f2af22bdf6603c21b8a253",
+      "bytes": 4081025270,
+      "mtime_ns": 1788381082370000000,
+      "grade": {
+        "crs": "EPSG:4326",
+        "transform": [
+          0.0002694945852358564,
+          0.0,
+          -61.576009296785145,
+          0.0,
+          -0.0002694945852358564,
+          -2.2510882704751074
+        ],
+        "largura": 70260,
+        "altura": 58078,
+        "bandas": 1,
+        "dtype": "uint8",
+        "nodata": null,
+        "blocos": [
+          [
+            1,
+            70260
+          ]
+        ]
+      }
+    },
+    "1990": {
+      "arquivo": "Mapas-Estudo\\municipios_coverage_1990-035.tif",
+      "sha256": "9cba6faf7111b9ad507575b2e6fa348ad3906c9d89c0ef7f6a892c2edcbf6b96",
+      "bytes": 4081025270,
+      "mtime_ns": 1788381082470000000,
+      "grade": {
+        "crs": "EPSG:4326",
+        "transform": [
+          0.0002694945852358564,
+          0.0,
+          -61.576009296785145,
+          0.0,
+          -0.0002694945852358564,
+          -2.2510882704751074
+        ],
+        "largura": 70260,
+        "altura": 58078,
+        "bandas": 1,
+        "dtype": "uint8",
+        "nodata": null,
+        "blocos": [
+          [
+            1,
+            70260
+          ]
+        ]
+      }
+    },
+    "1991": {
+      "arquivo": "Mapas-Estudo\\municipios_coverage_1991-034.tif",
+      "sha256": "50e6507cfdc2ba1cccda230029aeca2d24501b2ad6f84c8c29fe4cd88e65e7b2",
+      "bytes": 4081025270,
+      "mtime_ns": 1788381082120000000,
+      "grade": {
+        "crs": "EPSG:4326",
+        "transform": [
+          0.0002694945852358564,
+          0.0,
+          -61.576009296785145,
+          0.0,
+          -0.0002694945852358564,
+          -2.2510882704751074
+        ],
+        "largura": 70260,
+        "altura": 58078,
+        "bandas": 1,
+        "dtype": "uint8",
+        "nodata": null,
+        "blocos": [
+          [
+            1,
+            70260
+          ]
+        ]
+      }
+    },
+    "1992": {
+      "arquivo": "Mapas-Estudo\\municipios_coverage_1992-033.tif",
+      "sha256": "a3c6a00441a6b5d90fb0068a780599dc7c262c4c7bae400b245ded47bd8b54d2",
+      "bytes": 4081025270,
+      "mtime_ns": 1788381082540000000,
+      "grade": {
+        "crs": "EPSG:4326",
+        "transform": [
+          0.0002694945852358564,
+          0.0,
+          -61.576009296785145,
+          0.0,
+          -0.0002694945852358564,
+          -2.2510882704751074
+        ],
+        "largura": 70260,
+        "altura": 58078,
+        "bandas": 1,
+        "dtype": "uint8",
+        "nodata": null,
+        "blocos": [
+          [
+            1,
+            70260
+          ]
+        ]
+      }
+    },
+    "1993": {
+      "arquivo": "Mapas-Estudo\\municipios_coverage_1993-032.tif",
+      "sha256": "b00dab163b942fa15fea817e3a79606953947fb2a8da5fd5c99fcd05f70f90b4",
+      "bytes": 4081025270,
+      "mtime_ns": 1788381082570000000,
+      "grade": {
+        "crs": "EPSG:4326",
+        "transform": [
+          0.0002694945852358564,
+          0.0,
+          -61.576009296785145,
+          0.0,
+          -0.0002694945852358564,
+          -2.2510882704751074
+        ],
+        "largura": 70260,
+        "altura": 58078,
+        "bandas": 1,
+        "dtype": "uint8",
+        "nodata": null,
+        "blocos": [
+          [
+            1,
+            70260
+          ]
+        ]
+      }
+    },
+    "1994": {
+      "arquivo": "Mapas-Estudo\\municipios_coverage_1994-031.tif",
+      "sha256": "36dd469dd2ffa3d0a63330dc1a9ff7a2323973d50b78bff7795def6bd4ff950b",
+      "bytes": 4081025270,
+      "mtime_ns": 1788381080150000000,
+      "grade": {
+        "crs": "EPSG:4326",
+        "transform": [
+          0.0002694945852358564,
+          0.0,
+          -61.576009296785145,
+          0.0,
+          -0.0002694945852358564,
+          -2.2510882704751074
+        ],
+        "largura": 70260,
+        "altura": 58078,
+        "bandas": 1,
+        "dtype": "uint8",
+        "nodata": null,
+        "blocos": [
+          [
+            1,
+            70260
+          ]
+        ]
+      }
+    },
+    "1995": {
+      "arquivo": "Mapas-Estudo\\municipios_coverage_1995-030.tif",
+      "sha256": "7afc443aeb94c927671b3f96329437f22d82802dada3ef92df6607ea02cfc10b",
+      "bytes": 4081025270,
+      "mtime_ns": 1788381082500000000,
+      "grade": {
+        "crs": "EPSG:4326",
+        "transform": [
+          0.0002694945852358564,
+          0.0,
+          -61.576009296785145,
+          0.0,
+          -0.0002694945852358564,
+          -2.2510882704751074
+        ],
+        "largura": 70260,
+        "altura": 58078,
+        "bandas": 1,
+        "dtype": "uint8",
+        "nodata": null,
+        "blocos": [
+          [
+            1,
+            70260
+          ]
+        ]
+      }
+    },
+    "1996": {
+      "arquivo": "Mapas-Estudo\\municipios_coverage_1996-029.tif",
+      "sha256": "dc6f8f1942af5749e191c9c25c62142e084482286714a56805bb1374f5ff1708",
+      "bytes": 4081025270,
+      "mtime_ns": 1788381080920000000,
+      "grade": {
+        "crs": "EPSG:4326",
+        "transform": [
+          0.0002694945852358564,
+          0.0,
+          -61.576009296785145,
+          0.0,
+          -0.0002694945852358564,
+          -2.2510882704751074
+        ],
+        "largura": 70260,
+        "altura": 58078,
+        "bandas": 1,
+        "dtype": "uint8",
+        "nodata": null,
+        "blocos": [
+          [
+            1,
+            70260
+          ]
+        ]
+      }
+    },
+    "1997": {
+      "arquivo": "Mapas-Estudo\\municipios_coverage_1997-028.tif",
+      "sha256": "b10b44a435c5c48b05a58856f061f947e515ce0eb40c0f528234ea543e02c142",
+      "bytes": 4081025270,
+      "mtime_ns": 1788381081830000000,
+      "grade": {
+        "crs": "EPSG:4326",
+        "transform": [
+          0.0002694945852358564,
+          0.0,
+          -61.576009296785145,
+          0.0,
+          -0.0002694945852358564,
+          -2.2510882704751074
+        ],
+        "largura": 70260,
+        "altura": 58078,
+        "bandas": 1,
+        "dtype": "uint8",
+        "nodata": null,
+        "blocos": [
+          [
+            1,
+            70260
+          ]
+        ]
+      }
+    },
+    "1998": {
+      "arquivo": "Mapas-Estudo\\municipios_coverage_1998-027.tif",
+      "sha256": "deb65d695dbace8873d417a21e51dde50a6455470d832822755a9e91c72aff44",
+      "bytes": 4081025270,
+      "mtime_ns": 1788381081770000000,
+      "grade": {
+        "crs": "EPSG:4326",
+        "transform": [
+          0.0002694945852358564,
+          0.0,
+          -61.576009296785145,
+          0.0,
+          -0.0002694945852358564,
+          -2.2510882704751074
+        ],
+        "largura": 70260,
+        "altura": 58078,
+        "bandas": 1,
+        "dtype": "uint8",
+        "nodata": null,
+        "blocos": [
+          [
+            1,
+            70260
+          ]
+        ]
+      }
+    },
+    "1999": {
+      "arquivo": "Mapas-Estudo\\municipios_coverage_1999-026.tif",
+      "sha256": "f8f778e3bcb40a25836f1c24341714e55e9cefcee4b92b30c9a97de0d2ba9344",
+      "bytes": 4081025270,
+      "mtime_ns": 1788381082220000000,
+      "grade": {
+        "crs": "EPSG:4326",
+        "transform": [
+          0.0002694945852358564,
+          0.0,
+          -61.576009296785145,
+          0.0,
+          -0.0002694945852358564,
+          -2.2510882704751074
+        ],
+        "largura": 70260,
+        "altura": 58078,
+        "bandas": 1,
+        "dtype": "uint8",
+        "nodata": null,
+        "blocos": [
+          [
+            1,
+            70260
+          ]
+        ]
+      }
+    },
+    "2000": {
+      "arquivo": "Mapas-Estudo\\municipios_coverage_2000-025.tif",
+      "sha256": "190b4add2ee926f39cb65f63fbd60acab9a8b4343aca6305052398c0544ca166",
+      "bytes": 4081025270,
+      "mtime_ns": 1788381081920000000,
+      "grade": {
+        "crs": "EPSG:4326",
+        "transform": [
+          0.0002694945852358564,
+          0.0,
+          -61.576009296785145,
+          0.0,
+          -0.0002694945852358564,
+          -2.2510882704751074
+        ],
+        "largura": 70260,
+        "altura": 58078,
+        "bandas": 1,
+        "dtype": "uint8",
+        "nodata": null,
+        "blocos": [
+          [
+            1,
+            70260
+          ]
+        ]
+      }
+    },
+    "2001": {
+      "arquivo": "Mapas-Estudo\\municipios_coverage_2001-024.tif",
+      "sha256": "dc5574ef1080574c2ee51d6abcca77fef835f92e60ae935c858fa9820c0b6c43",
+      "bytes": 4081025270,
+      "mtime_ns": 1788381082080000000,
+      "grade": {
+        "crs": "EPSG:4326",
+        "transform": [
+          0.0002694945852358564,
+          0.0,
+          -61.576009296785145,
+          0.0,
+          -0.0002694945852358564,
+          -2.2510882704751074
+        ],
+        "largura": 70260,
+        "altura": 58078,
+        "bandas": 1,
+        "dtype": "uint8",
+        "nodata": null,
+        "blocos": [
+          [
+            1,
+            70260
+          ]
+        ]
+      }
+    },
+    "2002": {
+      "arquivo": "Mapas-Estudo\\municipios_coverage_2002_COL9_validado.tif",
+      "sha256": "299be8da04de39bafa585b6262c97ae7dd2c6d092345b8061b0b732ecf5e9ee0",
+      "bytes": 226390806,
+      "mtime_ns": 1794115439687541800,
+      "grade": {
+        "crs": "EPSG:4326",
+        "transform": [
+          0.0002694945852358564,
+          0.0,
+          -61.576009296785145,
+          0.0,
+          -0.0002694945852358564,
+          -2.2510882704751074
+        ],
+        "largura": 70260,
+        "altura": 58078,
+        "bandas": 1,
+        "dtype": "uint8",
+        "nodata": 0.0,
+        "blocos": [
+          [
+            512,
+            512
+          ]
+        ]
+      }
+    },
+    "2003": {
+      "arquivo": "Mapas-Estudo\\municipios_coverage_2003-022.tif",
+      "sha256": "25a374e473c6095b3f134f06e0bc73d1299d2a61ef3f6e33f17b035e60578678",
+      "bytes": 4081025270,
+      "mtime_ns": 1788381082140000000,
+      "grade": {
+        "crs": "EPSG:4326",
+        "transform": [
+          0.0002694945852358564,
+          0.0,
+          -61.576009296785145,
+          0.0,
+          -0.0002694945852358564,
+          -2.2510882704751074
+        ],
+        "largura": 70260,
+        "altura": 58078,
+        "bandas": 1,
+        "dtype": "uint8",
+        "nodata": null,
+        "blocos": [
+          [
+            1,
+            70260
+          ]
+        ]
+      }
+    },
+    "2004": {
+      "arquivo": "Mapas-Estudo\\municipios_coverage_2004-021.tif",
+      "sha256": "fd02ee450306314c5109d135f2147c9b11adee89fba32167b39ca8918d4030f7",
+      "bytes": 4081025270,
+      "mtime_ns": 1788381081600000000,
+      "grade": {
+        "crs": "EPSG:4326",
+        "transform": [
+          0.0002694945852358564,
+          0.0,
+          -61.576009296785145,
+          0.0,
+          -0.0002694945852358564,
+          -2.2510882704751074
+        ],
+        "largura": 70260,
+        "altura": 58078,
+        "bandas": 1,
+        "dtype": "uint8",
+        "nodata": null,
+        "blocos": [
+          [
+            1,
+            70260
+          ]
+        ]
+      }
+    },
+    "2005": {
+      "arquivo": "Mapas-Estudo\\municipios_coverage_2005-020.tif",
+      "sha256": "d43ffc072cf8df2c65fcc3fa7f8f5a7fc51d5ffadba203563b2d71031550fb8a",
+      "bytes": 4081025270,
+      "mtime_ns": 1788381082310000000,
+      "grade": {
+        "crs": "EPSG:4326",
+        "transform": [
+          0.0002694945852358564,
+          0.0,
+          -61.576009296785145,
+          0.0,
+          -0.0002694945852358564,
+          -2.2510882704751074
+        ],
+        "largura": 70260,
+        "altura": 58078,
+        "bandas": 1,
+        "dtype": "uint8",
+        "nodata": null,
+        "blocos": [
+          [
+            1,
+            70260
+          ]
+        ]
+      }
+    },
+    "2006": {
+      "arquivo": "Mapas-Estudo\\municipios_coverage_2006-019.tif",
+      "sha256": "20f246c010bd7782116fa44794efb63734a0b5db533a58520b467fcdf06ac62d",
+      "bytes": 4081025270,
+      "mtime_ns": 1788381079990000000,
+      "grade": {
+        "crs": "EPSG:4326",
+        "transform": [
+          0.0002694945852358564,
+          0.0,
+          -61.576009296785145,
+          0.0,
+          -0.0002694945852358564,
+          -2.2510882704751074
+        ],
+        "largura": 70260,
+        "altura": 58078,
+        "bandas": 1,
+        "dtype": "uint8",
+        "nodata": null,
+        "blocos": [
+          [
+            1,
+            70260
+          ]
+        ]
+      }
+    },
+    "2007": {
+      "arquivo": "Mapas-Estudo\\municipios_coverage_2007-018.tif",
+      "sha256": "f5f08b2fa3de64d57be60f92281aba4af1a0769bd83041692e89331f4ffee054",
+      "bytes": 4081025270,
+      "mtime_ns": 1788381080970000000,
+      "grade": {
+        "crs": "EPSG:4326",
+        "transform": [
+          0.0002694945852358564,
+          0.0,
+          -61.576009296785145,
+          0.0,
+          -0.0002694945852358564,
+          -2.2510882704751074
+        ],
+        "largura": 70260,
+        "altura": 58078,
+        "bandas": 1,
+        "dtype": "uint8",
+        "nodata": null,
+        "blocos": [
+          [
+            1,
+            70260
+          ]
+        ]
+      }
+    },
+    "2008": {
+      "arquivo": "Mapas-Estudo\\municipios_coverage_2008-017.tif",
+      "sha256": "31e7a11967af3426e2119b34fcef3fbdd7228d571d94b2d5b46fe0d01b57c1ee",
+      "bytes": 4081025270,
+      "mtime_ns": 1788381082530000000,
+      "grade": {
+        "crs": "EPSG:4326",
+        "transform": [
+          0.0002694945852358564,
+          0.0,
+          -61.576009296785145,
+          0.0,
+          -0.0002694945852358564,
+          -2.2510882704751074
+        ],
+        "largura": 70260,
+        "altura": 58078,
+        "bandas": 1,
+        "dtype": "uint8",
+        "nodata": null,
+        "blocos": [
+          [
+            1,
+            70260
+          ]
+        ]
+      }
+    },
+    "2009": {
+      "arquivo": "Mapas-Estudo\\municipios_coverage_2009-016.tif",
+      "sha256": "634fe9af0b244c19213ad9f1022e2a1a020f1b33f3b2f4fcdb1846f2cf5b7c02",
+      "bytes": 4081025270,
+      "mtime_ns": 1788381082320000000,
+      "grade": {
+        "crs": "EPSG:4326",
+        "transform": [
+          0.0002694945852358564,
+          0.0,
+          -61.576009296785145,
+          0.0,
+          -0.0002694945852358564,
+          -2.2510882704751074
+        ],
+        "largura": 70260,
+        "altura": 58078,
+        "bandas": 1,
+        "dtype": "uint8",
+        "nodata": null,
+        "blocos": [
+          [
+            1,
+            70260
+          ]
+        ]
+      }
+    },
+    "2010": {
+      "arquivo": "Mapas-Estudo\\municipios_coverage_2010-015.tif",
+      "sha256": "c6fdc42441c5b5aeb7d73291cfea61413ab6b03ee83018a653964c6219dd3a5c",
+      "bytes": 4081025270,
+      "mtime_ns": 1788381080500000000,
+      "grade": {
+        "crs": "EPSG:4326",
+        "transform": [
+          0.0002694945852358564,
+          0.0,
+          -61.576009296785145,
+          0.0,
+          -0.0002694945852358564,
+          -2.2510882704751074
+        ],
+        "largura": 70260,
+        "altura": 58078,
+        "bandas": 1,
+        "dtype": "uint8",
+        "nodata": null,
+        "blocos": [
+          [
+            1,
+            70260
+          ]
+        ]
+      }
+    },
+    "2011": {
+      "arquivo": "Mapas-Estudo\\municipios_coverage_2011-014.tif",
+      "sha256": "25d2e66f63b90fca79164a14742e66ca3433d366f30a933aee1ed68e742fe7d9",
+      "bytes": 4081025270,
+      "mtime_ns": 1788381079500000000,
+      "grade": {
+        "crs": "EPSG:4326",
+        "transform": [
+          0.0002694945852358564,
+          0.0,
+          -61.576009296785145,
+          0.0,
+          -0.0002694945852358564,
+          -2.2510882704751074
+        ],
+        "largura": 70260,
+        "altura": 58078,
+        "bandas": 1,
+        "dtype": "uint8",
+        "nodata": null,
+        "blocos": [
+          [
+            1,
+            70260
+          ]
+        ]
+      }
+    },
+    "2012": {
+      "arquivo": "Mapas-Estudo\\municipios_coverage_2012-013.tif",
+      "sha256": "62b1864224373bfade95b4c5463c18d2f9b76b3b6d922d022470b9db1590c03c",
+      "bytes": 4081025270,
+      "mtime_ns": 1788381082390000000,
+      "grade": {
+        "crs": "EPSG:4326",
+        "transform": [
+          0.0002694945852358564,
+          0.0,
+          -61.576009296785145,
+          0.0,
+          -0.0002694945852358564,
+          -2.2510882704751074
+        ],
+        "largura": 70260,
+        "altura": 58078,
+        "bandas": 1,
+        "dtype": "uint8",
+        "nodata": null,
+        "blocos": [
+          [
+            1,
+            70260
+          ]
+        ]
+      }
+    },
+    "2013": {
+      "arquivo": "Mapas-Estudo\\municipios_coverage_2013-012.tif",
+      "sha256": "bd4a9c24c8a0f04d4ba528449beab205f914e1610f227c2c66af51ce809b5ddb",
+      "bytes": 4081025270,
+      "mtime_ns": 1788381081700000000,
+      "grade": {
+        "crs": "EPSG:4326",
+        "transform": [
+          0.0002694945852358564,
+          0.0,
+          -61.576009296785145,
+          0.0,
+          -0.0002694945852358564,
+          -2.2510882704751074
+        ],
+        "largura": 70260,
+        "altura": 58078,
+        "bandas": 1,
+        "dtype": "uint8",
+        "nodata": null,
+        "blocos": [
+          [
+            1,
+            70260
+          ]
+        ]
+      }
+    },
+    "2014": {
+      "arquivo": "Mapas-Estudo\\municipios_coverage_2014-011.tif",
+      "sha256": "dba8a1cadbff16ea93606461e849a366a860b33105efb712aa5601a23723f165",
+      "bytes": 4081025270,
+      "mtime_ns": 1788381082410000000,
+      "grade": {
+        "crs": "EPSG:4326",
+        "transform": [
+          0.0002694945852358564,
+          0.0,
+          -61.576009296785145,
+          0.0,
+          -0.0002694945852358564,
+          -2.2510882704751074
+        ],
+        "largura": 70260,
+        "altura": 58078,
+        "bandas": 1,
+        "dtype": "uint8",
+        "nodata": null,
+        "blocos": [
+          [
+            1,
+            70260
+          ]
+        ]
+      }
+    },
+    "2015": {
+      "arquivo": "Mapas-Estudo\\municipios_coverage_2015-010.tif",
+      "sha256": "876722fbce6b84f7ac00af102120fa23234096a8223fccb704dd64b13e87e5bc",
+      "bytes": 4081025270,
+      "mtime_ns": 1788381082510000000,
+      "grade": {
+        "crs": "EPSG:4326",
+        "transform": [
+          0.0002694945852358564,
+          0.0,
+          -61.576009296785145,
+          0.0,
+          -0.0002694945852358564,
+          -2.2510882704751074
+        ],
+        "largura": 70260,
+        "altura": 58078,
+        "bandas": 1,
+        "dtype": "uint8",
+        "nodata": null,
+        "blocos": [
+          [
+            1,
+            70260
+          ]
+        ]
+      }
+    },
+    "2016": {
+      "arquivo": "Mapas-Estudo\\municipios_coverage_2016-008.tif",
+      "sha256": "a0d9c77966117c65e98d33f6d2e52a3d637a478c1fec2e74b7bf09f1f25f15ed",
+      "bytes": 4081025270,
+      "mtime_ns": 1788381080170000000,
+      "grade": {
+        "crs": "EPSG:4326",
+        "transform": [
+          0.0002694945852358564,
+          0.0,
+          -61.576009296785145,
+          0.0,
+          -0.0002694945852358564,
+          -2.2510882704751074
+        ],
+        "largura": 70260,
+        "altura": 58078,
+        "bandas": 1,
+        "dtype": "uint8",
+        "nodata": null,
+        "blocos": [
+          [
+            1,
+            70260
+          ]
+        ]
+      }
+    },
+    "2017": {
+      "arquivo": "Mapas-Estudo\\municipios_coverage_2017-009.tif",
+      "sha256": "71987a7ee709c9efcc39ba519478eccccb317c58af0af1d624cc1e468a7592e0",
+      "bytes": 4081025270,
+      "mtime_ns": 1788381082580000000,
+      "grade": {
+        "crs": "EPSG:4326",
+        "transform": [
+          0.0002694945852358564,
+          0.0,
+          -61.576009296785145,
+          0.0,
+          -0.0002694945852358564,
+          -2.2510882704751074
+        ],
+        "largura": 70260,
+        "altura": 58078,
+        "bandas": 1,
+        "dtype": "uint8",
+        "nodata": null,
+        "blocos": [
+          [
+            1,
+            70260
+          ]
+        ]
+      }
+    },
+    "2018": {
+      "arquivo": "Mapas-Estudo\\municipios_coverage_2018-007.tif",
+      "sha256": "b4a5c213fa8ab8963674fe0159dbf116451b6448737d0b1c6c7f071e20e48a07",
+      "bytes": 4081025270,
+      "mtime_ns": 1788381082040000000,
+      "grade": {
+        "crs": "EPSG:4326",
+        "transform": [
+          0.0002694945852358564,
+          0.0,
+          -61.576009296785145,
+          0.0,
+          -0.0002694945852358564,
+          -2.2510882704751074
+        ],
+        "largura": 70260,
+        "altura": 58078,
+        "bandas": 1,
+        "dtype": "uint8",
+        "nodata": null,
+        "blocos": [
+          [
+            1,
+            70260
+          ]
+        ]
+      }
+    },
+    "2019": {
+      "arquivo": "Mapas-Estudo\\municipios_coverage_2019-006.tif",
+      "sha256": "d71b618af33706f74922f7a66e672ff75d1aeef5fa86b66f09f71fe3771294fc",
+      "bytes": 4081025270,
+      "mtime_ns": 1788381082540000000,
+      "grade": {
+        "crs": "EPSG:4326",
+        "transform": [
+          0.0002694945852358564,
+          0.0,
+          -61.576009296785145,
+          0.0,
+          -0.0002694945852358564,
+          -2.2510882704751074
+        ],
+        "largura": 70260,
+        "altura": 58078,
+        "bandas": 1,
+        "dtype": "uint8",
+        "nodata": null,
+        "blocos": [
+          [
+            1,
+            70260
+          ]
+        ]
+      }
+    },
+    "2020": {
+      "arquivo": "Mapas-Estudo\\municipios_coverage_2020-005.tif",
+      "sha256": "3c34541426a092dcb53b205bb40cab5119925203e0c17edaf39e90b715fcb21d",
+      "bytes": 4081025270,
+      "mtime_ns": 1788381082070000000,
+      "grade": {
+        "crs": "EPSG:4326",
+        "transform": [
+          0.0002694945852358564,
+          0.0,
+          -61.576009296785145,
+          0.0,
+          -0.0002694945852358564,
+          -2.2510882704751074
+        ],
+        "largura": 70260,
+        "altura": 58078,
+        "bandas": 1,
+        "dtype": "uint8",
+        "nodata": null,
+        "blocos": [
+          [
+            1,
+            70260
+          ]
+        ]
+      }
+    },
+    "2021": {
+      "arquivo": "Mapas-Estudo\\municipios_coverage_2021-004.tif",
+      "sha256": "e9d6754b6cb65d73335f7e2b602a2a29fbcfcd73df68c4b9c7185f6dda636dc8",
+      "bytes": 4081025270,
+      "mtime_ns": 1788381082200000000,
+      "grade": {
+        "crs": "EPSG:4326",
+        "transform": [
+          0.0002694945852358564,
+          0.0,
+          -61.576009296785145,
+          0.0,
+          -0.0002694945852358564,
+          -2.2510882704751074
+        ],
+        "largura": 70260,
+        "altura": 58078,
+        "bandas": 1,
+        "dtype": "uint8",
+        "nodata": null,
+        "blocos": [
+          [
+            1,
+            70260
+          ]
+        ]
+      }
+    },
+    "2022": {
+      "arquivo": "Mapas-Estudo\\municipios_coverage_2022-003.tif",
+      "sha256": "21e9e24368da689cb17ffcbf06529f3acc9f32f439ad89bdb5a5dc36d32cf537",
+      "bytes": 4081025270,
+      "mtime_ns": 1788381082240000000,
+      "grade": {
+        "crs": "EPSG:4326",
+        "transform": [
+          0.0002694945852358564,
+          0.0,
+          -61.576009296785145,
+          0.0,
+          -0.0002694945852358564,
+          -2.2510882704751074
+        ],
+        "largura": 70260,
+        "altura": 58078,
+        "bandas": 1,
+        "dtype": "uint8",
+        "nodata": null,
+        "blocos": [
+          [
+            1,
+            70260
+          ]
+        ]
+      }
+    },
+    "2023": {
+      "arquivo": "Mapas-Estudo\\municipios_coverage_2023-002.tif",
+      "sha256": "e7bc134376c1fb44a5d596b096a8b6d4d32714e5fb6ae5e571682dd4d806eedc",
+      "bytes": 4081025270,
+      "mtime_ns": 1788381081550000000,
+      "grade": {
+        "crs": "EPSG:4326",
+        "transform": [
+          0.0002694945852358564,
+          0.0,
+          -61.576009296785145,
+          0.0,
+          -0.0002694945852358564,
+          -2.2510882704751074
+        ],
+        "largura": 70260,
+        "altura": 58078,
+        "bandas": 1,
+        "dtype": "uint8",
+        "nodata": null,
+        "blocos": [
+          [
+            1,
+            70260
+          ]
+        ]
+      }
+    }
+  },
+  "alias_2002": {
+    "arquivo": "Mapas-Estudo\\municipios_coverage_2002-023.tif",
+    "sha256": "299be8da04de39bafa585b6262c97ae7dd2c6d092345b8061b0b732ecf5e9ee0",
+    "identico_ao_validado": true
+  },
+  "complemento": {
+    "arquivo": "Mapas-Estudo\\mapbiomas_col9_recuperacao_3municipios_MA.tif",
+    "sha256": "b210cd6fae9f11b6ca638f3a2bebdce663a76bb21559b424d390f3c1f0d88bc5",
+    "bytes": 6809250,
+    "mtime_ns": 1794119497208956900,
+    "grade": {
+      "crs": "EPSG:4326",
+      "transform": [
+        0.0002694945852358564,
+        0.0,
+        -45.67502028411391,
+        0.0,
+        -0.0002694945852358564,
+        -3.544931774192454
+      ],
+      "largura": 2023,
+      "altura": 1429,
+      "bandas": 38,
+      "dtype": "uint8",
+      "nodata": null,
+      "blocos": [
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ],
+        [
+          256,
+          256
+        ]
+      ]
+    },
+    "descricoes": [
+      "classification_1985",
+      "classification_1986",
+      "classification_1987",
+      "classification_1988",
+      "classification_1989",
+      "classification_1990",
+      "classification_1991",
+      "classification_1992",
+      "classification_1993",
+      "classification_1994",
+      "classification_1995",
+      "classification_1996",
+      "classification_1997",
+      "classification_1998",
+      "classification_1999",
+      "classification_2000",
+      "classification_2001",
+      "classification_2003",
+      "classification_2004",
+      "classification_2005",
+      "classification_2006",
+      "classification_2007",
+      "classification_2008",
+      "classification_2009",
+      "classification_2010",
+      "classification_2011",
+      "classification_2012",
+      "classification_2013",
+      "classification_2014",
+      "classification_2015",
+      "classification_2016",
+      "classification_2017",
+      "classification_2018",
+      "classification_2019",
+      "classification_2020",
+      "classification_2021",
+      "classification_2022",
+      "classification_2023"
+    ],
+    "offset_col_linha": [
+      59003,
+      4801
+    ],
+    "municipios": [
+      2101772,
+      2108504,
+      2112274
+    ],
+    "regra": "Preencher exclusivamente zeros nos três municípios; não modificar rasters; não aplicar a 2002."
+  }
+}

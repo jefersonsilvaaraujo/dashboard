@@ -1,0 +1,11 @@
+{
+  "crs_territorio": "EPSG:4674",
+  "crs_rasters": "EPSG:4326",
+  "pyproj": "3.8.0",
+  "proj": "9.8.1",
+  "operacao_no_ambiente": "+proj=noop",
+  "geometrias_originais_verificadas": 255,
+  "wkb_identico_apos_to_crs_4326": true,
+  "metodo": "Comparação de g.geometry com g.to_crs(4326).geometry, WKB a WKB, no GeoPackage aprovado.",
+  "limite": "Equivalência numérica verificada neste acervo/ambiente, não equivalência universal de datums nem reamostragem raster."
+}

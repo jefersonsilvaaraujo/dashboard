@@ -1,0 +1,22 @@
+{
+  "tentativa": "tentativas\\ff8e88c3d2",
+  "protocolo_sha256": "ec6fe93e40a4ecb2a23dd52a41761c3d4d1f37df85d1d5c677d322a7fa69f2f0",
+  "artefatos": {
+    "tentativas\\ff8e88c3d2\\CV.parquet": "4f72f4f94b1aada0f0cd205fb8f5408041f1a49e967afe25e5e782715f557c9c",
+    "tentativas\\ff8e88c3d2\\especificacoes_modelos.json": "87fa34e276c488d162fa88b9d8c2aaa1cf47d0d28b71c01ddb2bc06e4f8fd526",
+    "tentativas\\ff8e88c3d2\\validacao_metricas.parquet": "15dcbb59e1fbaca40f3fa1d1994435da967879ad2b8e9251e436a8194ecf203d",
+    "tentativas\\ff8e88c3d2\\validacao_predicoes.parquet": "611eacd3941727a95b8a2e62331991d751826585435dd132f44a8dfa2000fd26",
+    "tentativas\\ff8e88c3d2\\xgboost\\final\\modelo.json": "b4f2024c9e6310d68b039016a405509474991fb906ef86616f357c0ad3fe1832",
+    "tentativas\\ff8e88c3d2\\xgboost\\final\\modelo_xgboost.json": "86f13148541d6fc60642df8dd957324f5c8325d885c03cc7d4d0480dc866a15e",
+    "tentativas\\ff8e88c3d2\\xgboost\\final\\preprocessamento.skops": "deabd2b99bf134b1fba45f074f5562d37b2b6ec0636866ea16800eaa80817ccb",
+    "tentativas\\ff8e88c3d2\\ridge\\final\\modelo.json": "56a99d0bb023fcc37f50b0d5d60303b1442f825cdef783ac77a17f52a0934495",
+    "tentativas\\ff8e88c3d2\\ridge\\final\\pipeline.skops": "17b167c10d564e580d50aaf95a771eb3e3dc08feffb76b63fdcea1a67f6d3f41",
+    "tentativas\\ff8e88c3d2\\random_forest\\final\\modelo.json": "2143a0e9d978bf1961fe3a4b9b7051cc43eb75c9056c15d3cc7a592ec1e03a6f",
+    "tentativas\\ff8e88c3d2\\random_forest\\final\\pipeline.skops": "719904f7d5b70d7d35f6a3ea55a576d0545a711c8c93364edd050e15965d773b",
+    "tentativas\\ff8e88c3d2\\persistencia\\final\\modelo.json": "7fdfda02a2cf51277db254c2a7b7d8202e7fae49d5e063277d1c0ac7af52de5c",
+    "tentativas\\ff8e88c3d2\\media_historica\\final\\modelo.json": "0432da535931e6530fc862b8e48c8e5dd4987b1fd80cc9713c50674e2eb21a13",
+    "tentativas\\ff8e88c3d2\\mediana_historica\\final\\modelo.json": "dbafef28aac5d93d4d4a17c3954e58165d2c25af1fb2fe9d650e6888f4d5f46c",
+    "tentativas\\ff8e88c3d2\\elastic_net\\final\\modelo.json": "100ab6cb91b325b2a52182aeb9df2f84b94d216d19aeba42b7a25043793092e1",
+    "tentativas\\ff8e88c3d2\\elastic_net\\final\\pipeline.skops": "a346b61319d0c4ad00eca9599948c4cbb5e535510b9b720a365f8fa8c9292f32"
+  }
+}

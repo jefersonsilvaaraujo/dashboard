@@ -1,0 +1,11 @@
+{
+  "pacote": "entregas_transicoes_col9\\checkpoint_modelos_regressao_col9_20261112_v4.zip",
+  "sha256": "76fa948918051696bb9eaf7661c171b283c759250c7db0bea13db6e0c788e2be",
+  "bytes": 389263117,
+  "arquivos": 2048,
+  "manifesto_sha256": "8e6ba3e41036b8d3956854a0bcf2b5de1059f2da4994e136c039762a592b6053",
+  "CRC_e_todos_hashes_internos_conferidos": true,
+  "testes_distintos": 140,
+  "teste_final_passagens": 1,
+  "dados_anteriores_preservados": true
+}

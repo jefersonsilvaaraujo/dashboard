@@ -1,0 +1,21 @@
+# Scripts executados dentro dos containers Linux precisam de quebra de linha LF
+*.sh   text eol=lf
+*.sql  text eol=lf
+Dockerfile text eol=lf
+
+# Preserve os bytes usados nos manifestos e hashes dos artefatos cientificos.
+/experimentos_regressao_col9/** -text
+/docs/** -text
+/referencias/** -text
+/mapas_col9/** -text
+/modelagem/*col9*.py -text
+/processamento/*col9*.py -text
+/testes/*col9*.py -text
+/*col9.py -text
+/contratos_series.py -text
+/pages/** -text
+/deploy/implantacao_col9.ps1 -text
+
+# Mapas vetoriais grandes e modelos serializados usam Git LFS.
+/experimentos_regressao_col9/**/mapas_*.svg filter=lfs diff=lfs merge=lfs -text
+/experimentos_regressao_col9/**/*.skops filter=lfs diff=lfs merge=lfs -text

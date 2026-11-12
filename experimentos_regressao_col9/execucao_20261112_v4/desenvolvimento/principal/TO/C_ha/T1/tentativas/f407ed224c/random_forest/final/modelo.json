@@ -1,0 +1,79 @@
+{
+  "coorte": "principal",
+  "contexto": "TO",
+  "target": "C_ha",
+  "bloco": "T1",
+  "features": [
+    "territorio_area_geodesica_ha",
+    "territorio_lon_referencia",
+    "territorio_lat_referencia",
+    "mb_vn_t_ha",
+    "mb_vn_t_pct",
+    "mb_ua_t_ha",
+    "mb_ua_t_pct",
+    "mb_pastagem_t_ha",
+    "mb_pastagem_t_pct",
+    "mb_agricultura_t_ha",
+    "mb_agricultura_t_pct",
+    "mb_formacoes_florestais_t_ha",
+    "mb_formacoes_florestais_t_pct",
+    "mb_savanica_t_ha",
+    "mb_savanica_t_pct",
+    "mb_campestre_t_ha",
+    "mb_campestre_t_pct",
+    "mb_mosaico_t_ha",
+    "mb_mosaico_t_pct",
+    "mb_classe25_t_ha",
+    "mb_classe25_t_pct",
+    "mb_classe29_t_ha",
+    "mb_classe29_t_pct",
+    "mb_classe32_t_ha",
+    "mb_classe32_t_pct",
+    "mb_classe33_t_ha",
+    "mb_classe33_t_pct",
+    "mb_area_classificada_t_ha",
+    "mb_pixels_validos_t",
+    "mb_pixels_sem_classe_valida_t",
+    "mb_cobertura_grade_t_pct",
+    "mb_razao_classificada_territorial_t_pct",
+    "mb_diferenca_classificada_territorial_t_ha"
+  ],
+  "n_treino_inicial": 5307,
+  "n_validacao": 549,
+  "UF_excluida": "TO",
+  "cortes_magnitude_treino": [
+    693.9782711732132,
+    1892.1646019903808,
+    5985.4878893154955
+  ],
+  "row_ids_treino_sha256": "1680d3086e12acd9f2c5c535388a9b2b19a6f196411db80317784ea99442b9fd",
+  "centro": 7.485288762542367,
+  "escala": 1.5339326733047065,
+  "transformacao": "log1p",
+  "avisos": [],
+  "algoritmo": "random_forest",
+  "parametros": {
+    "n_estimators": 100,
+    "max_depth": 10,
+    "min_samples_leaf": 10,
+    "max_features": 0.7
+  },
+  "config": 3,
+  "MAE_CV": 1912.0263859645424,
+  "RMSE_CV": 3869.0432736057105,
+  "n_colunas_entrada": 33,
+  "colunas_totalmente_ausentes_treino": [],
+  "n_treino_final": 5856,
+  "treino_final_ate": 2017,
+  "refit_exclui2014": true,
+  "arquivos_sha256": {
+    "pipeline.skops": "8994a88e6353bb99172db92a57fb9cd89b397f8aca755dd950ae6b612e579527"
+  },
+  "tipos_requerem_revisao_skops": {
+    "pipeline.skops": [
+      "numpy.dtype",
+      "sklearn.tree._tree.Tree"
+    ]
+  },
+  "persistencia": "Sem pickle/joblib. skops para sklearn; JSONnativoXGBoost. Não carregar tipos desconhecidos automaticamente."
+}

@@ -1,0 +1,4 @@
+modelo,erro_medio_absoluto_pp,correlacao_ranking_spearman,acerto_top_20pct
+Persistência (repete o ano atual),0.6877,0.7107,0.5808
+Média dos últimos 3 anos,0.6826,0.7344,0.5769
+Gradient boosting (regularizado),0.6751,0.7211,0.5154

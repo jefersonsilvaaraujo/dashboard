@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+from plotly.subplots import make_subplots
 from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
 import tempfile
@@ -9,8 +10,15 @@ from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from reportlab.lib.colors import HexColor
 from reportlab.lib.utils import ImageReader
-from plotly.io import write_image
+import json
+import logging
 import os
+
+import numpy as np
+
+import dados
+
+log = logging.getLogger("dashboard")
 
 # Caminhos relativos a este arquivo, para o app funcionar a partir de qualquer pasta
 base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -53,12 +61,12 @@ def indice_antropizacao(dados, por):
     return (antropica.reindex(total.index, fill_value=0) / total * 100).rename("índice").reset_index()
 
 # Carregar dados
-df = pd.read_csv(caminho("historico", "estatisticas_coverage_historico.csv"), sep=";", decimal=",")
+df = dados.carregar_cobertura()
 
 df["decada"] = (df["ano"] // 10) * 10
 
 # Legenda MapBiomas Coleção 10.1 (gerada por processamento/mapbiomas_col10.py)
-legenda_df = pd.read_csv(caminho("historico", "legenda_mapbiomas.csv"))
+legenda_df = dados.carregar_legenda()
 
 df = df.merge(legenda_df, on="classe_cobertura", how="left")
 df["nome_classe"] = df["nome_classe"].fillna("Classe " + df["classe_cobertura"].astype(str))
@@ -117,7 +125,7 @@ else:
     st.markdown(f"#### Localização do Município no Mapa (Comparativo {ANOS_MAPAS[0]} vs {ANOS_MAPAS[1]})")
     col1, col2 = st.columns(2)
 
-    df_coord = pd.read_csv(caminho("coordenadas", "municipios_coord.csv"))
+    df_coord = dados.carregar_municipios()
 
     for ano, col in zip(ANOS_MAPAS, [col1, col2]):
         png_path = caminho("municipios_shapefile", f"municipios_{ano}.png")
@@ -137,7 +145,7 @@ else:
             imagem_marcada.save(buffer, format="PNG")
             buffer.seek(0)
 
-            col.image(buffer, caption=f"Região de estudo em {ano}", use_container_width=True)
+            col.image(buffer, caption=f"Região de estudo em {ano}", width="stretch")
 
         except Exception as e:
             col.warning(f"Erro ao carregar mapa de {ano}: {e}")
@@ -148,7 +156,7 @@ else:
     for ano, col in zip(ANOS_MAPAS, [col1, col2]):
         mapa_municipio = caminho("mapas_municipios", f"{cd_mun}_{ano}.png")
         if os.path.exists(mapa_municipio):
-            col.image(mapa_municipio, caption=f"{cidade} em {ano}", use_container_width=True)
+            col.image(mapa_municipio, caption=f"{cidade} em {ano}", width="stretch")
         else:
             col.warning(f"Mapa de {ano} não encontrado. Rode processamento/mapas.py.")
 
@@ -189,7 +197,7 @@ else:
     st.caption("Mapas: MapBiomas Coleção 10 (raster 30 m). Áreas e indicadores: estatísticas da Coleção 10.1.")
 
 # Abas principais
-abas = st.tabs(["Evolução Temporal", "Distribuição Anual", "Participação Percentual", "Análise por Década", "Comparação Entre Anos", "Análises Especiais", "Análises por Estados" ])
+abas = st.tabs(["Evolução Temporal", "Distribuição Anual", "Participação Percentual", "Análise por Década", "Comparação Entre Anos", "Análises Especiais", "Análises por Estados", "Queimadas", "Desmatamento (PRODES)", "Análise Integrada"])
 
 with abas[0]:
     st.markdown("#### Gráfico de Linha")
@@ -203,7 +211,7 @@ with abas[0]:
         title="Evolução da Cobertura do Solo"
     )
     fig1.update_layout(legend_title="Classe de Cobertura", hovermode="x unified")
-    st.plotly_chart(fig1, use_container_width=True)
+    st.plotly_chart(fig1, width="stretch")
 
     st.markdown("#### Gráfico de Área Acumulada")
     fig_area = px.area(
@@ -216,7 +224,7 @@ with abas[0]:
         title="Área Acumulada por Classe ao Longo do Tempo"
     )
     fig_area.update_layout(legend_title="Classe de Cobertura")
-    st.plotly_chart(fig_area, use_container_width=True)
+    st.plotly_chart(fig_area, width="stretch")
 
     st.markdown("#### Gráfico de Dispersão por Ano")
     fig_scatter = px.scatter(
@@ -230,7 +238,7 @@ with abas[0]:
         title="Dispersão das Áreas por Classe e Ano"
     )
     fig_scatter.update_layout(legend_title="Classe de Cobertura")
-    st.plotly_chart(fig_scatter, use_container_width=True)
+    st.plotly_chart(fig_scatter, width="stretch")
 
 with abas[1]:
     ano_analise = st.selectbox("Selecione o ano para análise detalhada:", options=anos, index=len(anos)-1, key="ano_distribuicao")
@@ -244,7 +252,7 @@ with abas[1]:
         title=f"Distribuição da Cobertura em {ano_analise}"
     )
     fig2.update_layout(xaxis_title="Classe", yaxis_title="Área (ha)", showlegend=False)
-    st.plotly_chart(fig2, use_container_width=True)
+    st.plotly_chart(fig2, width="stretch")
 
 with abas[2]:
     ano_percentual = st.selectbox("Selecione o ano para o gráfico de participação percentual:", options=anos, index=len(anos)-1, key="ano_percentual")
@@ -257,7 +265,7 @@ with abas[2]:
         color_discrete_map=mapa_cores,
         title=f"Participação Percentual das Classes em {ano_percentual}"
     )
-    st.plotly_chart(fig3, use_container_width=True)
+    st.plotly_chart(fig3, width="stretch")
 
 with abas[3]:
     df_decada = df_filtrado.groupby(["decada", "nome_classe"], as_index=False)["area_ha"].sum()
@@ -271,7 +279,7 @@ with abas[3]:
         title="Distribuição da Cobertura por Década"
     )
     fig_dec.update_layout(xaxis_title="Década", yaxis_title="Área (ha)", legend_title="Classe de Cobertura")
-    st.plotly_chart(fig_dec, use_container_width=True)
+    st.plotly_chart(fig_dec, width="stretch")
 
 with abas[4]:
     st.markdown("### Comparação Entre Anos")
@@ -284,7 +292,7 @@ with abas[4]:
     df_diff = pd.DataFrame({"Ano 1": df_ano1, "Ano 2": df_ano2})
     df_diff["Variação Absoluta"] = df_diff["Ano 2"] - df_diff["Ano 1"]
     df_diff["Variação Percentual"] = ((df_diff["Ano 2"] - df_diff["Ano 1"]) / df_diff["Ano 1"]) * 100
-    st.dataframe(df_diff.fillna(0).round(2), use_container_width=True)
+    st.dataframe(df_diff.fillna(0).round(2), width="stretch")
 
     df_plot = df_diff.fillna(0).reset_index()
     df_melt = df_plot.melt(id_vars="nome_classe", value_vars=["Ano 1", "Ano 2"], var_name="Ano", value_name="Área (ha)")
@@ -297,15 +305,18 @@ with abas[4]:
         title=f"Comparação da Cobertura do Solo entre {ano_comp1} e {ano_comp2}"
     )
     fig_comp.update_layout(xaxis_title="Classe de Cobertura", yaxis_title="Área (ha)")
-    st.plotly_chart(fig_comp, use_container_width=True)
+    st.plotly_chart(fig_comp, width="stretch")
 
 # Estatísticas descritivas
 st.markdown("### Estatísticas Descritivas")
-st.dataframe(df_filtrado.describe(include="all"), use_container_width=True)
+# Convertido para texto: a tabela mistura números e nomes na mesma coluna
+estatisticas = df_filtrado.describe(include="all")
+estatisticas = estatisticas.astype(object).where(estatisticas.notna(), "").astype(str)
+st.dataframe(estatisticas, width="stretch")
 
 # Tabela interativa
 st.markdown("### Dados Filtrados")
-st.dataframe(df_filtrado.reset_index(drop=True), use_container_width=True)
+st.dataframe(df_filtrado.reset_index(drop=True), width="stretch")
 
 with abas[5]:
     st.markdown("### Análises Especiais")
@@ -336,9 +347,9 @@ with abas[5]:
 
     col1, col2 = st.columns(2)
     col1.markdown("**Maiores Ganhos**")
-    col1.dataframe(top_ganhos[[ANO_INICIAL, ANO_FINAL, "variação"]].round(2))
+    col1.dataframe(top_ganhos[[ANO_INICIAL, ANO_FINAL, "variação"]].round(2).rename(columns=str))
     col2.markdown("**Maiores Perdas**")
-    col2.dataframe(top_perdas[[ANO_INICIAL, ANO_FINAL, "variação"]].round(2))
+    col2.dataframe(top_perdas[[ANO_INICIAL, ANO_FINAL, "variação"]].round(2).rename(columns=str))
 
     # 3. Gráfico de mudança líquida
     st.markdown(f"#### Variação Líquida por Classe ({ANO_INICIAL}–{ANO_FINAL})")
@@ -347,7 +358,7 @@ with abas[5]:
                      color="variação",
                      color_continuous_scale="RdYlGn")
     fig_dif.update_layout(xaxis_title="Classe", yaxis_title="Área (ha)", showlegend=False)
-    st.plotly_chart(fig_dif, use_container_width=True)
+    st.plotly_chart(fig_dif, width="stretch")
 
     # 4. Ano de maior alteração
     st.markdown("#### Ano de Maior Alteração de Cobertura")
@@ -362,7 +373,7 @@ with abas[5]:
     df_idx = indice_antropizacao(df_filtrado, "ano")
     fig_ant = px.line(df_idx, x="ano", y="índice", title="Índice de Antropização ao Longo do Tempo",
                       labels={"índice": "% Área Antropizada"})
-    st.plotly_chart(fig_ant, use_container_width=True)
+    st.plotly_chart(fig_ant, width="stretch")
 
 with abas[6]:
     st.markdown("Análises por Estado")
@@ -376,7 +387,7 @@ with abas[6]:
     df_mun = df_estado.groupby("SIGLA_UF")["CD_MUN"].nunique().reset_index(name="Quantidade de Municípios")
     st.dataframe(df_mun)
     fig_uf1 = px.bar(df_mun, x="SIGLA_UF", y="Quantidade de Municípios", title="Quantidade de Municípios por Estado")
-    st.plotly_chart(fig_uf1, use_container_width=True)
+    st.plotly_chart(fig_uf1, width="stretch")
 
     # 2. Perda de vegetação nativa por estado
     st.markdown(f"### 2. Perda de Vegetação Nativa por Estado ({ANO_INICIAL}–{ANO_FINAL})")
@@ -388,7 +399,7 @@ with abas[6]:
     df_nat_pivot["variação"] = df_nat_pivot[ANO_FINAL] - df_nat_pivot[ANO_INICIAL]
     df_nat_agg = df_nat_pivot.groupby("SIGLA_UF")["variação"].sum().reset_index()
     fig_uf2 = px.bar(df_nat_agg, x="SIGLA_UF", y="variação", title="Perda Total de Vegetação Nativa (ha)", labels={"variação": "Perda (ha)"})
-    st.plotly_chart(fig_uf2, use_container_width=True)
+    st.plotly_chart(fig_uf2, width="stretch")
 
     # 3. Evolução da cobertura agropecuária por estado
     st.markdown(f"### 3. Evolução da Cobertura Agropecuária ({ANO_INICIAL}–{ANO_FINAL})")
@@ -400,26 +411,26 @@ with abas[6]:
     df_agro_pivot["crescimento"] = df_agro_pivot[ANO_FINAL] - df_agro_pivot[ANO_INICIAL]
     fig_uf3 = px.bar(df_agro_pivot.reset_index(), x="SIGLA_UF", y="crescimento", color="nome_classe",
                      color_discrete_map=mapa_cores, title="Crescimento da Cobertura Agropecuária por Estado")
-    st.plotly_chart(fig_uf3, use_container_width=True)
+    st.plotly_chart(fig_uf3, width="stretch")
 
     # 4. Urbanização por estado
     st.markdown("### 4. Urbanização por Estado ao Longo do Tempo")
     df_urb = df_estado[df_estado["classe_cobertura"] == 24]
     df_urb_agg = df_urb.groupby(["ano", "SIGLA_UF"])["area_ha"].sum().reset_index()
     fig_uf4 = px.line(df_urb_agg, x="ano", y="area_ha", color="SIGLA_UF", title="Evolução da Área Urbanizada por Estado")
-    st.plotly_chart(fig_uf4, use_container_width=True)
+    st.plotly_chart(fig_uf4, width="stretch")
 
     # 5. Índice médio de antropização por estado
     st.markdown("### 5. Índice Médio de Antropização por Estado")
     df_idx_reset = indice_antropizacao(df_estado, ["SIGLA_UF", "ano"])
     fig_uf5 = px.line(df_idx_reset, x="ano", y="índice", color="SIGLA_UF", title="Índice de Antropização por Estado")
-    st.plotly_chart(fig_uf5, use_container_width=True)
+    st.plotly_chart(fig_uf5, width="stretch")
 
     # 6. Diversidade de classes por estado
     st.markdown("### 6. Diversidade de Classes por Estado")
     df_div = df_estado.groupby(["SIGLA_UF", "ano"])["nome_classe"].nunique().reset_index(name="n_classes")
     fig_uf6 = px.line(df_div, x="ano", y="n_classes", color="SIGLA_UF", title="Número de Classes de Uso e Cobertura por Estado")
-    st.plotly_chart(fig_uf6, use_container_width=True)
+    st.plotly_chart(fig_uf6, width="stretch")
 
     # 7. Década de maior alteração por estado
     st.markdown("### 7. Década com Maior Alteração de Uso e Cobertura por Estado")
@@ -435,7 +446,481 @@ with abas[6]:
     df_alt_max = df_alt_diff.loc[df_alt_diff.groupby("SIGLA_UF")["alteracao"].idxmax()].reset_index(drop=True)
     df_alt_max["decada"] = df_alt_max["decada"].astype(str)
     fig_uf7 = px.bar(df_alt_max, x="SIGLA_UF", y="alteracao", color="decada", title="Década com Maior Alteração por Estado", labels={"alteracao": "Mudança Total (ha)"})
-    st.plotly_chart(fig_uf7, use_container_width=True)
+    st.plotly_chart(fig_uf7, width="stretch")
+
+with abas[7]:
+    st.markdown("### Focos de Calor")
+    MESES = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"]
+
+    focos = dados.carregar_focos_mensais()
+    municipios_ref = dados.carregar_municipios()
+    anos_focos = sorted(focos["ano"].unique())
+    periodo_focos = st.slider("Período dos focos:", min_value=int(anos_focos[0]), max_value=int(anos_focos[-1]),
+                              value=(int(anos_focos[0]), int(anos_focos[-1])), key="periodo_focos")
+    anos_periodo = list(range(periodo_focos[0], periodo_focos[1] + 1))
+    focos_periodo = focos[focos["ano"].between(*periodo_focos)]
+
+    if cidade != "Todos":
+        focos_sel = focos_periodo[focos_periodo["CD_MUN"] == cd_mun]
+        area_sel = municipios_ref.loc[municipios_ref["CD_MUN"] == cd_mun, "AREA_KM2"].sum()
+    else:
+        focos_sel = focos_periodo
+        area_sel = municipios_ref["AREA_KM2"].sum()
+
+    # Meses e anos sem foco não aparecem nos dados; completados com zero
+    focos_por_ano = focos_sel.groupby("ano")["focos"].sum().reindex(anos_periodo, fill_value=0)
+    total_focos = int(focos_por_ano.sum())
+
+    # Densidade anual (focos por 1.000 km² por ano), comparada com a média da área de estudo
+    densidade = total_focos / area_sel * 1000 / len(anos_periodo)
+    densidade_area = focos_periodo["focos"].sum() / municipios_ref["AREA_KM2"].sum() * 1000 / len(anos_periodo)
+
+    m1, m2, m3, m4 = st.columns(4)
+    m1.metric("Focos no período", f"{total_focos:,}".replace(",", "."),
+              chart_data=focos_por_ano.tolist(), chart_type="bar")
+    m2.metric("Média anual", f"{focos_por_ano.mean():,.0f}".replace(",", "."))
+    m3.metric("Ano com mais focos", str(focos_por_ano.idxmax()),
+              f"{int(focos_por_ano.max()):,} focos".replace(",", "."), delta_color="off", delta_arrow="off")
+    m4.metric("Focos por 1.000 km² por ano", f"{densidade:.1f}".replace(".", ","),
+              f"{(densidade / densidade_area - 1) * 100:+.0f}% vs. área de estudo" if cidade != "Todos" else None,
+              delta_color="inverse")
+
+    fig_q1 = px.bar(focos_por_ano.reset_index(), x="ano", y="focos",
+                    labels={"ano": "Ano", "focos": "Focos de calor"}, title="Focos de Calor por Ano",
+                    color_discrete_sequence=["#d4271e"])
+    st.plotly_chart(fig_q1, width="stretch")
+
+    # Sazonalidade: ano x mês
+    matriz = (
+        focos_sel.groupby(["ano", "mes"])["focos"].sum().unstack(fill_value=0)
+        .reindex(index=anos_periodo, columns=range(1, 13), fill_value=0)
+    )
+    matriz.columns = MESES
+    fig_q2 = px.imshow(matriz, aspect="auto", color_continuous_scale="YlOrRd",
+                       labels={"x": "Mês", "y": "Ano", "color": "Focos"}, title="Focos por Mês e Ano")
+    st.plotly_chart(fig_q2, width="stretch")
+
+    if cidade == "Todos":
+        ranking = (
+            focos_periodo.groupby(["NM_MUN", "SIGLA_UF"], as_index=False)["focos"].sum()
+            .nlargest(15, "focos").sort_values("focos")
+        )
+        ranking["municipio"] = ranking["NM_MUN"] + " (" + ranking["SIGLA_UF"] + ")"
+        fig_q3 = px.bar(ranking, x="focos", y="municipio", orientation="h",
+                        labels={"focos": "Focos de calor", "municipio": ""},
+                        title=f"Municípios com Mais Focos ({periodo_focos[0]}–{periodo_focos[1]})",
+                        color_discrete_sequence=["#d4271e"])
+        st.plotly_chart(fig_q3, width="stretch")
+
+        por_uf = focos_periodo.groupby(["ano", "SIGLA_UF"], as_index=False)["focos"].sum()
+        fig_q4 = px.line(por_uf, x="ano", y="focos", color="SIGLA_UF", markers=True,
+                         color_discrete_sequence=px.colors.qualitative.Set1,
+                         labels={"ano": "Ano", "focos": "Focos de calor", "SIGLA_UF": "UF"},
+                         title="Focos de Calor por Estado")
+        st.plotly_chart(fig_q4, width="stretch")
+    else:
+        posicao = (focos_periodo.groupby("CD_MUN")["focos"].sum()
+                   .reindex(municipios_ref["CD_MUN"], fill_value=0).rank(ascending=False, method="min"))
+        st.caption(f"{cidade} é o {int(posicao[cd_mun])}º de {len(posicao)} municípios da área de estudo "
+                   f"em número de focos no período.")
+
+    # Intensidade (FRP) e condições do tempo, onde a fonte oferece esses atributos
+    st.markdown("#### Intensidade do Fogo e Condições do Tempo")
+    def media_ponderada(coluna, peso):
+        valido = focos_sel.dropna(subset=[coluna])
+        soma = (valido[coluna] * valido[peso]).groupby(valido["ano"]).sum()
+        return (soma / valido.groupby("ano")[peso].sum()).reindex(anos_periodo)
+
+    clima = pd.DataFrame({
+        "FRP médio (MW)": media_ponderada("frp_medio", "focos_com_frp"),
+        "Risco de fogo médio (0–1)": media_ponderada("risco_fogo_medio", "focos"),
+        "Dias sem chuva (média)": media_ponderada("dias_sem_chuva_medio", "focos"),
+    }, index=anos_periodo).rename_axis("ano").reset_index()
+    c1, c2, c3 = st.columns(3)
+    for coluna, col in zip(clima.columns[1:], [c1, c2, c3]):
+        fig_clima = px.line(clima, x="ano", y=coluna, markers=True, title=coluna, labels={"ano": "Ano", coluna: ""})
+        fig_clima.update_layout(height=300, margin=dict(t=40, b=10))
+        col.plotly_chart(fig_clima, width="stretch")
+    st.caption("O FRP (potência radiativa do fogo) está disponível em 2003–2007 e 2015–2024; risco de fogo e "
+               "dias sem chuva, em 2015–2024. Anos sem o atributo aparecem como lacuna.")
+
+    # Mapa dos focos de um ano sobre os contornos dos municípios
+    st.markdown("#### Localização dos Focos")
+    ano_mapa = st.selectbox("Ano do mapa:", options=anos_periodo[::-1], key="ano_mapa_focos")
+    pontos = dados.carregar_focos_pontos(ano_mapa, cd_mun)
+    contornos, area_estudo = dados.carregar_contornos()
+
+    def colecao_geojson(geometrias):
+        return {"type": "FeatureCollection",
+                "features": [{"type": "Feature", "properties": {}, "geometry": json.loads(g)} for g in geometrias]}
+
+    def camada_mapa(geometrias, tipo, cor, largura=1.0, abaixo_dos_pontos=True):
+        camada = {"sourcetype": "geojson", "source": colecao_geojson(geometrias), "type": tipo, "color": cor,
+                  "below": "traces" if abaixo_dos_pontos else ""}
+        if tipo == "line":
+            camada["line"] = {"width": largura}
+        return camada
+
+    def enquadramento(lon_min, lat_min, lon_max, lat_max):
+        """Centro e zoom para mostrar o retângulo; cada nível de zoom dobra a escala (360° no nível 0)."""
+        extensao = max(lat_max - lat_min, lon_max - lon_min, 0.05)
+        centro = {"lat": (lat_min + lat_max) / 2, "lon": (lon_min + lon_max) / 2}
+        return centro, min(max(np.log2(360 / (extensao * 1.1)), 3), 11)
+
+    if pontos is None:
+        st.caption("O mapa dos focos está disponível quando o painel usa o banco PostgreSQL (docker compose).")
+    else:
+        pontos["mes"] = pd.to_datetime(pontos["data"]).dt.month.map(dict(enumerate(MESES, start=1)))
+        if cidade != "Todos":
+            municipio = contornos.set_index("CD_MUN").loc[cd_mun]
+            # Município com folga de 15%; vizinhos são os que aparecem nesse enquadramento
+            folga = 0.15 * max(municipio.lat_max - municipio.lat_min, municipio.lon_max - municipio.lon_min)
+            janela = (municipio.lon_min - folga, municipio.lat_min - folga,
+                      municipio.lon_max + folga, municipio.lat_max + folga)
+            vizinhos = contornos[(contornos["CD_MUN"] != cd_mun)
+                                 & (contornos["lon_max"] >= janela[0]) & (contornos["lon_min"] <= janela[2])
+                                 & (contornos["lat_max"] >= janela[1]) & (contornos["lat_min"] <= janela[3])]
+            centro, zoom = enquadramento(*janela)
+            fig_q5 = px.scatter_map(pontos, lat="latitude", lon="longitude", color="mes",
+                                    category_orders={"mes": MESES}, hover_data={"data": True, "frp": True},
+                                    labels={"mes": "Mês", "frp": "FRP (MW)", "data": "Data"},
+                                    center=centro, zoom=zoom, height=600, map_style="carto-positron",
+                                    title=f"Focos de Calor em {ano_mapa} ({len(pontos)} focos)")
+            fig_q5.update_traces(marker={"size": 7, "opacity": 0.85})
+            fig_q5.update_layout(map_layers=[
+                camada_mapa(vizinhos["geojson"], "line", "#7a7a7a", largura=1),
+                camada_mapa([municipio.geojson], "fill", "rgba(177, 0, 38, 0.07)"),
+                camada_mapa([municipio.geojson], "line", "#b10026", largura=3),
+            ])
+            legenda_mapa = (f"Contorno vermelho: {cidade}; linhas cinza: municípios vizinhos da área de estudo. "
+                            "Cada ponto é um foco, colorido pelo mês de detecção.")
+        else:
+            centro, zoom = enquadramento(area_estudo.lon_min, area_estudo.lat_min,
+                                         area_estudo.lon_max, area_estudo.lat_max)
+            visualizacao = st.radio("Visualização:", ["Focos por município", "Pontos dos focos"],
+                                    horizontal=True, key="visualizacao_mapa_focos")
+            if visualizacao == "Focos por município":
+                # Cada município colorido pela densidade de focos no ano
+                por_municipio = (
+                    focos[focos["ano"] == ano_mapa].groupby("CD_MUN")["focos"].sum()
+                    .reindex(contornos["CD_MUN"], fill_value=0).rename("focos").reset_index()
+                    .merge(municipios_ref[["CD_MUN", "AREA_KM2"]], on="CD_MUN")
+                    .merge(contornos[["CD_MUN", "nome", "sigla_uf"]], on="CD_MUN")
+                )
+                por_municipio["densidade"] = por_municipio["focos"] / por_municipio["AREA_KM2"] * 1000
+                por_municipio["municipio"] = por_municipio["nome"] + " (" + por_municipio["sigla_uf"] + ")"
+                poligonos = {"type": "FeatureCollection", "features": [
+                    {"type": "Feature", "id": int(cd), "properties": {}, "geometry": json.loads(g)}
+                    for cd, g in zip(contornos["CD_MUN"], contornos["geojson_regional"])
+                ]}
+                # Escala até o percentil 95: poucos municípios pequenos e muito queimados não
+                # podem achatar as cores dos demais (os acima ficam na cor máxima)
+                limite_cor = max(por_municipio["densidade"].quantile(0.95), 1)
+                fig_q5 = px.choropleth_map(
+                    por_municipio, geojson=poligonos, locations="CD_MUN", color="densidade",
+                    color_continuous_scale="YlOrRd", range_color=(0, limite_cor), hover_name="municipio",
+                    hover_data={"CD_MUN": False, "focos": True, "densidade": ":.1f"},
+                    labels={"densidade": "Focos por 1.000 km²", "focos": "Focos"},
+                    center=centro, zoom=zoom, height=600, map_style="carto-positron", opacity=0.8,
+                    title=f"Focos de Calor por Município em {ano_mapa} ({len(pontos):,} focos)".replace(",", "."),
+                )
+                fig_q5.update_traces(marker_line_color="rgba(60, 60, 60, 0.6)", marker_line_width=0.5)
+                legenda_mapa = ("Cada município está colorido pela densidade de focos no ano (focos por 1.000 km²); "
+                                "passe o mouse para ver o nome e a contagem. Contorno preto: limite da área de estudo.")
+            else:
+                fig_q5 = px.scatter_map(pontos, lat="latitude", lon="longitude", color="mes",
+                                        category_orders={"mes": MESES}, hover_data={"data": True, "frp": True},
+                                        labels={"mes": "Mês", "frp": "FRP (MW)", "data": "Data"},
+                                        center=centro, zoom=zoom, height=600, map_style="carto-positron",
+                                        title=f"Focos de Calor em {ano_mapa} ({len(pontos):,} focos)".replace(",", "."))
+                fig_q5.update_traces(marker={"size": 4, "opacity": 0.7})
+                fig_q5.update_layout(map_layers=[
+                    camada_mapa(contornos["geojson_regional"], "line", "rgba(60, 60, 60, 0.45)", largura=0.6),
+                ])
+                legenda_mapa = ("Cada ponto é um foco, colorido pelo mês de detecção; linhas cinza: municípios. "
+                                "Contorno preto: limite da área de estudo.")
+            # Limite da área de estudo por cima de tudo
+            fig_q5.update_layout(map_layers=list(fig_q5.layout.map.layers) + [
+                camada_mapa([area_estudo.geojson], "line", "#222222", largura=2.5, abaixo_dos_pontos=False),
+            ])
+        st.plotly_chart(fig_q5, width="stretch")
+        st.caption(legenda_mapa if not pontos.empty else f"Nenhum foco em {ano_mapa}. {legenda_mapa}")
+
+    st.caption("Fonte: INPE/BDQueimadas, focos do satélite de referência (AQUA, passagem da tarde). "
+               "Datas em UTC; município definido pelo polígono que contém o foco.")
+
+with abas[8]:
+    st.markdown("### Desmatamento (PRODES)")
+    CORES_BIOMA = {"Amazônia": "#1f8d49", "Cerrado": "#d6bc74", "Pantanal": "#519799"}
+    ANO_LIMITE_BASE = 2007  # d2000..d2007 acumulam o desmatamento anterior à série anual
+
+    prodes = dados.carregar_prodes()
+    if cidade != "Todos":
+        prodes_sel = prodes[prodes["CD_MUN"] == cd_mun]
+    else:
+        prodes_sel = prodes
+
+    area_total = prodes_sel["area_ha"].sum()
+    desmatado = prodes_sel[prodes_sel["tipo"].isin(["desmatamento", "residuo"])]
+    anual = prodes_sel[(prodes_sel["tipo"] == "desmatamento") & (prodes_sel["ano"] > ANO_LIMITE_BASE)]
+    # Anos da série completa (não só do município, que pode não ter desmatamento em algum ano)
+    anos_prodes = sorted(int(a) for a in prodes.loc[(prodes["tipo"] == "desmatamento")
+                                                    & (prodes["ano"] > ANO_LIMITE_BASE), "ano"].unique())
+    periodo_prodes = st.slider("Período (anos PRODES):", min_value=anos_prodes[0], max_value=anos_prodes[-1],
+                               value=(anos_prodes[0], anos_prodes[-1]), key="periodo_prodes")
+    anos_sel = list(range(periodo_prodes[0], periodo_prodes[1] + 1))
+
+    def hectares_fmt(valor):
+        """Formato compacto para caber no indicador (ex.: 743,5 mil ha)."""
+        if valor >= 1e6:
+            texto = f"{valor / 1e6:.1f} milhões ha"
+        elif valor >= 1e4:
+            texto = f"{valor / 1e3:.1f} mil ha"
+        else:
+            texto = f"{valor:,.0f} ha".replace(",", "_")
+        return texto.replace(".", ",").replace("_", ".")
+
+    def hectares_exato(valor):
+        return f"{valor:,.0f} ha".replace(",", ".")
+
+    def percentual(valor):
+        return f"{valor / area_total * 100:.1f}% da área".replace(".", ",") if area_total > 0 else None
+
+    desm_periodo = anual[anual["ano"].between(*periodo_prodes)]
+    por_ano = desm_periodo.groupby("ano")["area_ha"].sum().reindex(anos_sel, fill_value=0)
+    nativa = prodes_sel.loc[prodes_sel["tipo"] == "vegetacao_nativa", "area_ha"].sum()
+
+    m1, m2 = st.columns(2)
+    m3, m4 = st.columns(2)
+    m1.metric("Desmatamento acumulado", hectares_fmt(desmatado["area_ha"].sum()), percentual(desmatado["area_ha"].sum()),
+              delta_color="off", delta_arrow="off", help=hectares_exato(desmatado["area_ha"].sum()))
+    m2.metric("Vegetação nativa remanescente", hectares_fmt(nativa), percentual(nativa),
+              delta_color="off", delta_arrow="off", help=hectares_exato(nativa))
+    m3.metric(f"Desmatamento {periodo_prodes[0]}–{periodo_prodes[1]}", hectares_fmt(por_ano.sum()),
+              chart_data=por_ano.tolist(), chart_type="bar", help=hectares_exato(por_ano.sum()))
+    m4.metric("Ano com maior desmatamento", str(int(por_ano.idxmax())) if por_ano.sum() > 0 else "–",
+              hectares_fmt(por_ano.max()), delta_color="off", delta_arrow="off",
+              help="Até 2012, nos anos pares, a vegetação não florestal soma dois anos de desmatamento.")
+
+    if cidade != "Todos":
+        biomas_mun = prodes_sel.groupby("bioma")["area_ha"].sum() / area_total * 100
+        st.caption("Área do município por bioma: " + ", ".join(
+            f"{nome} {valor:.1f}%".replace(".", ",") for nome, valor in biomas_mun.sort_values(ascending=False).items()))
+
+    # Série anual por bioma, com os resíduos à parte
+    serie = desm_periodo.groupby(["ano", "bioma"], as_index=False)["area_ha"].sum()
+    residuos = prodes_sel[(prodes_sel["tipo"] == "residuo") & prodes_sel["ano"].between(*periodo_prodes)]
+    residuos = residuos.groupby("ano", as_index=False)["area_ha"].sum().assign(bioma="Resíduo (detectado no ano)")
+    fig_p1 = px.bar(pd.concat([serie, residuos]), x="ano", y="area_ha", color="bioma",
+                    color_discrete_map={**CORES_BIOMA, "Resíduo (detectado no ano)": "#9c9c9c"},
+                    labels={"ano": "Ano PRODES", "area_ha": "Desmatamento (ha)", "bioma": ""},
+                    title="Desmatamento Anual por Bioma (PRODES)")
+    if periodo_prodes[0] <= 2012:
+        fig_p1.add_vrect(x0=periodo_prodes[0] - 0.5, x1=min(2012, periodo_prodes[1]) + 0.5,
+                         fillcolor="gray", opacity=0.12, line_width=0,
+                         annotation_text="parte da área mapeada a cada 2 anos", annotation_position="top left")
+    st.plotly_chart(fig_p1, width="stretch")
+    st.caption("Ano PRODES AAAA = agosto de AAAA−1 a julho de AAAA. Até 2012 a vegetação não florestal "
+               "(Cerrado, Pantanal e áreas não florestais da Amazônia) era mapeada a cada dois anos, "
+               "concentrando dois anos nos anos pares; de 2013 em diante a série é anual em toda a área. "
+               "Resíduos são desmatamentos antigos identificados somente no ano indicado.")
+
+    # Composição da área
+    composicao = pd.DataFrame({
+        "categoria": [f"Desmatado até {ANO_LIMITE_BASE}", f"Desmatado {ANO_LIMITE_BASE + 1}–{int(prodes['ano'].max())}",
+                      "Resíduos", "Vegetação nativa", "Hidrografia"],
+        "area_ha": [
+            prodes_sel.loc[(prodes_sel["tipo"] == "desmatamento") & (prodes_sel["ano"] <= ANO_LIMITE_BASE), "area_ha"].sum(),
+            prodes_sel.loc[(prodes_sel["tipo"] == "desmatamento") & (prodes_sel["ano"] > ANO_LIMITE_BASE), "area_ha"].sum(),
+            prodes_sel.loc[prodes_sel["tipo"] == "residuo", "area_ha"].sum(),
+            nativa,
+            prodes_sel.loc[prodes_sel["tipo"] == "hidrografia", "area_ha"].sum(),
+        ],
+    })
+    fig_p2 = px.pie(composicao, names="categoria", values="area_ha", hole=0.45,
+                    color="categoria", title="Composição da Área segundo o PRODES",
+                    color_discrete_sequence=["#8c510a", "#d8b365", "#9c9c9c", "#1f8d49", "#2532e4"])
+    fig_p2.update_traces(sort=False)
+
+    col_a, col_b = st.columns(2)
+    col_a.plotly_chart(fig_p2, width="stretch")
+
+    if cidade == "Todos":
+        por_bioma = desm_periodo.groupby("bioma")["area_ha"].sum().sort_values(ascending=False)
+        col_b.markdown(f"**Desmatamento por bioma ({periodo_prodes[0]}–{periodo_prodes[1]})**")
+        col_b.dataframe(
+            pd.DataFrame({"Desmatamento (ha)": por_bioma.round(0).map(hectares_exato),
+                          "Participação": (por_bioma / por_bioma.sum() * 100).map(lambda v: f"{v:.1f}%".replace(".", ","))}),
+            width="stretch",
+        )
+
+        ranking_prodes = (
+            desm_periodo.groupby(["NM_MUN", "SIGLA_UF"], as_index=False)["area_ha"].sum()
+            .nlargest(15, "area_ha").sort_values("area_ha")
+        )
+        ranking_prodes["municipio"] = ranking_prodes["NM_MUN"] + " (" + ranking_prodes["SIGLA_UF"] + ")"
+        fig_p3 = px.bar(ranking_prodes, x="area_ha", y="municipio", orientation="h",
+                        labels={"area_ha": "Desmatamento (ha)", "municipio": ""},
+                        title=f"Municípios com Mais Desmatamento ({periodo_prodes[0]}–{periodo_prodes[1]})",
+                        color_discrete_sequence=["#8c510a"])
+        st.plotly_chart(fig_p3, width="stretch")
+    else:
+        todos_desm = prodes[(prodes["tipo"] == "desmatamento") & prodes["ano"].between(*periodo_prodes)]
+        posicao_prodes = todos_desm.groupby("CD_MUN")["area_ha"].sum().rank(ascending=False, method="min")
+        if cd_mun in posicao_prodes.index:
+            col_b.metric("Posição no ranking de desmatamento do período",
+                         f"{int(posicao_prodes[cd_mun])}º de {prodes['CD_MUN'].nunique()}")
+
+    # PRODES x MapBiomas: desmatamento bruto x redução líquida da vegetação nativa
+    st.markdown("#### PRODES x MapBiomas")
+    cobertura_sel = df if cidade == "Todos" else df[df["CD_MUN"] == cd_mun]
+    nativa_mb = cobertura_sel[cobertura_sel["nome_classe"].isin(classes_nativas)].groupby("ano")["area_ha"].sum()
+    reducao_mb = (nativa_mb.shift(1) - nativa_mb).rename("MapBiomas: redução líquida da vegetação nativa")
+    comparacao = pd.concat([
+        por_ano.rename("PRODES: desmatamento (bruto)"),
+        reducao_mb.reindex(anos_sel),
+    ], axis=1).rename_axis("ano").reset_index().melt(id_vars="ano", var_name="fonte", value_name="area_ha")
+    fig_p4 = px.line(comparacao, x="ano", y="area_ha", color="fonte", markers=True,
+                     color_discrete_sequence=["#8c510a", "#1f8d49"],
+                     labels={"ano": "Ano", "area_ha": "Área (ha)", "fonte": ""},
+                     title="Desmatamento PRODES x Redução de Vegetação Nativa MapBiomas")
+    st.plotly_chart(fig_p4, width="stretch")
+    st.caption("O PRODES mede a supressão bruta da vegetação nativa (uma área desmatada permanece desmatada). "
+               "No MapBiomas a variação é líquida: a regeneração compensa parte das perdas. Os anos também "
+               "diferem: o ano PRODES vai de agosto a julho; o mapa MapBiomas representa o ano civil.")
+    st.caption("Fonte: INPE/PRODES Brasil 2025, raster de ~10 m; biomas IBGE 1:250.000 (2019). "
+               "Áreas calculadas por município e bioma.")
+
+with abas[9]:
+    st.markdown("### Análise Integrada")
+    st.caption("Município x ano PRODES (agosto de AAAA−1 a julho de AAAA). Os indicadores MapBiomas de cada ano "
+               "vêm do mapa do ano civil anterior, que retrata a situação no início do ano PRODES.")
+
+    painel = dados.carregar_painel()
+    anos_painel = sorted(int(a) for a in painel["ano"].unique())
+    c_periodo, c_bioma = st.columns([2, 1])
+    periodo_painel = c_periodo.slider("Período (anos PRODES):", min_value=anos_painel[0], max_value=anos_painel[-1],
+                                      value=(2013, anos_painel[-1]), key="periodo_painel",
+                                      help="A partir de 2013 o PRODES é anual em toda a área.")
+    biomas_painel = ["Todos os biomas"] + sorted(painel["bioma_predominante"].dropna().unique())
+    bioma_painel = c_bioma.selectbox("Bioma predominante:", biomas_painel, key="bioma_painel",
+                                     disabled=cidade != "Todos")
+
+    base = painel[painel["ano"].between(*periodo_painel)].copy()
+    if cidade == "Todos" and bioma_painel != "Todos os biomas":
+        base = base[base["bioma_predominante"] == bioma_painel]
+    # Indicadores relativos à área, comparáveis entre municípios de tamanhos diferentes
+    area_ha = base["area_km2"] * 100
+    base["Vegetação natural (% da área)"] = 100 * base["mb_vegetacao_natural_ha"] / area_ha
+    base["Pastagem (% da área)"] = 100 * base["mb_pastagem_ha"] / area_ha
+    base["Soja e lavouras (% da área)"] = 100 * (base["mb_soja_ha"] + base["mb_lavouras_ha"]) / area_ha
+    base["Índice de antropização (%)"] = base["mb_indice_antropizacao"]
+    base["Focos por 1.000 km²"] = base["fq_densidade_focos"]
+    base["Taxa de desmatamento (%)"] = base["pd_taxa_desmatamento"]
+    base["Vizinhos: focos por 1.000 km²"] = base["vz_densidade_focos"]
+    base["Vizinhos: taxa de desmatamento (%)"] = base["vz_taxa_desmatamento"]
+    base["Taxa de desmatamento no ano seguinte (%)"] = base["alvo_taxa_desmatamento_t1"]
+
+    selecao = base[base["cd_mun"] == cd_mun] if cidade != "Todos" else base
+
+    # 1. Série integrada
+    serie_int = selecao.groupby("ano").agg(
+        antropica=("mb_antropica_ha", "sum"), area=("area_km2", "sum"),
+        focos=("fq_focos", "sum"), desmatamento=("pd_desmatamento_ha", "sum"),
+    ).reset_index()
+    serie_int["antropizacao"] = 100 * serie_int["antropica"] / (serie_int["area"] * 100)
+    fig_i1 = make_subplots(rows=3, cols=1, shared_xaxes=True, vertical_spacing=0.06,
+                           subplot_titles=("Índice de antropização (%) — MapBiomas",
+                                           "Focos de calor no ano PRODES",
+                                           "Desmatamento (ha) — PRODES"))
+    fig_i1.add_scatter(x=serie_int["ano"], y=serie_int["antropizacao"], mode="lines+markers",
+                       line_color="#8c510a", name="Antropização", row=1, col=1)
+    fig_i1.add_bar(x=serie_int["ano"], y=serie_int["focos"], marker_color="#d4271e", name="Focos", row=2, col=1)
+    fig_i1.add_bar(x=serie_int["ano"], y=serie_int["desmatamento"], marker_color="#8c510a", name="Desmatamento", row=3, col=1)
+    fig_i1.update_layout(height=650, showlegend=False, title="Série Integrada")
+    st.plotly_chart(fig_i1, width="stretch")
+
+    # 2. Defasagem entre fogo e desmatamento
+    st.markdown("#### Fogo antecede o desmatamento?")
+    defasagens = []
+    painel_ordenado = painel.sort_values(["cd_mun", "ano"])
+    for k in range(-2, 3):
+        # Taxa de desmatamento k anos depois do ano dos focos (k negativo = antes)
+        deslocada = painel_ordenado.groupby("cd_mun")["pd_taxa_desmatamento"].shift(-k)
+        pares = painel_ordenado.assign(desm_k=deslocada)
+        pares = pares[pares["cd_mun"].isin(selecao["cd_mun"]) & pares["ano"].between(*periodo_painel)]
+        pares = pares.dropna(subset=["fq_densidade_focos", "desm_k"])
+        if len(pares) > 3:
+            # DataFrame.corr calcula Spearman sem depender do scipy
+            correlacao = pares[["fq_densidade_focos", "desm_k"]].corr(method="spearman").iloc[0, 1]
+            defasagens.append({"k": k, "correlacao": correlacao, "pares": len(pares)})
+    defasagens = pd.DataFrame(defasagens)
+    if not defasagens.empty:
+        defasagens["quando"] = defasagens["k"].map(
+            {-2: "2 anos antes", -1: "1 ano antes", 0: "mesmo ano", 1: "1 ano depois", 2: "2 anos depois"})
+        fig_i2 = px.bar(defasagens, x="quando", y="correlacao", text_auto=".2f",
+                        hover_data={"pares": True, "k": False},
+                        labels={"quando": "Desmatamento em relação ao ano dos focos", "correlacao": "Correlação de Spearman"},
+                        title="Correlação entre Densidade de Focos e Taxa de Desmatamento por Defasagem",
+                        color_discrete_sequence=["#d4271e"])
+        fig_i2.update_yaxes(range=[min(0, defasagens["correlacao"].min() - 0.05), 1])
+        st.plotly_chart(fig_i2, width="stretch")
+        st.caption("Correlação de postos (Spearman) entre os focos por 1.000 km² de um ano e a taxa de desmatamento "
+                   "PRODES k anos antes ou depois, calculada sobre os pares município x ano da seleção. "
+                   "Correlação não é causalidade: fogo e desmatamento também respondem a fatores comuns (clima, "
+                   "fronteira agrícola)." + (" Para um único município há poucos anos; interprete com cautela."
+                                             if cidade != "Todos" else ""))
+
+    # 3. Correlações entre variáveis
+    VARIAVEIS_CORR = ["Vegetação natural (% da área)", "Pastagem (% da área)", "Soja e lavouras (% da área)",
+                      "Índice de antropização (%)", "Focos por 1.000 km²", "Taxa de desmatamento (%)",
+                      "Vizinhos: focos por 1.000 km²", "Vizinhos: taxa de desmatamento (%)",
+                      "Taxa de desmatamento no ano seguinte (%)"]
+    if cidade == "Todos":
+        st.markdown("#### Correlações entre as Variáveis")
+        matriz_corr = base[VARIAVEIS_CORR].corr(method="spearman")
+        fig_i3 = px.imshow(matriz_corr, text_auto=".2f", color_continuous_scale="RdBu_r", zmin=-1, zmax=1,
+                           aspect="auto", title=f"Correlação de Spearman ({len(base)} pares município x ano)")
+        fig_i3.update_layout(height=600)
+        st.plotly_chart(fig_i3, width="stretch")
+
+    # 4. Municípios: focos x desmatamento no período
+    st.markdown("#### Municípios: Focos x Desmatamento no Período")
+    por_mun = base.groupby(["cd_mun", "nm_mun", "sigla_uf", "bioma_predominante", "area_km2"], as_index=False).agg(
+        focos=("Focos por 1.000 km²", "mean"), taxa=("Taxa de desmatamento (%)", "mean"))
+    por_mun["municipio"] = por_mun["nm_mun"] + " (" + por_mun["sigla_uf"] + ")"
+    fig_i4 = px.scatter(por_mun, x="focos", y="taxa", color="bioma_predominante", size="area_km2", size_max=30,
+                        hover_name="municipio", color_discrete_map=CORES_BIOMA,
+                        labels={"focos": "Focos por 1.000 km² (média anual)", "taxa": "Taxa de desmatamento (% ao ano, média)",
+                                "bioma_predominante": "Bioma predominante", "area_km2": "Área (km²)"},
+                        title=f"Focos x Desmatamento por Município ({periodo_painel[0]}–{periodo_painel[1]})")
+    if cidade != "Todos":
+        destaque = por_mun[por_mun["cd_mun"] == cd_mun]
+        fig_i4.add_scatter(x=destaque["focos"], y=destaque["taxa"], mode="markers+text", text=destaque["municipio"],
+                           textposition="top center", marker={"size": 18, "color": "rgba(0,0,0,0)",
+                                                              "line": {"width": 3, "color": "#111111"}},
+                           showlegend=False, hoverinfo="skip")
+    st.plotly_chart(fig_i4, width="stretch")
+    if cidade != "Todos":
+        st.caption("O círculo preto destaca o município selecionado entre os demais da área de estudo.")
+
+    # 5. Base para modelagem
+    st.markdown("#### Base para Modelagem")
+    st.caption(f"{len(painel):,} linhas ({painel['cd_mun'].nunique()} municípios x {len(anos_painel)} anos PRODES) e "
+               f"{painel.shape[1]} variáveis. Os alvos (`alvo_*`) são do ano seguinte; os demais valores usam apenas "
+               "informação disponível até o fim do ano da linha.".replace(",", "."))
+    d1, d2 = st.columns(2)
+    d1.download_button("Baixar painel (.csv)", painel.to_csv(index=False, sep=";", decimal=","),
+                       file_name="painel_municipio_ano.csv", mime="text/csv")
+    parquet = BytesIO()
+    painel.to_parquet(parquet, index=False)
+    d2.download_button("Baixar painel (.parquet)", parquet.getvalue(),
+                       file_name="painel_municipio_ano.parquet", mime="application/octet-stream")
+    dicionario = caminho("docs", "dicionario_painel.md")
+    if os.path.exists(dicionario):
+        with st.expander("Dicionário de variáveis"):
+            with open(dicionario, encoding="utf-8") as arquivo:
+                st.markdown(arquivo.read())
 
 st.sidebar.markdown("---")
 
@@ -469,7 +954,10 @@ if cidade != "Todos":
                     "4. Análise de Participação Percentual",
                     "5. Análise por Décadas",
                     "6. Comparação Entre Anos",
-                    "7. Análises Especiais"
+                    "7. Análises Especiais",
+                    "8. Focos de Calor",
+                    "9. Desmatamento (PRODES)",
+                    "10. Análise Integrada"
                 ]
                 for item in sumario_items:
                     c.drawString(70, y_pos, item)
@@ -492,7 +980,7 @@ if cidade != "Todos":
                 c.showPage()
                 
                 # Página 2 e 3 - Mapas da região com pin
-                df_coord = pd.read_csv(caminho("coordenadas", "municipios_coord.csv"))
+                df_coord = dados.carregar_municipios()
 
                 for ano in ANOS_MAPAS:
                     try:
@@ -532,7 +1020,8 @@ if cidade != "Todos":
                             
                     except Exception as e:
                         c.setFont("Helvetica", 10)
-                        c.drawString(50, height-100, f"Erro ao processar mapa de {ano}: {str(e)}")
+                        log.exception("Falha ao inserir o mapa de %s no PDF", ano)
+                        c.drawString(50, height-100, f"Mapa de {ano} indisponível neste relatório.")
 
                     c.showPage()
 
@@ -592,7 +1081,8 @@ if cidade != "Todos":
                             
                     except Exception as e:
                         c.setFont("Helvetica", 10)
-                        c.drawString(50, height-100, f"Erro ao gerar gráfico: {str(e)}")
+                        log.exception("Falha ao gerar o gráfico '%s' no PDF", titulo)
+                        c.drawString(50, height-100, "Gráfico indisponível neste relatório.")
                     
                     c.showPage()
                 
@@ -617,6 +1107,21 @@ if cidade != "Todos":
                 
                 if 'fig_comp' in locals():
                     adicionar_grafico_pdf(fig_comp, f"Comparação da Cobertura entre {ano_comp1} e {ano_comp2}", c, width, height)
+
+                if 'fig_q1' in locals():
+                    adicionar_grafico_pdf(fig_q1, f"Focos de Calor por Ano ({periodo_focos[0]}–{periodo_focos[1]})", c, width, height)
+
+                if 'fig_q2' in locals():
+                    adicionar_grafico_pdf(fig_q2, "Focos de Calor por Mês e Ano", c, width, height)
+
+                if 'fig_p1' in locals():
+                    adicionar_grafico_pdf(fig_p1, f"Desmatamento Anual (PRODES, {periodo_prodes[0]}–{periodo_prodes[1]})", c, width, height)
+
+                if 'fig_p4' in locals():
+                    adicionar_grafico_pdf(fig_p4, "Desmatamento PRODES x Redução de Vegetação Nativa MapBiomas", c, width, height)
+
+                if 'fig_i1' in locals():
+                    adicionar_grafico_pdf(fig_i1, f"Série Integrada ({periodo_painel[0]}–{periodo_painel[1]})", c, width, height)
                 
                 # Página final com estatísticas
                 c.setFont("Helvetica-Bold", 14)

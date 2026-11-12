@@ -1,0 +1,81 @@
+{
+  "count": 5,
+  "page": 1,
+  "totalPages": 1,
+  "nextPage": 0,
+  "previousPage": 0,
+  "showingFrom": 1,
+  "showingTo": 5,
+  "items": [
+    {
+      "id": 41296,
+      "tipo": "Notícia",
+      "titulo": "PAM 2023: Safra bate recorde, mas valor da produção cai",
+      "introducao": "Safra cresce 19,6% e bate recorde em 2023, mas valor da produção cai 2,3% - Foto: Jaelson Lucas/AEN Após seis anos de altas, o valor de produção das principais culturas agrícolas do país caiu 2,3% em 2023 frente a 2022 e alcançou R$ 814,5 bilhões. A...",
+      "data_publicacao": "12/09/2024 10:00:00",
+      "produto_id": 9117,
+      "produtos": "9117|Culturas temporárias e permanentes #PAM1|producao-agricola-municipal-culturas-temporarias-e-permanentes|2046",
+      "editorias": "economicas",
+      "imagens": "{\"image_intro\":\"images\\/agenciadenoticias\\/estatisticas_economicas\\/2024_09\\/PAM_THUMB_Jaelson-Lucas-AEN.jpg\",\"float_intro\":\"\",\"image_intro_alt\":\"\",\"image_intro_caption\":\"\",\"image_fulltext\":\"images\\/agenciadenoticias\\/estatisticas_economicas\\/2024_09\\/PAM_HOME_Jaelson-Lucas-AEN.jpg\",\"float_fulltext\":\"\",\"image_fulltext_alt\":\"\",\"image_fulltext_caption\":\"\"}",
+      "produtos_relacionados": "9117",
+      "destaque": true,
+      "link": "http://agenciadenoticias.ibge.gov.br/agencia-noticias/2012-agencia-de-noticias/noticias/41296-pam-2023-safra-bate-recorde-mas-valor-da-producao-cai.html"
+    },
+    {
+      "id": 41293,
+      "tipo": "Release",
+      "titulo": "Em julho, vendas no varejo crescem 0,6%",
+      "introducao": "Em julho de 2024, o volume de vendas do comércio varejista cresceu 0,6% na comparação com junho, na série com ajuste sazonal, após queda de 0,9% no mês anterior. A média móvel trimestral depois de registrar 0,3% no trimestre encerrado em junho de 2024,...",
+      "data_publicacao": "12/09/2024 09:00:00",
+      "produto_id": 9227,
+      "produtos": "9227|Pesquisa Mensal de Comércio|pesquisa-mensal-de-comercio|2075",
+      "editorias": "economicas",
+      "imagens": "{\"image_intro\":\"images\\/agenciadenoticias\\/releases\\/PMC_release.png\",\"float_intro\":\"\",\"image_intro_alt\":\"\",\"image_intro_caption\":\"\",\"image_fulltext\":\"images\\/agenciadenoticias\\/releases\\/PMC_release.png\",\"float_fulltext\":\"\",\"image_fulltext_alt\":\"\",\"image_fulltext_caption\":\"\"}",
+      "produtos_relacionados": "9227",
+      "destaque": true,
+      "link": "http://agenciadenoticias.ibge.gov.br/agencia-sala-de-imprensa/2013-agencia-de-noticias/releases/41293-em-julho-vendas-no-varejo-crescem-0-6.html"
+    },
+    {
+      "id": 41297,
+      "tipo": "Release",
+      "titulo": "Em agosto, IBGE prevê safra de 296,4 milhões de toneladas para 2024",
+      "introducao": "A estimativa de agosto de 2024 para a produção de cereais, leguminosas e oleaginosas é de 296,4 milhões de toneladas, 6,0% menor que a obtida em 2023 (315,4 milhões de toneladas), redução de 19,0 milhões de toneladas. Em relação ao mês anterior, houve...",
+      "data_publicacao": "12/09/2024 09:00:00",
+      "produto_id": 9201,
+      "produtos": "9201|Levantamento Sistemático da Produção Agrícola|levantamento-sistematico-da-producao-agricola|2071",
+      "editorias": "economicas",
+      "imagens": "{\"image_intro\":\"images\\/agenciadenoticias\\/releases\\/LSPA_Release.png\",\"float_intro\":\"\",\"image_intro_alt\":\"\",\"image_intro_caption\":\"\",\"image_fulltext\":\"images\\/agenciadenoticias\\/releases\\/LSPA_Release.png\",\"float_fulltext\":\"\",\"image_fulltext_alt\":\"\",\"image_fulltext_caption\":\"\"}",
+      "produtos_relacionados": "9201",
+      "destaque": true,
+      "link": "http://agenciadenoticias.ibge.gov.br/agencia-sala-de-imprensa/2013-agencia-de-noticias/releases/41297-em-agosto-ibge-preve-safra-de-296-4-milhoes-de-toneladas-para-2024.html"
+    },
+    {
+      "id": 41294,
+      "tipo": "Notícia",
+      "titulo": "Vendas no varejo crescem 0,6% em julho, após caírem no mês anterior",
+      "introducao": "Trajetória recente de hiper e supermercados espelham resultado do varejo nacional - Foto: Helena Pontes / Angência IBGE Notícias As vendas no comércio varejista no Brasil voltaram a crescer no mês de julho, após queda em junho. O aumento foi de 0,6%,...",
+      "data_publicacao": "12/09/2024 09:00:00",
+      "produto_id": 9227,
+      "produtos": "9227|Pesquisa Mensal de Comércio|pesquisa-mensal-de-comercio|2075",
+      "editorias": "economicas",
+      "imagens": "{\"image_intro\":\"images\\/agenciadenoticias\\/estatisticas_economicas\\/2024_09\\/PMC_THUMB_Helena-Pontes.jpg\",\"float_intro\":\"\",\"image_intro_alt\":\"\",\"image_intro_caption\":\"\",\"image_fulltext\":\"images\\/agenciadenoticias\\/estatisticas_economicas\\/2024_09\\/PMC_HOME_Helena-Pontes.jpg\",\"float_fulltext\":\"\",\"image_fulltext_alt\":\"\",\"image_fulltext_caption\":\"\"}",
+      "produtos_relacionados": "9227",
+      "destaque": true,
+      "link": "http://agenciadenoticias.ibge.gov.br/agencia-noticias/2012-agencia-de-noticias/noticias/41294-vendas-no-varejo-crescem-0-6-em-julho-apos-cairem-no-mes-anterior.html"
+    },
+    {
+      "id": 41299,
+      "tipo": "Notícia",
+      "titulo": "Estimativa de agosto aponta queda de 6,0% na safra 2024",
+      "introducao": "O algodão foi a única lavoura a alcançar recorde de produção - Foto: UEM/PR O Levantamento Sistemático da Produção Agrícola (LSPA), divulgado hoje (12) pelo IBGE, mostra que a safra nacional de cereais, leguminosas e oleaginosas deve registrar uma queda...",
+      "data_publicacao": "12/09/2024 09:00:00",
+      "produto_id": 9201,
+      "produtos": "9201|Levantamento Sistemático da Produção Agrícola|levantamento-sistematico-da-producao-agricola|2071",
+      "editorias": "economicas",
+      "imagens": "{\"image_intro\":\"images\\/agenciadenoticias\\/estatisticas_economicas\\/2024_09\\/LSPA_THUMB_UEM-PR.jpg\",\"float_intro\":\"\",\"image_intro_alt\":\"\",\"image_intro_caption\":\"\",\"image_fulltext\":\"images\\/agenciadenoticias\\/estatisticas_economicas\\/2024_09\\/LSPA_HOME_UEM-PR.jpg\",\"float_fulltext\":\"\",\"image_fulltext_alt\":\"\",\"image_fulltext_caption\":\"\"}",
+      "produtos_relacionados": "9201",
+      "destaque": true,
+      "link": "http://agenciadenoticias.ibge.gov.br/agencia-noticias/2012-agencia-de-noticias/noticias/41299-estimativa-de-agosto-aponta-queda-de-6-0-na-safra-2024.html"
+    }
+  ]
+}

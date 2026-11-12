@@ -1,0 +1,31 @@
+# Auditoria pré-treino
+
+{
+  "status": "APTO_PARA_EXPERIMENTO_RETROSPECTIVO_COM_RISCOS_DECLARADOS",
+  "chaves": 9690,
+  "municipios": 255,
+  "atributos_candidatos": 53,
+  "duplicatas": 0,
+  "desfechos_proibidos_em_X": 0,
+  "fenomeno_direto_posterior_a_t": 0,
+  "dependencia_produtor": "Não eliminada por teste de colunas/janelas.50 atributos Col9 sujeitos a informação retrospectiva futura potencial.",
+  "T4": {
+    "status": "admitido_somente_como_proxy_de_registros_na_coorte2003",
+    "linhas": 5100,
+    "NA_anuais": 52,
+    "calendario": "UTC conforme fonte; não garante completude instrumental nem ausência de fogo; sem zero imputado"
+  },
+  "preservacao_preparacao_arquivos": 90,
+  "rasters39_tamanho_mtime_conferem": true,
+  "matriz_preparacao_sha256": "9641b6d6d29ff25eccc9bc522267f447f802b5cca8778a96594886ce81fae775",
+  "reconstrucao_R_confere": true,
+  "diferenca_max_leitores_CSV": {
+    "C_ha": 3.637978807091713e-12,
+    "D_ha": 4.656612873077393e-10,
+    "R_pct": 8.881784197001252e-16
+  },
+  "tolerancia_conferencia_CSV_absoluta": 1e-08,
+  "nota_numerica": "Diferenças de representação de poucosULP entre leitores CSV. Valores Parquet preservados sem correção; não é incoerência temática/de chave."
+}
+
+Não há vazamento direto identificado nas janelas/colunas. Isso não prova independência temporal do produto: filtros retrospectivos podem carregar informação posterior. Fontes, banco, dashboard eDOCX não foram alterados.

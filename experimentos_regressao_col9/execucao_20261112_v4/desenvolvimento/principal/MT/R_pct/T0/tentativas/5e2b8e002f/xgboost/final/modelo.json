@@ -1,0 +1,52 @@
+{
+  "coorte": "principal",
+  "contexto": "MT",
+  "target": "R_pct",
+  "bloco": "T0",
+  "features": [
+    "territorio_area_geodesica_ha",
+    "territorio_lon_referencia",
+    "territorio_lat_referencia"
+  ],
+  "n_treino_inicial": 5423,
+  "n_validacao": 561,
+  "UF_excluida": "MT",
+  "cortes_magnitude_treino": [
+    1.2972654145761515,
+    2.6345618556069343,
+    4.6563316552950855
+  ],
+  "row_ids_treino_sha256": "1dead9323aa4072066ab45b18d32353ca7bbe62fb3ed744c8468c1231add4c8b",
+  "centro": 3.4901751253963087,
+  "escala": 3.3186625007653068,
+  "transformacao": "identidade",
+  "avisos": [],
+  "algoritmo": "xgboost",
+  "parametros": {
+    "n_estimators": 160,
+    "max_depth": 2,
+    "learning_rate": 0.05,
+    "min_child_weight": 10,
+    "reg_lambda": 5.0,
+    "subsample": 0.9,
+    "colsample_bytree": 0.9
+  },
+  "config": 0,
+  "MAE_CV": 1.5742108493428322,
+  "RMSE_CV": 2.1998674917545005,
+  "n_colunas_entrada": 3,
+  "colunas_totalmente_ausentes_treino": [],
+  "n_treino_final": 5984,
+  "treino_final_ate": 2017,
+  "refit_exclui2014": true,
+  "arquivos_sha256": {
+    "preprocessamento.skops": "73d6867b34f8dc7926c4a55f668883e9cdf7d40c62e5ce961b4893adc0fd8fa9",
+    "modelo_xgboost.json": "e73fdb398906afb3051ea2d1da27c74893130879776f405d895ad91d2e87a20e"
+  },
+  "tipos_requerem_revisao_skops": {
+    "preprocessamento.skops": [
+      "numpy.dtype"
+    ]
+  },
+  "persistencia": "Sem pickle/joblib. skops para sklearn; JSONnativoXGBoost. Não carregar tipos desconhecidos automaticamente."
+}

@@ -1,0 +1,25 @@
+{
+  "count": 1,
+  "page": 1,
+  "totalPages": 1,
+  "nextPage": 0,
+  "previousPage": 0,
+  "showingFrom": 1,
+  "showingTo": 1,
+  "items": [
+    {
+      "id": 45548,
+      "tipo": "Notícia",
+      "titulo": "Municípios dependentes da indústria extrativa freiam desconcentração econômica em 2023",
+      "introducao": "Recuo no preço do petróleo faz municípios extrativistas perderem participação no PIB - Foto: Agência Petrobras O recuo no preço do petróleo e minério de ferro reduziu a participação no Produto Interno Bruto (PIB) de municípios mais dependentes da...",
+      "data_publicacao": "19/12/2025 10:00:00",
+      "produto_id": 9088,
+      "produtos": "9088|Produto Interno Bruto dos Municípios|produto-interno-bruto-dos-municipios|2036",
+      "editorias": "economicas",
+      "imagens": "{\"image_intro\":\"images\\/agenciadenoticias\\/estatisticas_economicas\\/2025_12\\/PIBMunicipios-THUMB-AgPetrobras.jpg\",\"float_intro\":\"\",\"image_intro_alt\":\"\",\"image_intro_caption\":\"\",\"image_fulltext\":\"images\\/agenciadenoticias\\/estatisticas_economicas\\/2025_12\\/PIBMunicipios-HOME-AgPetrobras.jpg\",\"float_fulltext\":\"\",\"image_fulltext_alt\":\"\",\"image_fulltext_caption\":\"\"}",
+      "produtos_relacionados": "9088",
+      "destaque": true,
+      "link": "http://agenciadenoticias.ibge.gov.br/agencia-noticias/2012-agencia-de-noticias/noticias/45548-municipios-dependentes-da-industria-extrativa-freiam-desconcentracao-economica-em-2023.html"
+    }
+  ]
+}

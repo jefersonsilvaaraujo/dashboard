@@ -1,0 +1,17 @@
+{
+  "origem": "Encaminhamento do pesquisador após análise dos relatórios de validação científica Col9",
+  "entrega_computacional": "aprovada_provisoriamente",
+  "validacao_tematica": "nao_concluida",
+  "limiares_A_B_C": "nenhum_homologado",
+  "experimento_principal": "predicao_retrospectiva_com_validacao_temporal_e_espacial",
+  "nao_descrever_como": "simulacao_operacional_historica_com_disponibilidade_comprovada",
+  "horizonte_principal": "t_mais_1",
+  "municipios": 255,
+  "periodo_transicoes": [1985, 2023],
+  "ano_2024": "reservado_para_utilizacao_metodologica_separada_ainda_nao_definida",
+  "treinamento_definitivo": "nao_autorizado",
+  "desfecho_binario_homologado": "nao_autorizado",
+  "preservar": ["rasters", "matrizes", "PostgreSQL", "dashboard", "CSVs", "checkpoints_anteriores"],
+  "piloto_120_pontos": "proposta_preparada_nao_confundir_com_aprovacao_da_amostra_ou_acuracia",
+  "persistencia_t2_t3": "opcoes_conceituais_sem_incorporacao_ao_desfecho"
+}

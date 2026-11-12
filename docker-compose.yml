@@ -1,0 +1,84 @@
+# Painel MapBiomas: banco PostGIS, app Streamlit e processamento (ETL).
+#
+#   docker compose up -d --build          # sobe banco e app
+#   docker compose run --rm etl           # aplica migrações e carrega os dados no banco
+#
+# Configuração em .env (copie de .env.example). As portas só aceitam conexões
+# da própria máquina (127.0.0.1); na VPS o acesso público passa pelo Apache.
+name: dashboard-mestrado
+
+x-banco-admin: &banco-admin
+  PGHOST: db
+  PGPORT: "5432"
+  PGDATABASE: ${POSTGRES_DB:-dashboard}
+  PGUSER: ${POSTGRES_USER:-dashboard_admin}
+  PGPASSWORD: ${POSTGRES_PASSWORD:?defina POSTGRES_PASSWORD no .env}
+
+services:
+  db:
+    image: postgis/postgis:17-3.5
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-dashboard}
+      POSTGRES_USER: ${POSTGRES_USER:-dashboard_admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?defina POSTGRES_PASSWORD no .env}
+      APP_DB_USER: ${APP_DB_USER:-dashboard_app}
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD:?defina APP_DB_PASSWORD no .env}
+    volumes:
+      - dados_postgres:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    ports:
+      - "127.0.0.1:${DB_PORTA:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  app:
+    build: .
+    restart: unless-stopped
+    environment:
+      # Usuário somente leitura, criado em db/init
+      PGHOST: db
+      PGPORT: "5432"
+      PGDATABASE: ${POSTGRES_DB:-dashboard}
+      PGUSER: ${APP_DB_USER:-dashboard_app}
+      PGPASSWORD: ${APP_DB_PASSWORD:?defina APP_DB_PASSWORD no .env}
+      STREAMLIT_SERVER_BASE_URL_PATH: ${APP_BASE_URL_PATH:-}
+    ports:
+      - "127.0.0.1:${APP_PORTA:-8501}:8501"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - >-
+          import os, urllib.request;
+          b = os.environ.get('STREAMLIT_SERVER_BASE_URL_PATH', '').strip('/');
+          urllib.request.urlopen('http://localhost:8501/' + (b + '/' if b else '') + '_stcore/health', timeout=5)
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  etl:
+    build:
+      context: .
+      dockerfile: processamento/Dockerfile
+    profiles: ["etl"]  # não sobe com "up"; roda sob demanda com "docker compose run --rm etl"
+    environment:
+      <<: *banco-admin
+      MESTRADO_DADOS: /dados
+    volumes:
+      - .:/projeto
+      - ${MESTRADO_DADOS_HOST:-..}:/dados:ro
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  dados_postgres:

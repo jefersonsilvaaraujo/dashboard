@@ -1,0 +1,5 @@
+{
+  "motivo": "Condicao de leitura de dtype corrigida explicitamente; grades e dados nao mudam",
+  "ajustes_cientificos": 0,
+  "teste_aberto": false
+}

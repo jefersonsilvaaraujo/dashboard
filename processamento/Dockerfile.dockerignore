@@ -1,0 +1,3 @@
+# A imagem do ETL só precisa da lista de dependências; o código é montado pelo docker-compose
+*
+!processamento/requirements.txt

@@ -1,0 +1,400 @@
+{
+  "rasters": [
+    {
+      "ano": 1985,
+      "flags": [
+        [
+          "all_valid"
+        ]
+      ],
+      "nodata": null,
+      "auxiliares": []
+    },
+    {
+      "ano": 1986,
+      "flags": [
+        [
+          "all_valid"
+        ]
+      ],
+      "nodata": null,
+      "auxiliares": []
+    },
+    {
+      "ano": 1987,
+      "flags": [
+        [
+          "all_valid"
+        ]
+      ],
+      "nodata": null,
+      "auxiliares": []
+    },
+    {
+      "ano": 1988,
+      "flags": [
+        [
+          "all_valid"
+        ]
+      ],
+      "nodata": null,
+      "auxiliares": []
+    },
+    {
+      "ano": 1989,
+      "flags": [
+        [
+          "all_valid"
+        ]
+      ],
+      "nodata": null,
+      "auxiliares": []
+    },
+    {
+      "ano": 1990,
+      "flags": [
+        [
+          "all_valid"
+        ]
+      ],
+      "nodata": null,
+      "auxiliares": []
+    },
+    {
+      "ano": 1991,
+      "flags": [
+        [
+          "all_valid"
+        ]
+      ],
+      "nodata": null,
+      "auxiliares": []
+    },
+    {
+      "ano": 1992,
+      "flags": [
+        [
+          "all_valid"
+        ]
+      ],
+      "nodata": null,
+      "auxiliares": []
+    },
+    {
+      "ano": 1993,
+      "flags": [
+        [
+          "all_valid"
+        ]
+      ],
+      "nodata": null,
+      "auxiliares": []
+    },
+    {
+      "ano": 1994,
+      "flags": [
+        [
+          "all_valid"
+        ]
+      ],
+      "nodata": null,
+      "auxiliares": []
+    },
+    {
+      "ano": 1995,
+      "flags": [
+        [
+          "all_valid"
+        ]
+      ],
+      "nodata": null,
+      "auxiliares": []
+    },
+    {
+      "ano": 1996,
+      "flags": [
+        [
+          "all_valid"
+        ]
+      ],
+      "nodata": null,
+      "auxiliares": []
+    },
+    {
+      "ano": 1997,
+      "flags": [
+        [
+          "all_valid"
+        ]
+      ],
+      "nodata": null,
+      "auxiliares": []
+    },
+    {
+      "ano": 1998,
+      "flags": [
+        [
+          "all_valid"
+        ]
+      ],
+      "nodata": null,
+      "auxiliares": []
+    },
+    {
+      "ano": 1999,
+      "flags": [
+        [
+          "all_valid"
+        ]
+      ],
+      "nodata": null,
+      "auxiliares": []
+    },
+    {
+      "ano": 2000,
+      "flags": [
+        [
+          "all_valid"
+        ]
+      ],
+      "nodata": null,
+      "auxiliares": []
+    },
+    {
+      "ano": 2001,
+      "flags": [
+        [
+          "all_valid"
+        ]
+      ],
+      "nodata": null,
+      "auxiliares": []
+    },
+    {
+      "ano": 2002,
+      "flags": [
+        [
+          "nodata"
+        ]
+      ],
+      "nodata": 0.0,
+      "auxiliares": []
+    },
+    {
+      "ano": 2003,
+      "flags": [
+        [
+          "all_valid"
+        ]
+      ],
+      "nodata": null,
+      "auxiliares": []
+    },
+    {
+      "ano": 2004,
+      "flags": [
+        [
+          "all_valid"
+        ]
+      ],
+      "nodata": null,
+      "auxiliares": []
+    },
+    {
+      "ano": 2005,
+      "flags": [
+        [
+          "all_valid"
+        ]
+      ],
+      "nodata": null,
+      "auxiliares": [
+        {
+          "arquivo": "Mapas-Estudo\\municipios_coverage_2005-020.tif.aux.xml",
+          "sha256": "814696e1299022307c3aa49f13c5cfee119697612ae0702e40646d8011ebef19"
+        }
+      ]
+    },
+    {
+      "ano": 2006,
+      "flags": [
+        [
+          "all_valid"
+        ]
+      ],
+      "nodata": null,
+      "auxiliares": []
+    },
+    {
+      "ano": 2007,
+      "flags": [
+        [
+          "all_valid"
+        ]
+      ],
+      "nodata": null,
+      "auxiliares": []
+    },
+    {
+      "ano": 2008,
+      "flags": [
+        [
+          "all_valid"
+        ]
+      ],
+      "nodata": null,
+      "auxiliares": []
+    },
+    {
+      "ano": 2009,
+      "flags": [
+        [
+          "all_valid"
+        ]
+      ],
+      "nodata": null,
+      "auxiliares": []
+    },
+    {
+      "ano": 2010,
+      "flags": [
+        [
+          "all_valid"
+        ]
+      ],
+      "nodata": null,
+      "auxiliares": []
+    },
+    {
+      "ano": 2011,
+      "flags": [
+        [
+          "all_valid"
+        ]
+      ],
+      "nodata": null,
+      "auxiliares": []
+    },
+    {
+      "ano": 2012,
+      "flags": [
+        [
+          "all_valid"
+        ]
+      ],
+      "nodata": null,
+      "auxiliares": []
+    },
+    {
+      "ano": 2013,
+      "flags": [
+        [
+          "all_valid"
+        ]
+      ],
+      "nodata": null,
+      "auxiliares": []
+    },
+    {
+      "ano": 2014,
+      "flags": [
+        [
+          "all_valid"
+        ]
+      ],
+      "nodata": null,
+      "auxiliares": []
+    },
+    {
+      "ano": 2015,
+      "flags": [
+        [
+          "all_valid"
+        ]
+      ],
+      "nodata": null,
+      "auxiliares": []
+    },
+    {
+      "ano": 2016,
+      "flags": [
+        [
+          "all_valid"
+        ]
+      ],
+      "nodata": null,
+      "auxiliares": []
+    },
+    {
+      "ano": 2017,
+      "flags": [
+        [
+          "all_valid"
+        ]
+      ],
+      "nodata": null,
+      "auxiliares": []
+    },
+    {
+      "ano": 2018,
+      "flags": [
+        [
+          "all_valid"
+        ]
+      ],
+      "nodata": null,
+      "auxiliares": []
+    },
+    {
+      "ano": 2019,
+      "flags": [
+        [
+          "all_valid"
+        ]
+      ],
+      "nodata": null,
+      "auxiliares": []
+    },
+    {
+      "ano": 2020,
+      "flags": [
+        [
+          "all_valid"
+        ]
+      ],
+      "nodata": null,
+      "auxiliares": []
+    },
+    {
+      "ano": 2021,
+      "flags": [
+        [
+          "all_valid"
+        ]
+      ],
+      "nodata": null,
+      "auxiliares": []
+    },
+    {
+      "ano": 2022,
+      "flags": [
+        [
+          "all_valid"
+        ]
+      ],
+      "nodata": null,
+      "auxiliares": []
+    },
+    {
+      "ano": 2023,
+      "flags": [
+        [
+          "all_valid"
+        ]
+      ],
+      "nodata": null,
+      "auxiliares": []
+    }
+  ],
+  "mascaras_internas_ou_alpha_exigindo_tratamento_extra": []
+}

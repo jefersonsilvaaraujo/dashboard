@@ -1,0 +1,47 @@
+{
+  "criado_UTC": "2026-11-12T14:34:29.657917+00:00",
+  "antes_teste": true,
+  "bins_calibracao": {
+    "R_pct": {
+      "limites_quartis_predicao_validacao": [
+        1.2762379464916052,
+        2.209827929807359,
+        3.1871079345142928
+      ],
+      "modelo": {
+        "coorte": "principal",
+        "contexto": "temporal",
+        "target": "R_pct",
+        "categoria": "supervisionado",
+        "bloco": "T3",
+        "algoritmo": "xgboost",
+        "MAE_validacao": 0.6601829705707187,
+        "RMSE_validacao": 1.013297826407017
+      }
+    },
+    "C_ha": {
+      "limites_quartis_predicao_validacao": [
+        527.2280731167308,
+        1226.9366628401697,
+        2825.2085904350984
+      ],
+      "modelo": {
+        "coorte": "principal",
+        "contexto": "temporal",
+        "target": "C_ha",
+        "categoria": "supervisionado",
+        "bloco": "T3",
+        "algoritmo": "random_forest",
+        "MAE_validacao": 538.7928495432959,
+        "RMSE_validacao": 1151.6439857919818
+      }
+    }
+  },
+  "permutacao": "Cinco repetições; trajetórias municipais de2015–2017 permutadas dentrodaUF. Sem reajustar modelo ou selecionar atributos; média/DPnãoéIC.",
+  "politica_figuras": "Mostrar todas as predições finitas semclipping; faixas visuais abrangem observados/previstos; mapas de média2019–2022 em unidadesoriginais.",
+  "sem_uso_yteste": true,
+  "arquivos_sha256": {
+    "IMPORTANCIAS_REPETICOES_VALIDACAO.parquet": "899bd9f3726a28ee3722b350976635692b49d6b5bef7c56901b5830d22db34d6",
+    "IMPORTANCIAS_VALIDACAO.csv": "0e0c2444a1eeb694515a1f331ac19038d12c32e9bfa2f621540ff7693aa55a1a"
+  }
+}

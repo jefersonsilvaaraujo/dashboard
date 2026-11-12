@@ -1,0 +1,269 @@
+cd_mun,nm_mun,sigla_uf,bioma_predominante,taxa_prevista_pct,posicao
+2101939,Bernardo do Mearim,MA,Cerrado,3.6072,1
+2106359,Marajá do Sena,MA,Cerrado,3.2221,2
+2105609,Joselândia,MA,Cerrado,3.0700,3
+2105963,Lagoa Grande do Maranhão,MA,Cerrado,2.8126,4
+2108207,Pedreiras,MA,Cerrado,2.7894,5
+2110302,Santo Antônio dos Lopes,MA,Cerrado,2.7562,6
+2108801,Pirapemas,MA,Cerrado,2.6444,7
+2106631,Matões do Norte,MA,Cerrado,2.5574,8
+2108454,Peritoró,MA,Cerrado,2.4596,9
+2100436,Alto Alegre do Maranhão,MA,Cerrado,2.4445,10
+2106003,Lima Campos,MA,Cerrado,2.4387,11
+1703800,Buriti do Tocantins,TO,Amazônia,2.4133,12
+1700301,Aguiarnópolis,TO,Cerrado,2.3548,13
+2103604,Coroatá,MA,Cerrado,2.3435,14
+2111409,São Luís Gonzaga do Maranhão,MA,Cerrado,2.2515,15
+2106755,Miranda do Norte,MA,Cerrado,2.2225,16
+2112605,Urbano Santos,MA,Cerrado,2.1920,17
+2110401,São Benedito do Rio Preto,MA,Cerrado,2.1638,18
+1721307,Tupiratins,TO,Cerrado,2.1619,19
+2111250,São José dos Basílios,MA,Cerrado,2.1414,20
+1503044,Floresta do Araguaia,PA,Amazônia,2.1041,21
+1718881,Santa Maria do Tocantins,TO,Cerrado,2.0730,22
+1506583,Santa Maria das Barreiras,PA,Amazônia,2.0600,23
+2111631,São Raimundo do Doca Bezerra,MA,Cerrado,2.0475,24
+1703305,Bom Jesus do Tocantins,TO,Cerrado,2.0341,25
+2108900,Poção de Pedras,MA,Cerrado,2.0003,26
+1702208,Araguatins,TO,Cerrado,1.9929,27
+2112233,Trizidela do Vale,MA,Cerrado,1.9851,28
+2112704,Vargem Grande,MA,Cerrado,1.9447,29
+1502707,Conceição do Araguaia,PA,Amazônia,1.9312,30
+1711803,Juarina,TO,Cerrado,1.9243,31
+2105401,Itapecuru Mirim,MA,Cerrado,1.9221,32
+2103208,Chapadinha,MA,Cerrado,1.9002,33
+1713205,Miracema do Tocantins,TO,Cerrado,1.8793,34
+2109551,Ribamar Fiquene,MA,Cerrado,1.8705,35
+2102325,Buriticupu,MA,Amazônia,1.8403,36
+2102036,Bom Jesus das Selvas,MA,Amazônia,1.8212,37
+1703826,Cachoeirinha,TO,Cerrado,1.8015,38
+2100956,Arame,MA,Amazônia,1.7990,39
+1720002,Santa Terezinha do Tocantins,TO,Cerrado,1.7786,40
+2111805,Sítio Novo,MA,Cerrado,1.7601,41
+1718402,Presidente Kennedy,TO,Cerrado,1.7466,42
+1720200,São Miguel do Tocantins,TO,Cerrado,1.7342,43
+1708304,Goianorte,TO,Cerrado,1.7087,44
+1722081,Wanderlândia,TO,Cerrado,1.7070,45
+1715705,Palmeirante,TO,Cerrado,1.7020,46
+2100055,Açailândia,MA,Amazônia,1.6904,47
+2107209,Nina Rodrigues,MA,Cerrado,1.6371,48
+1706506,Darcinópolis,TO,Cerrado,1.6325,49
+1709302,Guaraí,TO,Cerrado,1.5803,50
+2101608,Barra do Corda,MA,Cerrado,1.5760,51
+1710904,Itapiratins,TO,Cerrado,1.5445,52
+1505551,Pau D'Arco,PA,Amazônia,1.5387,53
+1700251,Abreulândia,TO,Cerrado,1.5290,54
+2111763,Senador La Rocque,MA,Amazônia,1.4895,55
+1506708,Santana do Araguaia,PA,Amazônia,1.4893,56
+1706001,Couto Magalhães,TO,Cerrado,1.4508,57
+1506138,Redenção,PA,Amazônia,1.4317,58
+2111532,São Pedro da Água Branca,MA,Amazônia,1.4132,59
+2104552,Governador Edison Lobão,MA,Cerrado,1.4084,60
+2102358,Buritirana,MA,Cerrado,1.4022,61
+2104800,Grajaú,MA,Cerrado,1.3845,62
+1713809,Palmeiras do Tocantins,TO,Cerrado,1.3770,63
+1710706,Itaguatins,TO,Cerrado,1.3737,64
+1718808,Sampaio,TO,Amazônia,1.3634,65
+1718709,Rio dos Bois,TO,Cerrado,1.3567,66
+2102705,Cantanhede,MA,Cerrado,1.3545,67
+2103257,Cidelândia,MA,Amazônia,1.3497,68
+2111508,São Mateus do Maranhão,MA,Cerrado,1.3160,69
+1708254,Tabocão,TO,Cerrado,1.2717,70
+2108108,Paulo Ramos,MA,Amazônia,1.2539,71
+5108907,Nova Maringá,MT,Amazônia,1.2153,72
+1713304,Miranorte,TO,Cerrado,1.2145,73
+1703008,Babaçulândia,TO,Cerrado,1.2102,74
+2102150,Brejo de Areia,MA,Amazônia,1.2059,75
+1707702,Filadélfia,TO,Cerrado,1.1955,76
+1716505,Pedro Afonso,TO,Cerrado,1.1848,77
+2101004,Arari,MA,Amazônia,1.1803,78
+1714880,Nova Olinda,TO,Cerrado,1.1766,79
+1720101,São Bento do Tocantins,TO,Cerrado,1.1611,80
+1707207,Dois Irmãos do Tocantins,TO,Cerrado,1.1600,81
+1701903,Araguacema,TO,Cerrado,1.1532,82
+5108857,Nova Marilândia,MT,Amazônia,1.1190,83
+2105302,Imperatriz,MA,Cerrado,1.1181,84
+1702554,Augustinópolis,TO,Amazônia,1.0925,85
+1720309,São Sebastião do Tocantins,TO,Amazônia,1.0728,86
+5106802,Porto dos Gaúchos,MT,Amazônia,1.0608,87
+1703602,Brasilândia do Tocantins,TO,Cerrado,1.0549,88
+2105351,Itaipava do Grajaú,MA,Cerrado,1.0471,89
+1716703,Colméia,TO,Amazônia,1.0429,90
+1705508,Colinas do Tocantins,TO,Cerrado,1.0196,91
+1707108,Divinópolis do Tocantins,TO,Cerrado,0.9995,92
+1703891,Carrasco Bonito,TO,Amazônia,0.9987,93
+1718303,Praia Norte,TO,Cerrado,0.9915,94
+2106508,Matinha,MA,Amazônia,0.9735,95
+2111672,São Roberto,MA,Cerrado,0.9497,96
+1701002,Ananás,TO,Amazônia,0.9440,97
+1717206,Piraquê,TO,Amazônia,0.9384,98
+5103361,Conquista D'Oeste,MT,Amazônia,0.9299,99
+2112902,Vitória do Mearim,MA,Amazônia,0.9230,100
+1707405,Esperantina,TO,Amazônia,0.9229,101
+5107156,Reserva do Cabaçal,MT,Cerrado,0.9077,102
+5107883,Serra Nova Dourada,MT,Cerrado,0.8915,103
+5100359,Alto Boa Vista,MT,Amazônia,0.8817,104
+5107354,São José do Xingu,MT,Amazônia,0.8813,105
+5104542,Itanhangá,MT,Amazônia,0.8735,106
+2107001,Montes Altos,MA,Cerrado,0.8564,107
+2107506,Paço do Lumiar,MA,Amazônia,0.8307,108
+2110005,Santa Luzia,MA,Amazônia,0.8252,109
+1702901,Axixá do Tocantins,TO,Cerrado,0.8097,110
+1507508,São João do Araguaia,PA,Amazônia,0.8015,111
+2112852,Vila Nova dos Martírios,MA,Amazônia,0.7919,112
+1701309,Aragominas,TO,Amazônia,0.7897,113
+5106232,Nova Olímpia,MT,Amazônia,0.7530,114
+2111722,Satubinha,MA,Amazônia,0.7413,115
+2105153,Igarapé do Meio,MA,Amazônia,0.7401,116
+2102507,Cajari,MA,Amazônia,0.7286,117
+5106182,Nova Lacerda,MT,Amazônia,0.7208,118
+1720804,Sítio Novo do Tocantins,TO,Cerrado,0.7105,119
+2103752,Davinópolis,MA,Cerrado,0.6951,120
+5107305,São José do Rio Claro,MT,Amazônia,0.6931,121
+1721109,Tocantínia,TO,Cerrado,0.6843,122
+2105500,João Lisboa,MA,Amazônia,0.6735,123
+1702109,Araguaína,TO,Amazônia,0.6703,124
+2104008,Esperantinópolis,MA,Cerrado,0.6668,125
+1716653,Pequizeiro,TO,Amazônia,0.6576,126
+1714302,Nazaré,TO,Cerrado,0.6567,127
+1703883,Carmolândia,TO,Amazônia,0.6366,128
+2110203,Santa Rita,MA,Amazônia,0.6342,129
+2101202,Bacabal,MA,Amazônia,0.6327,130
+2100600,Amarante do Maranhão,MA,Amazônia,0.6161,131
+1717503,Pium,TO,Cerrado,0.6132,132
+1712504,Marianópolis do Tocantins,TO,Cerrado,0.6088,133
+2105708,Lago da Pedra,MA,Cerrado,0.5927,134
+2101731,Belágua,MA,Cerrado,0.5823,135
+2105476,Jenipapo dos Vieiras,MA,Cerrado,0.5805,136
+2108702,Pio XII,MA,Amazônia,0.5723,137
+1506161,Rio Maria,PA,Amazônia,0.5698,138
+5107776,Santa Terezinha,MT,Amazônia,0.5592,139
+5102694,Canabrava do Norte,MT,Amazônia,0.5508,140
+2110856,São Francisco do Brejão,MA,Amazônia,0.5469,141
+2105948,Lago dos Rodrigues,MA,Cerrado,0.5444,142
+5104906,Jangada,MT,Cerrado,0.5399,143
+2106904,Monção,MA,Amazônia,0.5377,144
+5106307,Paranatinga,MT,Cerrado,0.5281,145
+1712454,Luzinópolis,TO,Cerrado,0.5170,146
+1507151,São Domingos do Araguaia,PA,Amazônia,0.5095,147
+5106778,Porto Alegre do Norte,MT,Amazônia,0.5050,148
+5105101,Juara,MT,Amazônia,0.5035,149
+2113009,Vitorino Freire,MA,Amazônia,0.5020,150
+2109304,Presidente Vargas,MA,Cerrado,0.5009,151
+1701051,Angico,TO,Cerrado,0.5008,152
+5105507,Vila Bela da Santíssima Trindade,MT,Amazônia,0.4993,153
+5103353,Confresa,MT,Amazônia,0.4913,154
+2112803,Viana,MA,Amazônia,0.4855,155
+5106109,Nossa Senhora do Livramento,MT,Cerrado,0.4763,156
+5106828,Porto Esperidião,MT,Amazônia,0.4716,157
+2105203,Igarapé Grande,MA,Cerrado,0.4652,158
+1721257,Tupirama,TO,Cerrado,0.4629,159
+2105906,Lago Verde,MA,Amazônia,0.4605,160
+5107248,Santa Carmem,MT,Amazônia,0.4574,161
+5105622,Mirassol d'Oeste,MT,Amazônia,0.4565,162
+2103554,Conceição do Lago-Açu,MA,Amazônia,0.4504,163
+5106240,Nova Ubiratã,MT,Amazônia,0.4473,164
+1100189,Pimenta Bueno,RO,Amazônia,0.4443,165
+1722107,Xambioá,TO,Amazônia,0.4429,166
+1100924,Chupinguaia,RO,Amazônia,0.4323,167
+5103700,Feliz Natal,MT,Amazônia,0.4306,168
+5107859,São Félix do Araguaia,MT,Amazônia,0.4306,169
+1100064,Colorado do Oeste,RO,Amazônia,0.4292,170
+1703909,Caseara,TO,Cerrado,0.4155,171
+1501253,Bannach,PA,Amazônia,0.4115,172
+5100201,Água Boa,MT,Cerrado,0.4013,173
+5101902,Brasnorte,MT,Amazônia,0.3969,174
+1702307,Arapoema,TO,Amazônia,0.3946,175
+5101852,Bom Jesus do Araguaia,MT,Amazônia,0.3920,176
+2105005,Humberto de Campos,MA,Cerrado,0.3908,177
+2102374,Cachoeira Grande,MA,Cerrado,0.3903,178
+5108501,Vera,MT,Amazônia,0.3895,179
+1507755,Sapucaia,PA,Amazônia,0.3883,180
+5108006,Tapurah,MT,Amazônia,0.3880,181
+5107701,Rosário Oeste,MT,Cerrado,0.3848,182
+1501758,Brejo Grande do Araguaia,PA,Amazônia,0.3798,183
+5100508,Alto Paraguai,MT,Cerrado,0.3787,184
+5105234,Lambari D'Oeste,MT,Amazônia,0.3698,185
+5107909,Sinop,MT,Amazônia,0.3682,186
+5107768,Santa Rita do Trivelato,MT,Cerrado,0.3652,187
+5106752,Pontes e Lacerda,MT,Amazônia,0.3596,188
+5102702,Canarana,MT,Cerrado,0.3557,189
+5105002,Jauru,MT,Amazônia,0.3523,190
+5108600,Vila Rica,MT,Amazônia,0.3522,191
+5106000,Nortelândia,MT,Amazônia,0.3521,192
+2100402,Altamira do Maranhão,MA,Amazônia,0.3470,193
+5108352,Vale de São Domingos,MT,Cerrado,0.3450,194
+1505635,Piçarra,PA,Amazônia,0.3361,195
+2109908,Santa Inês,MA,Amazônia,0.3346,196
+2111003,São João Batista,MA,Amazônia,0.3329,197
+5100102,Acorizal,MT,Cerrado,0.3314,198
+5107180,Ribeirão Cascalheira,MT,Cerrado,0.3278,199
+2105807,Lago do Junco,MA,Cerrado,0.3254,200
+1100072,Corumbiara,RO,Amazônia,0.3205,201
+5102504,Cáceres,MT,Pantanal,0.3197,202
+5103437,Curvelândia,MT,Amazônia,0.3178,203
+5103106,Cocalinho,MT,Cerrado,0.3177,204
+1718550,Riachinho,TO,Amazônia,0.3169,205
+2111300,São Luís,MA,Amazônia,0.3127,206
+1505494,Palestina do Pará,PA,Amazônia,0.3105,207
+2107100,Morros,MA,Cerrado,0.3105,208
+5106851,Porto Estrela,MT,Cerrado,0.3044,209
+5107875,Sapezal,MT,Cerrado,0.3038,210
+5106224,Nova Mutum,MT,Cerrado,0.3037,211
+5105903,Nobres,MT,Cerrado,0.2992,212
+5103502,Diamantino,MT,Cerrado,0.2982,213
+1712801,Maurilândia do Tocantins,TO,Cerrado,0.2974,214
+5103858,Gaúcha do Norte,MT,Amazônia,0.2970,215
+1711902,Lagoa da Confusão,TO,Cerrado,0.2918,216
+5107263,Santo Afonso,MT,Amazônia,0.2898,217
+5102603,Campinápolis,MT,Cerrado,0.2891,218
+2109205,Presidente Juscelino,MA,Amazônia,0.2873,219
+5105309,Luciara,MT,Cerrado,0.2838,220
+5106505,Poconé,MT,Pantanal,0.2784,221
+1711100,Itaporã do Tocantins,TO,Amazônia,0.2783,222
+1721208,Tocantinópolis,TO,Cerrado,0.2731,223
+5107065,Querência,MT,Amazônia,0.2731,224
+1716307,Pau D'Arco,TO,Amazônia,0.2681,225
+2109403,Primeira Cruz,MA,Cerrado,0.2669,226
+1100304,Vilhena,RO,Amazônia,0.2667,227
+2101707,Barreirinhas,MA,Cerrado,0.2629,228
+2111201,São José de Ribamar,MA,Amazônia,0.2620,229
+1507458,São Geraldo do Araguaia,PA,Amazônia,0.2617,230
+2102077,Bom Lugar,MA,Amazônia,0.2592,231
+5103304,Comodoro,MT,Cerrado,0.2577,232
+5102637,Campo Novo do Parecis,MT,Cerrado,0.2572,233
+5104526,Ipiranga do Norte,MT,Amazônia,0.2568,234
+5107206,Rio Branco,MT,Amazônia,0.2540,235
+5101704,Barra do Bugres,MT,Amazônia,0.2510,236
+1708205,Formoso do Araguaia,TO,Cerrado,0.2494,237
+5105150,Juína,MT,Amazônia,0.2474,238
+1702158,Araguanã,TO,Amazônia,0.2460,239
+5106315,Novo Santo Antônio,MT,Cerrado,0.2455,240
+5106174,Nova Nazaré,MT,Cerrado,0.2432,241
+1100031,Cabixi,RO,Amazônia,0.2426,242
+1718865,Santa Fé do Araguaia,TO,Amazônia,0.2411,243
+5107925,Sorriso,MT,Cerrado,0.2399,244
+5104500,Indiavaí,MT,Amazônia,0.2387,245
+5102686,Campos de Júlio,MT,Cerrado,0.2337,246
+5107958,Tangará da Serra,MT,Cerrado,0.2291,247
+2107407,Olho d'Água das Cunhãs,MA,Amazônia,0.2247,248
+5103957,Glória D'Oeste,MT,Amazônia,0.2240,249
+5103452,Denise,MT,Amazônia,0.2209,250
+2101251,Bacabeira,MA,Amazônia,0.2180,251
+5105259,Lucas do Rio Verde,MT,Cerrado,0.2148,252
+2100709,Anajatuba,MA,Amazônia,0.2073,253
+2110278,Santo Amaro do Maranhão,MA,Cerrado,0.2058,254
+2109601,Rosário,MA,Amazônia,0.2005,255
+1703057,Bandeirantes do Tocantins,TO,Amazônia,0.1967,256
+5101308,Arenápolis,MT,Amazônia,0.1923,257
+5101258,Araputanga,MT,Amazônia,0.1889,258
+1508407,Xinguara,PA,Amazônia,0.1802,259
+2105104,Icatu,MA,Amazônia,0.1689,260
+5107750,Salto do Céu,MT,Amazônia,0.1580,261
+1713957,Muricilândia,TO,Amazônia,0.1478,262
+1703206,Bernardo Sayão,TO,Amazônia,0.1476,263
+5107107,São José dos Quatro Marcos,MT,Amazônia,0.1366,264
+2101103,Axixá,MA,Amazônia,0.1287,265
+5103809,Figueirópolis D'Oeste,MT,Amazônia,0.1076,266
+2102408,Cajapió,MA,Amazônia,0.0998,267
+2109452,Raposa,MA,Amazônia,0.0745,268

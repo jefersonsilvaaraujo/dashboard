@@ -63,7 +63,7 @@ def ler_legenda(classes_tipo):
     return legenda.sort_values("classe_cobertura").reset_index(drop=True)
 
 
-def gerar_cobertura():
+def gerar_cobertura(apenas_area_estudo=True):
     planilha = pd.read_excel(config.MAPBIOMAS_XLSX, sheet_name=config.MAPBIOMAS_ABA,
                              engine="calamine")
     planilha.columns = [int(c) if isinstance(c, float) else c for c in planilha.columns]
@@ -72,7 +72,7 @@ def gerar_cobertura():
     classes_tipo = planilha.drop_duplicates("class_id").set_index("class_id")["class_level_0"]
     legenda = ler_legenda(classes_tipo)
 
-    municipios = carregar_municipios()
+    municipios = carregar_municipios(apenas_area_estudo)
     municipios["chave"] = municipios["nome_municipio"].map(normalizar_nome) + "|" + municipios["SIGLA_UF"]
     planilha["chave"] = planilha["municipality"].map(normalizar_nome) + "|" + planilha["state_acronym"]
 
@@ -99,6 +99,46 @@ def gerar_cobertura():
         ["CD_MUN", "ano", "classe_cobertura"], key=lambda s: s.map(ordem) if s.name == "CD_MUN" else s
     )
     return cobertura, legenda
+
+
+def carregar_no_banco(conexao):
+    """Recarrega a legenda e a cobertura de todos os municípios do shapefile.
+
+    A cobertura é substituída por inteiro numa única transação: quem lê o banco
+    vê a versão anterior completa ou a nova completa, nunca uma mistura.
+    """
+    from banco import registrar_carga
+
+    cobertura, legenda = gerar_cobertura(apenas_area_estudo=False)
+
+    with conexao.transaction():
+        carga_id = registrar_carga(
+            conexao, "MapBiomas Brasil - estatísticas de cobertura por município",
+            config.MAPBIOMAS_XLSX, len(cobertura),
+            versao="Coleção 10.1", referencia="https://doi.org/10.58053/MapBiomas/SJZOLT",
+        )
+        conexao.cursor().executemany(
+            """
+            INSERT INTO mapbiomas.classe (classe_id, nome, cor, grupo, tipo, carga_id)
+            VALUES (%s, %s, %s, %s, %s, %s)
+            ON CONFLICT (classe_id) DO UPDATE SET
+                nome = EXCLUDED.nome, cor = EXCLUDED.cor, grupo = EXCLUDED.grupo,
+                tipo = EXCLUDED.tipo, carga_id = EXCLUDED.carga_id
+            """,
+            [(int(c.classe_cobertura), c.nome_classe, c.cor_rgb, c.grupo, c.tipo, carga_id)
+             for c in legenda.itertuples()],
+        )
+
+        conexao.execute("DELETE FROM mapbiomas.cobertura")
+        with conexao.cursor().copy(
+            "COPY mapbiomas.cobertura (cd_mun, ano, classe_id, area_ha, carga_id) FROM STDIN"
+        ) as copia:
+            for linha in cobertura.itertuples(index=False):
+                copia.write_row((int(linha.CD_MUN), int(linha.ano), int(linha.classe_cobertura),
+                                 float(linha.area_ha), carga_id))
+
+    conexao.execute("ANALYZE mapbiomas.classe, mapbiomas.cobertura")
+    print(f"{len(legenda)} classes e {len(cobertura)} linhas de cobertura carregadas (carga {carga_id})")
 
 
 if __name__ == "__main__":

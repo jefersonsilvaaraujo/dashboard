@@ -1,0 +1,28 @@
+{
+  "coorte": "principal",
+  "contexto": "TO",
+  "target": "R_pct",
+  "bloco": "BASE",
+  "features": [
+    "territorio_area_geodesica_ha",
+    "territorio_lon_referencia",
+    "territorio_lat_referencia"
+  ],
+  "n_treino_inicial": 5307,
+  "n_validacao": 549,
+  "UF_excluida": "TO",
+  "cortes_magnitude_treino": [
+    1.016361822490852,
+    2.20553721067962,
+    4.169228570383794
+  ],
+  "row_ids_treino_sha256": "1680d3086e12acd9f2c5c535388a9b2b19a6f196411db80317784ea99442b9fd",
+  "algoritmo": "media_historica",
+  "media": 3.0640285422625686,
+  "mediana": 2.121627769978963,
+  "n_treino_final": 5856,
+  "treino_final_ate": 2017,
+  "refit_exclui2014": true,
+  "arquivos_sha256": {},
+  "tipos_requerem_revisao_skops": {}
+}

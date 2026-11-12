@@ -1,0 +1,16 @@
+{
+  "python": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+  "pacotes": {
+    "rasterio": "1.5.2",
+    "geopandas": "1.2.0",
+    "shapely": "2.2.0",
+    "pyproj": "3.8.0",
+    "numpy": "2.5.4",
+    "pandas": "2.3.3",
+    "Pillow": "13.0.0"
+  },
+  "gdal": "3.12.2",
+  "proj": "9.8.1",
+  "gerador": "processamento/mapas_col9.py",
+  "sha256_gerador": "8eac59b587ea507f9417565ca6257fabf54f4c089546e38e26985f7d1fe0a889"
+}
