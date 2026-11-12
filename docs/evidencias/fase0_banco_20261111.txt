@@ -1,0 +1,409 @@
+﻿BEGIN
+SET
+Pager usage is off.
+RELACOES
+  esquema  |         relname          | relkind | estimativa |  proprietario   
+-----------+--------------------------+---------+------------+-----------------
+ analise   | mv_painel_base           | m       |       4824 | dashboard_admin
+ analise   | vw_painel_municipio_ano  | v       |         -1 | dashboard_admin
+ mapbiomas | classe                   | r       |         31 | dashboard_admin
+ mapbiomas | cobertura                | r       |     126212 | dashboard_admin
+ mapbiomas | cobertura_col9_255       | r       |     113364 | dashboard_admin
+ mapbiomas | vw_cobertura_col9_255    | v       |         -1 | dashboard_admin
+ mapbiomas | vw_cobertura_municipio   | v       |         -1 | dashboard_admin
+ prodes    | area_classe              | r       |       9583 | dashboard_admin
+ prodes    | classe                   | r       |         41 | dashboard_admin
+ prodes    | vw_area_classe_municipio | v       |         -1 | dashboard_admin
+ public    | geography_columns        | v       |         -1 | dashboard_admin
+ public    | geometry_columns         | v       |         -1 | dashboard_admin
+ public    | migracao                 | r       |         -1 | dashboard_admin
+ public    | spatial_ref_sys          | r       |       8500 | dashboard_admin
+ queimadas | foco                     | r       |     993769 | dashboard_admin
+ queimadas | foco_atributo            | r       |     710022 | dashboard_admin
+ queimadas | mv_focos_municipio_mes   | m       |      41367 | dashboard_admin
+ queimadas | vw_focos_municipio_mes   | v       |         -1 | dashboard_admin
+ ref       | bioma                    | r       |          6 | dashboard_admin
+ ref       | carga                    | r       |         -1 | dashboard_admin
+ ref       | municipio                | r       |        268 | dashboard_admin
+ ref       | municipio_col9_255       | r       |        255 | dashboard_admin
+ ref       | mv_area_estudo_contorno  | m       |         -1 | dashboard_admin
+ ref       | mv_municipio_vizinho     | m       |       1426 | dashboard_admin
+ ref       | uf                       | r       |         -1 | dashboard_admin
+ ref       | vw_municipio             | v       |         -1 | dashboard_admin
+ ref       | vw_municipio_contorno    | v       |         -1 | dashboard_admin
+ ref       | vw_municipios_col9_255   | v       |         -1 | dashboard_admin
+(28 rows)
+
+COLUNAS_COL9
+ table_schema |       table_name       |   column_name    |  data_type   | udt_name | is_nullable | numeric_precision | numeric_scale 
+--------------+------------------------+------------------+--------------+----------+-------------+-------------------+---------------
+ mapbiomas    | cobertura_col9_255     | cd_mun           | integer      | int4     | NO          |                32 |             0
+ mapbiomas    | cobertura_col9_255     | nm_mun           | text         | text     | NO          |                   |              
+ mapbiomas    | cobertura_col9_255     | sigla_uf         | character    | bpchar   | NO          |                   |              
+ mapbiomas    | cobertura_col9_255     | ano              | smallint     | int2     | NO          |                16 |             0
+ mapbiomas    | cobertura_col9_255     | classe_cobertura | smallint     | int2     | NO          |                16 |             0
+ mapbiomas    | cobertura_col9_255     | pixels           | bigint       | int8     | NO          |                64 |             0
+ mapbiomas    | cobertura_col9_255     | area_ha          | numeric      | numeric  | NO          |                18 |             4
+ mapbiomas    | cobertura_col9_255     | perc_ocupacao    | numeric      | numeric  | NO          |                10 |             4
+ mapbiomas    | vw_cobertura_col9_255  | cd_mun           | integer      | int4     | YES         |                32 |             0
+ mapbiomas    | vw_cobertura_col9_255  | nm_mun           | text         | text     | YES         |                   |              
+ mapbiomas    | vw_cobertura_col9_255  | sigla_uf         | character    | bpchar   | YES         |                   |              
+ mapbiomas    | vw_cobertura_col9_255  | ano              | smallint     | int2     | YES         |                16 |             0
+ mapbiomas    | vw_cobertura_col9_255  | classe_cobertura | smallint     | int2     | YES         |                16 |             0
+ mapbiomas    | vw_cobertura_col9_255  | pixels           | bigint       | int8     | YES         |                64 |             0
+ mapbiomas    | vw_cobertura_col9_255  | area_ha          | numeric      | numeric  | YES         |                18 |             4
+ mapbiomas    | vw_cobertura_col9_255  | perc_ocupacao    | numeric      | numeric  | YES         |                10 |             4
+ ref          | municipio_col9_255     | cd_mun           | integer      | int4     | NO          |                32 |             0
+ ref          | municipio_col9_255     | nm_mun           | text         | text     | NO          |                   |              
+ ref          | municipio_col9_255     | sigla_uf         | character    | bpchar   | NO          |                   |              
+ ref          | municipio_col9_255     | area_geom_km2    | numeric      | numeric  | NO          |                16 |             5
+ ref          | municipio_col9_255     | geom             | USER-DEFINED | geometry | NO          |                   |              
+ ref          | vw_municipios_col9_255 | cd_mun           | integer      | int4     | YES         |                32 |             0
+ ref          | vw_municipios_col9_255 | nm_mun           | text         | text     | YES         |                   |              
+ ref          | vw_municipios_col9_255 | sigla_uf         | character    | bpchar   | YES         |                   |              
+ ref          | vw_municipios_col9_255 | area_geom_km2    | numeric      | numeric  | YES         |                16 |             5
+ ref          | vw_municipios_col9_255 | geom             | USER-DEFINED | geometry | YES         |                   |              
+(26 rows)
+
+DEFINICOES_COL9
+ schemaname |        viewname        |                           definition                            
+------------+------------------------+-----------------------------------------------------------------
+ mapbiomas  | vw_cobertura_col9_255  |  SELECT c.cd_mun,                                              +
+            |                        |     m.nm_mun,                                                  +
+            |                        |     m.sigla_uf,                                                +
+            |                        |     c.ano,                                                     +
+            |                        |     c.classe_cobertura,                                        +
+            |                        |     c.pixels,                                                  +
+            |                        |     c.area_ha,                                                 +
+            |                        |     c.perc_ocupacao                                            +
+            |                        |    FROM (mapbiomas.cobertura_col9_255 c                        +
+            |                        |      JOIN ref.municipio_col9_255 m ON ((m.cd_mun = c.cd_mun)));
+ ref        | vw_municipios_col9_255 |  SELECT cd_mun,                                                +
+            |                        |     nm_mun,                                                    +
+            |                        |     sigla_uf,                                                  +
+            |                        |     area_geom_km2,                                             +
+            |                        |     geom                                                       +
+            |                        |    FROM ref.municipio_col9_255;
+(2 rows)
+
+CONSTRAINTS_COL9
+            objeto            |                  conname                  |                                    definicao                                    
+------------------------------+-------------------------------------------+---------------------------------------------------------------------------------
+ mapbiomas.cobertura_col9_255 | cobertura_col9_255_ano_check              | CHECK (((ano >= 1985) AND (ano <= 2023)))
+ mapbiomas.cobertura_col9_255 | cobertura_col9_255_classe_cobertura_check | CHECK (((classe_cobertura >= 1) AND (classe_cobertura <= 255)))
+ mapbiomas.cobertura_col9_255 | cobertura_col9_255_pixels_check           | CHECK ((pixels > 0))
+ mapbiomas.cobertura_col9_255 | cobertura_col9_255_area_ha_check          | CHECK ((area_ha > (0)::numeric))
+ mapbiomas.cobertura_col9_255 | cobertura_col9_255_perc_ocupacao_check    | CHECK (((perc_ocupacao >= (0)::numeric) AND (perc_ocupacao <= (100)::numeric)))
+ mapbiomas.cobertura_col9_255 | cobertura_col9_255_pkey                   | PRIMARY KEY (cd_mun, ano, classe_cobertura)
+ ref.municipio_col9_255       | municipio_col9_255_area_geom_km2_check    | CHECK ((area_geom_km2 > (0)::numeric))
+ ref.municipio_col9_255       | municipio_col9_255_pkey                   | PRIMARY KEY (cd_mun)
+(8 rows)
+
+INDICES
+ schemaname |       tablename        |          indexname          |                                                        indexdef                                                         
+------------+------------------------+-----------------------------+-------------------------------------------------------------------------------------------------------------------------
+ analise    | mv_painel_base         | mv_painel_base_pk           | CREATE UNIQUE INDEX mv_painel_base_pk ON analise.mv_painel_base USING btree (cd_mun, ano)
+ mapbiomas  | classe                 | classe_nome_key             | CREATE UNIQUE INDEX classe_nome_key ON mapbiomas.classe USING btree (nome)
+ mapbiomas  | classe                 | classe_pkey                 | CREATE UNIQUE INDEX classe_pkey ON mapbiomas.classe USING btree (classe_id)
+ mapbiomas  | cobertura              | cobertura_carga_idx         | CREATE INDEX cobertura_carga_idx ON mapbiomas.cobertura USING btree (carga_id)
+ mapbiomas  | cobertura              | cobertura_classe_ano_idx    | CREATE INDEX cobertura_classe_ano_idx ON mapbiomas.cobertura USING btree (classe_id, ano)
+ mapbiomas  | cobertura              | cobertura_pkey              | CREATE UNIQUE INDEX cobertura_pkey ON mapbiomas.cobertura USING btree (cd_mun, ano, classe_id)
+ mapbiomas  | cobertura_col9_255     | cobertura_col9_255_pkey     | CREATE UNIQUE INDEX cobertura_col9_255_pkey ON mapbiomas.cobertura_col9_255 USING btree (cd_mun, ano, classe_cobertura)
+ prodes     | area_classe            | area_classe_pkey            | CREATE UNIQUE INDEX area_classe_pkey ON prodes.area_classe USING btree (cd_mun, cd_bioma, classe_id)
+ prodes     | classe                 | classe_pkey                 | CREATE UNIQUE INDEX classe_pkey ON prodes.classe USING btree (classe_id)
+ prodes     | classe                 | classe_rotulo_key           | CREATE UNIQUE INDEX classe_rotulo_key ON prodes.classe USING btree (rotulo)
+ queimadas  | foco                   | foco_carga_idx              | CREATE INDEX foco_carga_idx ON queimadas.foco USING btree (carga_id)
+ queimadas  | foco                   | foco_data_brin              | CREATE INDEX foco_data_brin ON queimadas.foco USING brin (data_hora)
+ queimadas  | foco                   | foco_geom_gix               | CREATE INDEX foco_geom_gix ON queimadas.foco USING gist (geom)
+ queimadas  | foco                   | foco_id_bdq_key             | CREATE UNIQUE INDEX foco_id_bdq_key ON queimadas.foco USING btree (id_bdq)
+ queimadas  | foco                   | foco_mun_data_idx           | CREATE INDEX foco_mun_data_idx ON queimadas.foco USING btree (cd_mun, data_hora)
+ queimadas  | foco                   | foco_pkey                   | CREATE UNIQUE INDEX foco_pkey ON queimadas.foco USING btree (foco_id)
+ queimadas  | foco_atributo          | foco_atributo_carga_idx     | CREATE INDEX foco_atributo_carga_idx ON queimadas.foco_atributo USING btree (carga_id)
+ queimadas  | foco_atributo          | foco_atributo_pkey          | CREATE UNIQUE INDEX foco_atributo_pkey ON queimadas.foco_atributo USING btree (foco_id)
+ queimadas  | mv_focos_municipio_mes | mv_focos_municipio_mes_pk   | CREATE UNIQUE INDEX mv_focos_municipio_mes_pk ON queimadas.mv_focos_municipio_mes USING btree (cd_mun, ano, mes)
+ ref        | bioma                  | bioma_geom_gix              | CREATE INDEX bioma_geom_gix ON ref.bioma USING gist (geom)
+ ref        | bioma                  | bioma_nome_key              | CREATE UNIQUE INDEX bioma_nome_key ON ref.bioma USING btree (nome)
+ ref        | bioma                  | bioma_pkey                  | CREATE UNIQUE INDEX bioma_pkey ON ref.bioma USING btree (cd_bioma)
+ ref        | carga                  | carga_pkey                  | CREATE UNIQUE INDEX carga_pkey ON ref.carga USING btree (carga_id)
+ ref        | municipio              | municipio_cd_uf_idx         | CREATE INDEX municipio_cd_uf_idx ON ref.municipio USING btree (cd_uf)
+ ref        | municipio              | municipio_geom_gix          | CREATE INDEX municipio_geom_gix ON ref.municipio USING gist (geom)
+ ref        | municipio              | municipio_nome_uf_unico     | CREATE UNIQUE INDEX municipio_nome_uf_unico ON ref.municipio USING btree (cd_uf, nome)
+ ref        | municipio              | municipio_pkey              | CREATE UNIQUE INDEX municipio_pkey ON ref.municipio USING btree (cd_mun)
+ ref        | municipio_col9_255     | municipio_col9_255_geom_gix | CREATE INDEX municipio_col9_255_geom_gix ON ref.municipio_col9_255 USING gist (geom)
+ ref        | municipio_col9_255     | municipio_col9_255_pkey     | CREATE UNIQUE INDEX municipio_col9_255_pkey ON ref.municipio_col9_255 USING btree (cd_mun)
+ ref        | mv_municipio_vizinho   | mv_municipio_vizinho_pk     | CREATE UNIQUE INDEX mv_municipio_vizinho_pk ON ref.mv_municipio_vizinho USING btree (cd_mun, cd_mun_vizinho)
+ ref        | uf                     | uf_nome_key                 | CREATE UNIQUE INDEX uf_nome_key ON ref.uf USING btree (nome)
+ ref        | uf                     | uf_pkey                     | CREATE UNIQUE INDEX uf_pkey ON ref.uf USING btree (cd_uf)
+ ref        | uf                     | uf_sigla_key                | CREATE UNIQUE INDEX uf_sigla_key ON ref.uf USING btree (sigla)
+(33 rows)
+
+DEPENDENCIAS_VIEWS
+            dependente            |              origem              
+----------------------------------+----------------------------------
+ analise.mv_painel_base           | mapbiomas.classe
+ analise.mv_painel_base           | mapbiomas.cobertura
+ analise.mv_painel_base           | prodes.area_classe
+ analise.mv_painel_base           | prodes.classe
+ analise.mv_painel_base           | queimadas.foco
+ analise.mv_painel_base           | queimadas.foco_atributo
+ analise.mv_painel_base           | queimadas.mv_focos_municipio_mes
+ analise.mv_painel_base           | ref.bioma
+ analise.mv_painel_base           | ref.municipio
+ analise.vw_painel_municipio_ano  | analise.mv_painel_base
+ analise.vw_painel_municipio_ano  | ref.municipio
+ analise.vw_painel_municipio_ano  | ref.mv_municipio_vizinho
+ analise.vw_painel_municipio_ano  | ref.uf
+ mapbiomas.vw_cobertura_col9_255  | mapbiomas.cobertura_col9_255
+ mapbiomas.vw_cobertura_col9_255  | ref.municipio_col9_255
+ mapbiomas.vw_cobertura_municipio | mapbiomas.cobertura
+ mapbiomas.vw_cobertura_municipio | ref.municipio
+ mapbiomas.vw_cobertura_municipio | ref.uf
+ prodes.vw_area_classe_municipio  | prodes.area_classe
+ prodes.vw_area_classe_municipio  | prodes.classe
+ prodes.vw_area_classe_municipio  | ref.bioma
+ prodes.vw_area_classe_municipio  | ref.municipio
+ prodes.vw_area_classe_municipio  | ref.uf
+ queimadas.mv_focos_municipio_mes | queimadas.foco
+ queimadas.mv_focos_municipio_mes | queimadas.foco_atributo
+ queimadas.vw_focos_municipio_mes | queimadas.mv_focos_municipio_mes
+ queimadas.vw_focos_municipio_mes | ref.municipio
+ queimadas.vw_focos_municipio_mes | ref.uf
+ ref.mv_area_estudo_contorno      | public.geometry_dump
+ ref.mv_area_estudo_contorno      | ref.municipio
+ ref.mv_municipio_vizinho         | ref.municipio
+ ref.vw_municipio                 | ref.municipio
+ ref.vw_municipio                 | ref.uf
+ ref.vw_municipio_contorno        | ref.municipio
+ ref.vw_municipio_contorno        | ref.uf
+ ref.vw_municipios_col9_255       | ref.municipio_col9_255
+(36 rows)
+
+PAPEIS_SEM_SEGREDOS
+      rolname      | rolsuper | rolcreatedb | rolcreaterole | rolcanlogin |                        rolconfig                         
+-------------------+----------+-------------+---------------+-------------+----------------------------------------------------------
+ dashboard_admin   | t        | t           | t             | t           | 
+ dashboard_app     | f        | f           | f             | t           | {default_transaction_read_only=on,statement_timeout=30s}
+ dashboard_leitura | f        | f           | f             | f           | 
+(3 rows)
+
+    membro     |       grupo       
+---------------+-------------------
+ dashboard_app | dashboard_leitura
+(1 row)
+
+PERMISSOES
+      rolname      |              objeto              | uso_schema | leitura | alguma_escrita 
+-------------------+----------------------------------+------------+---------+----------------
+ dashboard_app     | analise.mv_painel_base           | t          | t       | f
+ dashboard_app     | analise.vw_painel_municipio_ano  | t          | t       | f
+ dashboard_app     | mapbiomas.classe                 | t          | t       | f
+ dashboard_app     | mapbiomas.cobertura              | t          | t       | f
+ dashboard_app     | mapbiomas.cobertura_col9_255     | t          | t       | f
+ dashboard_app     | mapbiomas.vw_cobertura_col9_255  | t          | t       | f
+ dashboard_app     | mapbiomas.vw_cobertura_municipio | t          | t       | f
+ dashboard_app     | prodes.area_classe               | t          | t       | f
+ dashboard_app     | prodes.classe                    | t          | t       | f
+ dashboard_app     | prodes.vw_area_classe_municipio  | t          | t       | f
+ dashboard_app     | queimadas.foco                   | t          | t       | f
+ dashboard_app     | queimadas.foco_atributo          | t          | t       | f
+ dashboard_app     | queimadas.mv_focos_municipio_mes | t          | t       | f
+ dashboard_app     | queimadas.vw_focos_municipio_mes | t          | t       | f
+ dashboard_app     | ref.bioma                        | t          | t       | f
+ dashboard_app     | ref.carga                        | t          | t       | f
+ dashboard_app     | ref.municipio                    | t          | t       | f
+ dashboard_app     | ref.municipio_col9_255           | t          | t       | f
+ dashboard_app     | ref.mv_area_estudo_contorno      | t          | t       | f
+ dashboard_app     | ref.mv_municipio_vizinho         | t          | t       | f
+ dashboard_app     | ref.uf                           | t          | t       | f
+ dashboard_app     | ref.vw_municipio                 | t          | t       | f
+ dashboard_app     | ref.vw_municipio_contorno        | t          | t       | f
+ dashboard_app     | ref.vw_municipios_col9_255       | t          | t       | f
+ dashboard_leitura | analise.mv_painel_base           | t          | t       | f
+ dashboard_leitura | analise.vw_painel_municipio_ano  | t          | t       | f
+ dashboard_leitura | mapbiomas.classe                 | t          | t       | f
+ dashboard_leitura | mapbiomas.cobertura              | t          | t       | f
+ dashboard_leitura | mapbiomas.cobertura_col9_255     | t          | t       | f
+ dashboard_leitura | mapbiomas.vw_cobertura_col9_255  | t          | t       | f
+ dashboard_leitura | mapbiomas.vw_cobertura_municipio | t          | t       | f
+ dashboard_leitura | prodes.area_classe               | t          | t       | f
+ dashboard_leitura | prodes.classe                    | t          | t       | f
+ dashboard_leitura | prodes.vw_area_classe_municipio  | t          | t       | f
+ dashboard_leitura | queimadas.foco                   | t          | t       | f
+ dashboard_leitura | queimadas.foco_atributo          | t          | t       | f
+ dashboard_leitura | queimadas.mv_focos_municipio_mes | t          | t       | f
+ dashboard_leitura | queimadas.vw_focos_municipio_mes | t          | t       | f
+ dashboard_leitura | ref.bioma                        | t          | t       | f
+ dashboard_leitura | ref.carga                        | t          | t       | f
+ dashboard_leitura | ref.municipio                    | t          | t       | f
+ dashboard_leitura | ref.municipio_col9_255           | t          | t       | f
+ dashboard_leitura | ref.mv_area_estudo_contorno      | t          | t       | f
+ dashboard_leitura | ref.mv_municipio_vizinho         | t          | t       | f
+ dashboard_leitura | ref.uf                           | t          | t       | f
+ dashboard_leitura | ref.vw_municipio                 | t          | t       | f
+ dashboard_leitura | ref.vw_municipio_contorno        | t          | t       | f
+ dashboard_leitura | ref.vw_municipios_col9_255       | t          | t       | f
+(48 rows)
+
+MIGRACOES
+      versao       |          aplicada_em          
+-------------------+-------------------------------
+ 001_base.sql      | 2026-10-25 19:57:13.37316+00
+ 002_ref.sql       | 2026-10-25 19:57:13.67554+00
+ 003_mapbiomas.sql | 2026-10-25 19:57:13.683948+00
+ 004_queimadas.sql | 2026-10-25 20:40:33.717881+00
+ 005_prodes.sql    | 2026-10-25 21:25:42.145199+00
+ 006_contornos.sql | 2026-10-26 02:21:07.350941+00
+ 007_analise.sql   | 2026-10-26 02:45:53.894165+00
+(7 rows)
+
+ACEITE_COL9
+ linhas | municipios | anos | inicio | fim  | ufs 
+--------+------------+------+--------+------+-----
+ 113364 |        255 |   39 |   1985 | 2023 |   5
+(1 row)
+
+ cd_mun | ano | classe_cobertura | count 
+--------+-----+------------------+-------
+(0 rows)
+
+ cd_mun | ano 
+--------+-----
+(0 rows)
+
+ municipios | selecionados 
+------------+--------------
+        268 |          268
+(1 row)
+
+ sigla_uf | count 
+----------+-------
+ MA       |    95
+ MT       |    68
+ PA       |    15
+ RO       |     5
+ TO       |    72
+(5 rows)
+
+ st_srid | geometrytype | st_isvalid | count 
+---------+--------------+------------+-------
+    4674 | MULTIPOLYGON | t          |   255
+(1 row)
+
+ diferenca | cd_mun  
+-----------+---------
+ entrada   | 2101772
+ entrada   | 2108504
+ entrada   | 2112274
+ entrada   | 5101837
+ saida     | 1100031
+ saida     | 1501253
+ saida     | 2108454
+ saida     | 2110302
+ saida     | 2111300
+ saida     | 5102504
+ saida     | 5103437
+ saida     | 5103957
+ saida     | 5105234
+ saida     | 5105622
+ saida     | 5106109
+ saida     | 5106174
+ saida     | 5106505
+ saida     | 5106802
+ saida     | 5106828
+ saida     | 5107248
+ saida     | 5107909
+(21 rows)
+
+FONTES_COMPLEMENTARES
+      fonte       | linhas | municipios | min  | max  
+------------------+--------+------------+------+------
+ painel_legado    |   4824 |        268 | 2008 | 2025
+ prodes           |   9583 |        268 | 2000 | 2025
+ focos_mensais    |  41367 |        268 | 2003 | 2025
+ cobertura_legada | 126212 |        268 | 1985 | 2024
+(4 rows)
+
+   fonte   | presentes_nos_255 
+-----------+-------------------
+ queimadas |               251
+ prodes    |               251
+(2 rows)
+
+ cd_mun  |         nm_mun         | tem_prodes | tem_focos 
+---------+------------------------+------------+-----------
+ 2101772 | Bela Vista do Maranhão | f          | f
+ 2108504 | Pindaré-Mirim          | f          | f
+ 2112274 | Tufilândia             | f          | f
+ 5101837 | Boa Esperança do Norte | f          | f
+(4 rows)
+
+LEGENDA_ATUAL_SEM_HOMOLOGACAO
+ classe_cobertura |              nome              |             grupo              |         tipo         |   cor   
+------------------+--------------------------------+--------------------------------+----------------------+---------
+                3 | Formação Florestal             | Floresta                       | Natural              | #1f8d49
+                4 | Formação Savânica              | Floresta                       | Natural              | #7dc975
+                5 | Mangue                         | Floresta                       | Natural              | #04381d
+                6 | Floresta Alagável              | Floresta                       | Natural              | #026975
+                9 | Silvicultura                   | Agropecuária                   | Antrópico            | #7a5900
+               11 | Campo Alagado e Área Pantanosa | Vegetação Herbácea e Arbustiva | Natural              | #519799
+               12 | Formação Campestre             | Vegetação Herbácea e Arbustiva | Natural              | #d6bc74
+               15 | Pastagem                       | Agropecuária                   | Antrópico            | #edde8e
+               20 | Cana                           | Agropecuária                   | Antrópico            | #db7093
+               21 | Mosaico de Usos                | Agropecuária                   | Antrópico            | #ffefc3
+               23 | Praia, Duna e Areal            | Área não Vegetada              | Natural              | #ffa07a
+               24 | Área Urbanizada                | Área não Vegetada              | Antrópico            | #d4271e
+               25 | Outras Áreas não Vegetadas     | Área não Vegetada              | Natural ou Antrópico | #db4d4f
+               29 | Afloramento Rochoso            | Vegetação Herbácea e Arbustiva | Natural              | #ffaa5f
+               30 | Mineração                      | Área não Vegetada              | Antrópico            | #9c0027
+               31 | Aquicultura                    | Corpo D'água                   | Antrópico            | #091077
+               32 | Apicum                         | Vegetação Herbácea e Arbustiva | Natural              | #fc8114
+               33 | Rio, Lago e Oceano             | Corpo D'água                   | Natural              | #2532e4
+               39 | Soja                           | Agropecuária                   | Antrópico            | #f5b3c8
+               40 | Arroz                          | Agropecuária                   | Antrópico            | #c71585
+               41 | Outras Lavouras Temporárias    | Agropecuária                   | Antrópico            | #f54ca9
+               62 | Algodão (beta)                 | Agropecuária                   | Antrópico            | #ff69b4
+(22 rows)
+
+EXPLAIN_SEM_EXECUTAR
+                                                QUERY PLAN                                                 
+-----------------------------------------------------------------------------------------------------------
+ Nested Loop  (cost=4.97..126.03 rows=32 width=45)
+   ->  Index Scan using municipio_col9_255_pkey on municipio_col9_255 m  (cost=0.14..8.16 rows=1 width=21)
+         Index Cond: (cd_mun = 2102325)
+   ->  Bitmap Heap Scan on cobertura_col9_255 c  (cost=4.83..117.55 rows=32 width=28)
+         Recheck Cond: ((cd_mun = 2102325) AND (ano >= 2001) AND (ano <= 2003))
+         ->  Bitmap Index Scan on cobertura_col9_255_pkey  (cost=0.00..4.82 rows=32 width=0)
+               Index Cond: ((cd_mun = 2102325) AND (ano >= 2001) AND (ano <= 2003))
+(7 rows)
+
+                                                                     QUERY PLAN                                                                      
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+ Subquery Scan on vw_painel_municipio_ano  (cost=912.67..913.74 rows=1 width=368)
+   Filter: ((vw_painel_municipio_ano.ano >= 2001) AND (vw_painel_municipio_ano.ano <= 2003))
+   ->  WindowAgg  (cost=912.67..913.47 rows=18 width=368)
+         ->  WindowAgg  (cost=912.63..913.11 rows=18 width=352)
+               ->  Sort  (cost=912.57..912.61 rows=18 width=304)
+                     Sort Key: b.ano
+                     ->  Nested Loop Left Join  (cost=50.71..912.19 rows=18 width=304)
+                           ->  Nested Loop  (cost=4.73..84.20 rows=18 width=280)
+                                 ->  Nested Loop  (cost=4.57..67.52 rows=18 width=268)
+                                       ->  Index Scan using municipio_pkey on municipio m  (cost=0.15..8.17 rows=1 width=18)
+                                             Index Cond: (cd_mun = 2102325)
+                                       ->  Bitmap Heap Scan on mv_painel_base b  (cost=4.42..59.18 rows=18 width=254)
+                                             Recheck Cond: (cd_mun = 2102325)
+                                             ->  Bitmap Index Scan on mv_painel_base_pk  (cost=0.00..4.42 rows=18 width=0)
+                                                   Index Cond: (cd_mun = 2102325)
+                                 ->  Memoize  (cost=0.16..2.85 rows=1 width=14)
+                                       Cache Key: b.cd_uf
+                                       Cache Mode: logical
+                                       ->  Index Scan using uf_pkey on uf u  (cost=0.15..2.84 rows=1 width=14)
+                                             Index Cond: (cd_uf = b.cd_uf)
+                           ->  Aggregate  (cost=45.98..45.99 rows=1 width=24)
+                                 ->  Nested Loop  (cost=0.56..45.94 rows=5 width=16)
+                                       ->  Index Only Scan using mv_municipio_vizinho_pk on mv_municipio_vizinho v  (cost=0.28..4.36 rows=5 width=4)
+                                             Index Cond: (cd_mun = b.cd_mun)
+                                       ->  Index Scan using mv_painel_base_pk on mv_painel_base n  (cost=0.28..8.30 rows=1 width=20)
+                                             Index Cond: ((cd_mun = v.cd_mun_vizinho) AND (ano = b.ano))
+(26 rows)
+
+ROLLBACK

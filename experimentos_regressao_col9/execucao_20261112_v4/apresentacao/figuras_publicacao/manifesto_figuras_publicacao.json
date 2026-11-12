@@ -1,0 +1,23 @@
+{
+  "origem_sha256": "f244ece2e296d032abfdd751a9a94a59ef9ba309ec12a96b642e823d5f862a66",
+  "apenas_revisao_visual": true,
+  "novos_ajustes_ou_predicoes": false,
+  "sha256": {
+    "importancias_validacao_C_ha.png": "1d4ebccc16384398de618ee26fd6e039021b552353535a6588bb61e6fefc0ec0",
+    "importancias_validacao_C_ha.svg": "a55957ac2909f4ab4d1125470951e29f08f41f73e1ed4bd214b91205ebcabf68",
+    "importancias_validacao_R_pct.png": "34ffa79d2dc948e1b8d5ef288d97328318a2b38d714c53486c378550fcfc7920",
+    "importancias_validacao_R_pct.svg": "f8e6dca6f174ac13154a59bf4c1659c720a06f7093eeba7ff9159911b8a49424",
+    "mapas_LOSO_C_ha.png": "6d783fa5bc0deee052fe0b3835233e644040c43aba7b51a6d95b500163e0fc8c",
+    "mapas_LOSO_C_ha.svg": "ede78e766f53ebf4254cda553de65bf61e4461e0b97ff2d9644d60029c21737c",
+    "mapas_LOSO_R_pct.png": "c75c3a7e6e971f705b7badb2e295e36be816e8597e7be3cf1a5a4cfddf844c98",
+    "mapas_LOSO_R_pct.svg": "2ec3ef1dcea6275953551b1018c958d0c7d6646b122a4d9753ab9456c18f9993",
+    "mapas_municipais_C_ha.png": "302eaaf98d74fdf25b18e97c44951bc09fc5f17a873643eb570666e9cc826cc1",
+    "mapas_municipais_C_ha.svg": "2e2d57526bfdc7b8a4f8a95e505834c461e28046605661b0296e17f2aa7642dd",
+    "mapas_municipais_R_pct.png": "95fa11a787a85145750458faade0f64f07ba8e4f4b1f6ce9d94863f56832ad6f",
+    "mapas_municipais_R_pct.svg": "961be2cff857cb74c9b492f19d0b042c2e94ad27eb79d11c85caabd2ab0ae8a9",
+    "observado_previsto_C_ha.png": "4c4ecc0dfb3daf0bdfeef59f80d74132f06f65ec04aebdfa1b4888675a477845",
+    "observado_previsto_C_ha.svg": "344b8ebbbd1b490efef7e8a8f7d92b407a16ed1b7647834b2f97ba9638c2d695",
+    "observado_previsto_R_pct.png": "c2a9f76d7018c87ad7f4ecfd1090b70ba7847442cff33cc9d9ea989d737e41fb",
+    "observado_previsto_R_pct.svg": "6981616d1a0e894c5a129a28e633224165f8d1263ee8b73ba6c6118b76541286"
+  }
+}

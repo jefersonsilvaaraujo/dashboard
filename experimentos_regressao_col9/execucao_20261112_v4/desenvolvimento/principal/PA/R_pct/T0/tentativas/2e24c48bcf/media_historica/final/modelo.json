@@ -1,0 +1,28 @@
+{
+  "coorte": "principal",
+  "contexto": "PA",
+  "target": "R_pct",
+  "bloco": "BASE",
+  "features": [
+    "territorio_area_geodesica_ha",
+    "territorio_lon_referencia",
+    "territorio_lat_referencia"
+  ],
+  "n_treino_inicial": 6960,
+  "n_validacao": 720,
+  "UF_excluida": "PA",
+  "cortes_magnitude_treino": [
+    1.0679885680739374,
+    2.17333600039141,
+    3.9499271105463283
+  ],
+  "row_ids_treino_sha256": "e5ad6dece941e1e7f4e5571b24bd735c3797262d5d4e67848b9a08a3a39f86f9",
+  "algoritmo": "media_historica",
+  "media": 2.997203573889617,
+  "mediana": 2.1307555381601198,
+  "n_treino_final": 7680,
+  "treino_final_ate": 2017,
+  "refit_exclui2014": true,
+  "arquivos_sha256": {},
+  "tipos_requerem_revisao_skops": {}
+}

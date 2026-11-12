@@ -2,6 +2,48 @@
 
 Este painel interativo desenvolvido em **Python com Streamlit** tem como objetivo permitir a **análise da dinâmica de uso e cobertura do solo** em municípios da fronteira Cerrado-Amazônia, com base nos dados do projeto **MapBiomas** (Coleção 10.1, séries históricas de 1985 a 2024).
 
+O estudo definitivo usa a **Coleção 9 (1985–2023), 255 municípios**, disponível na
+página independente `Colecao_9_255`. O painel principal continua legado. Consulte
+[diagnóstico e sequência verificável](docs/DIAGNOSTICO_FASE0.md) e
+[decisões e testes](docs/DECISOES_DEFESA_MESTRADO.md) antes de atualizar dados.
+
+As definições D1–D4 foram aprovadas e implementadas. A nova página
+inclui indicadores/sensibilidades, séries, médias por década, variação líquida,
+mapas dos 255 e auditoria de áreas. Veja os relatórios da
+[Fase 1](docs/RELATORIO_FASE1_COL9.md) e [Fase 2](docs/RELATORIO_FASE2_COL9.md).
+A nova página foi implantada em 11/11/2026 após confirmação expressa, com
+substituição somente do app, preservando banco e volume. Os testes funcionais
+automatizados passaram; a conferência visual completa permanece pendente.
+Veja o [relatório de implantação](docs/RELATORIO_IMPLANTACAO_COL9_20261111.md).
+Conversão significativa em t+1 exige a
+[proposta própria de variável-alvo](docs/PROPOSTA_VARIAVEL_ALVO_CONVERSAO_COL9.md),
+sem usar automaticamente diferenças líquidas ou alvos do painel legado.
+
+As transições espaciais Col9 foram calculadas separadamente para os 255 municípios
+nos 38 pares anuais: [relatório exploratório](docs/RELATORIO_EXPLORATORIO_TRANSICOES_COL9.md)
+e [protocolo de reprodução e auditoria](docs/PROTOCOLO_TRANSICOES_COL9.md).
+Matrizes, sensibilidades e cenários são contínuos; tau, A_min, elegibilidade
+mínima definitiva e variável-alvo binária aguardam validação científica.
+
+A etapa de validação científica possui [checkpoint A/B/C](docs/ENTREGA_VALIDACAO_CIENTIFICA_COL9.md),
+[relatório temático preliminar](docs/RELATORIO_VALIDACAO_TEMATICA_COL9.md),
+[comparação A/B/C de limiares](docs/RELATORIO_COMPARACAO_LIMIARES_COL9.md) e
+[especificação da matriz sem rótulos](docs/ESPECIFICACAO_MATRIZ_TREINAMENTO_COL9.md).
+A amostra probabilística está sorteada; as respostas independentes ainda não
+permitem estimar acurácia. Não há alvo homologado ou treinamento novo.
+
+O pesquisador definiu a **predição retrospectiva** como experimento principal,
+mantendo2024 reservado. Foram preparados o [piloto temático de120 pontos](docs/PROTOCOLO_PILOTO_TEMATICO_COL9.md),
+a [nota sobre relevância/persistência](docs/NOTA_CONVERSAO_RELEVANTE_COL9.md),
+o [protocolo retrospectivo](docs/PROTOCOLO_MODELAGEM_RETROSPECTIVA_COL9.md) e
+o [relatório de decisões/entrega dos pacotes A/B](docs/PENDENCIAS_DECISOES_PILOTO_COL9.md).
+As fichas permanecem sem respostas; não foi calculada acurácia do piloto.
+
+**Preservação da base existente:** os comandos de ETL descritos abaixo recarregam
+tabelas legadas com `DELETE` e podem sobrescrever CSVs/mapas. Não são comandos de
+diagnóstico; neste projeto exigem aprovação expressa antes da execução. Para uma
+base já carregada, não execute o ETL para instalar a página Col9 ou rodar testes.
+
 ## 🔍 Funcionalidades
 
 - Visualização interativa de gráficos por ano, década e classe de cobertura

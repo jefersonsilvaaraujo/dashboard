@@ -4,8 +4,10 @@ O painel lendo do banco deve mostrar exatamente o que mostrava lendo dos CSVs.
 Requer o banco no ar e carregado:
 
     docker compose up -d db
-    docker compose run --rm etl
     pytest testes
+
+Não executar o ETL para testar uma base existente: ele substitui dados legados
+e exige aprovação expressa neste projeto. Os testes abaixo só consultam o banco.
 
 Sem as variáveis PG*, o teste usa o .env do projeto (usuário somente leitura do app).
 """

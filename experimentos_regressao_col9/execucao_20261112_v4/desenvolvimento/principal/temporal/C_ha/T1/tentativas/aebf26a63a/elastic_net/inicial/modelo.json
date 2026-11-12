@@ -1,0 +1,73 @@
+{
+  "coorte": "principal",
+  "contexto": "temporal",
+  "target": "C_ha",
+  "bloco": "T1",
+  "features": [
+    "territorio_area_geodesica_ha",
+    "territorio_lon_referencia",
+    "territorio_lat_referencia",
+    "mb_vn_t_ha",
+    "mb_vn_t_pct",
+    "mb_ua_t_ha",
+    "mb_ua_t_pct",
+    "mb_pastagem_t_ha",
+    "mb_pastagem_t_pct",
+    "mb_agricultura_t_ha",
+    "mb_agricultura_t_pct",
+    "mb_formacoes_florestais_t_ha",
+    "mb_formacoes_florestais_t_pct",
+    "mb_savanica_t_ha",
+    "mb_savanica_t_pct",
+    "mb_campestre_t_ha",
+    "mb_campestre_t_pct",
+    "mb_mosaico_t_ha",
+    "mb_mosaico_t_pct",
+    "mb_classe25_t_ha",
+    "mb_classe25_t_pct",
+    "mb_classe29_t_ha",
+    "mb_classe29_t_pct",
+    "mb_classe32_t_ha",
+    "mb_classe32_t_pct",
+    "mb_classe33_t_ha",
+    "mb_classe33_t_pct",
+    "mb_area_classificada_t_ha",
+    "mb_pixels_validos_t",
+    "mb_pixels_sem_classe_valida_t",
+    "mb_cobertura_grade_t_pct",
+    "mb_razao_classificada_territorial_t_pct",
+    "mb_diferenca_classificada_territorial_t_ha"
+  ],
+  "n_treino_inicial": 7395,
+  "n_validacao": 765,
+  "UF_excluida": null,
+  "cortes_magnitude_treino": [
+    676.4421268609228,
+    1705.3107727136753,
+    4474.1242845947945
+  ],
+  "row_ids_treino_sha256": "aa5709bf9e6028ee80a7c29e76b37252018f874a5606779c4c5367ebdea720ea",
+  "centro": 4021.1377397557167,
+  "escala": 6219.201819749819,
+  "transformacao": "identidade",
+  "avisos": [],
+  "algoritmo": "elastic_net",
+  "parametros": {
+    "alpha": 0.001,
+    "l1_ratio": 0.25
+  },
+  "config": 0,
+  "MAE_CV": 2927.9528465587923,
+  "RMSE_CV": 5250.871900169094,
+  "n_colunas_entrada": 33,
+  "colunas_totalmente_ausentes_treino": [],
+  "arquivos_sha256": {
+    "pipeline.skops": "36d8f734c56c2a020286a5c6ce82d43275e3a6ded01f79ffeb8836b8502d45b5"
+  },
+  "tipos_requerem_revisao_skops": {
+    "pipeline.skops": [
+      "numpy.dtype"
+    ]
+  },
+  "persistencia": "Sem pickle/joblib. skops para sklearn; JSONnativoXGBoost. Não carregar tipos desconhecidos automaticamente."
+}

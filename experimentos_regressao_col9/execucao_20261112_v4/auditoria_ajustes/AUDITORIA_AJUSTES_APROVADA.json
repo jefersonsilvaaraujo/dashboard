@@ -1,0 +1,13 @@
+{
+  "modelos_verificados": 504,
+  "normalizacao_y_e_imputacao_conferem": true,
+  "UFs_retidas_excluidas_em_todos_ajustes": true,
+  "teste_ainda_fechado": true,
+  "linhas_avaliacao_CV": 4536,
+  "falhas_configuracao_registradas": 0,
+  "sem_reajuste": true,
+  "codigo_sha256": "3f94731bc3913c7aba474dba9c19111e155d5326a0c2df1a94b253fb53e67df4",
+  "artefatos_sha256": {
+    "VERIFICACAO_MODELOS_FINAIS.parquet": "29e1d529be24b0eb55e428b18ed994c64ca4a9ea391ae82c95aa867f9d5a7b1d"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "status": "exploratorio_sem_homologacao",
+  "data": "2026-11-11",
+  "fonte": "cobertura_col9_255_1985_2023_consolidada.csv",
+  "sha256_checkpoint": "8342c8ce79eaceb6fd13a6a2b8ea217b06d4448325667348ae8d205435c56212",
+  "metodo": "Leitura csv.DictReader com utf-8-sig e delimitador ;. Somas de area_ha e perc_ocupacao com decimal.Decimal; sem gravar nas fontes. Participacoes usam soma anual de area_ha como denominador.",
+  "classes_observadas": [3,4,5,6,9,11,12,15,20,21,23,24,25,29,30,31,32,33,39,40,41,62],
+  "anos": {
+    "1985": {
+      "area_classificada_ha": "78744322.6913",
+      "area_classe_25_ha": "249919.2506",
+      "area_classe_29_ha": "250315.5006",
+      "area_classe_32_ha": "11476.3192",
+      "area_classe_31_ha": "0",
+      "area_classe_33_ha": "820225.7544",
+      "participacao_29_32_area_classificada_pct": "0.3324580247217287299758442135",
+      "participacao_25_area_classificada_pct": "0.3173806594029059029141320096"
+    },
+    "2023": {
+      "area_classificada_ha": "78744283.2598",
+      "area_classe_25_ha": "332974.5573",
+      "area_classe_29_ha": "251078.5196",
+      "area_classe_32_ha": "9187.7332",
+      "area_classe_31_ha": "342.6316",
+      "area_classe_33_ha": "703540.2553",
+      "participacao_29_32_area_classificada_pct": "0.3305208226244271000876830563",
+      "participacao_25_area_classificada_pct": "0.4228555312408157044700766401"
+    }
+  },
+  "soma_percentuais_origem_por_municipio_ano": {
+    "minimo": "98.1229",
+    "maximo": "99.9980",
+    "com_soma_acima_100_1": 0,
+    "com_soma_abaixo_99": 2963,
+    "pares": 9945,
+    "ressalva": "Percentuais de origem arredondados. A diferenca nao prova NoData; metodo de area e mascara precisam de auditoria independente."
+  }
+}

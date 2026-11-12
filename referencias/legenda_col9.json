@@ -1,0 +1,10 @@
+{
+  "versao": "col9_legend_code_v2",
+  "colecao": "9",
+  "fonte": "https://brasil.mapbiomas.org/wp-content/uploads/sites/4/2024/10/Legenda-Colecao-9-LEGEND-CODE_v2.pdf",
+  "consulta": "2026-11-11",
+  "escopo": "29 classes terminais; níveis agregados omitidos para impedir dupla contagem",
+  "campos_conferidos": ["classe_cobertura", "nome_classe", "cor_rgb", "grupo"],
+  "tipo_natural_antropico": "não definido pelo documento oficial de códigos; classificação operacional aprovada é independente",
+  "restricao": "O documento oficial não define o tipo operacional. A metodologia aprovada da pesquisa está separada em metodologia_col9.json. Código zero é NoData, não uma transição."
+}

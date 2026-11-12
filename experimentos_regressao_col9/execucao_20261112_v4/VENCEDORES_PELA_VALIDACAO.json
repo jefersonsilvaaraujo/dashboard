@@ -1,0 +1,482 @@
+[
+  {
+    "coorte": "focos2003",
+    "contexto": "MA",
+    "target": "C_ha",
+    "categoria": "incluindo_baselines",
+    "bloco": "T3",
+    "algoritmo": "ridge",
+    "MAE_validacao": 643.3143437246656,
+    "RMSE_validacao": 1167.2168061258128
+  },
+  {
+    "coorte": "focos2003",
+    "contexto": "MA",
+    "target": "C_ha",
+    "categoria": "supervisionado",
+    "bloco": "T3",
+    "algoritmo": "ridge",
+    "MAE_validacao": 643.3143437246656,
+    "RMSE_validacao": 1167.2168061258128
+  },
+  {
+    "coorte": "focos2003",
+    "contexto": "MA",
+    "target": "R_pct",
+    "categoria": "incluindo_baselines",
+    "bloco": "T4",
+    "algoritmo": "random_forest",
+    "MAE_validacao": 0.5789805265398217,
+    "RMSE_validacao": 0.9645420563586593
+  },
+  {
+    "coorte": "focos2003",
+    "contexto": "MA",
+    "target": "R_pct",
+    "categoria": "supervisionado",
+    "bloco": "T4",
+    "algoritmo": "random_forest",
+    "MAE_validacao": 0.5789805265398217,
+    "RMSE_validacao": 0.9645420563586593
+  },
+  {
+    "coorte": "focos2003",
+    "contexto": "MT",
+    "target": "C_ha",
+    "categoria": "incluindo_baselines",
+    "bloco": "T3",
+    "algoritmo": "xgboost",
+    "MAE_validacao": 356.6347256345896,
+    "RMSE_validacao": 620.5342714758925
+  },
+  {
+    "coorte": "focos2003",
+    "contexto": "MT",
+    "target": "C_ha",
+    "categoria": "supervisionado",
+    "bloco": "T3",
+    "algoritmo": "xgboost",
+    "MAE_validacao": 356.6347256345896,
+    "RMSE_validacao": 620.5342714758925
+  },
+  {
+    "coorte": "focos2003",
+    "contexto": "MT",
+    "target": "R_pct",
+    "categoria": "incluindo_baselines",
+    "bloco": "T4",
+    "algoritmo": "random_forest",
+    "MAE_validacao": 0.7076088040097336,
+    "RMSE_validacao": 1.087774200280719
+  },
+  {
+    "coorte": "focos2003",
+    "contexto": "MT",
+    "target": "R_pct",
+    "categoria": "supervisionado",
+    "bloco": "T4",
+    "algoritmo": "random_forest",
+    "MAE_validacao": 0.7076088040097336,
+    "RMSE_validacao": 1.087774200280719
+  },
+  {
+    "coorte": "focos2003",
+    "contexto": "PA",
+    "target": "C_ha",
+    "categoria": "incluindo_baselines",
+    "bloco": "T4",
+    "algoritmo": "random_forest",
+    "MAE_validacao": 516.0832243474658,
+    "RMSE_validacao": 1150.879188663891
+  },
+  {
+    "coorte": "focos2003",
+    "contexto": "PA",
+    "target": "C_ha",
+    "categoria": "supervisionado",
+    "bloco": "T4",
+    "algoritmo": "random_forest",
+    "MAE_validacao": 516.0832243474658,
+    "RMSE_validacao": 1150.879188663891
+  },
+  {
+    "coorte": "focos2003",
+    "contexto": "PA",
+    "target": "R_pct",
+    "categoria": "incluindo_baselines",
+    "bloco": "T4",
+    "algoritmo": "elastic_net",
+    "MAE_validacao": 0.5823313770321464,
+    "RMSE_validacao": 0.8842145996560741
+  },
+  {
+    "coorte": "focos2003",
+    "contexto": "PA",
+    "target": "R_pct",
+    "categoria": "supervisionado",
+    "bloco": "T4",
+    "algoritmo": "elastic_net",
+    "MAE_validacao": 0.5823313770321464,
+    "RMSE_validacao": 0.8842145996560741
+  },
+  {
+    "coorte": "focos2003",
+    "contexto": "RO",
+    "target": "C_ha",
+    "categoria": "incluindo_baselines",
+    "bloco": "T3",
+    "algoritmo": "random_forest",
+    "MAE_validacao": 521.306140910359,
+    "RMSE_validacao": 1143.3315768606415
+  },
+  {
+    "coorte": "focos2003",
+    "contexto": "RO",
+    "target": "C_ha",
+    "categoria": "supervisionado",
+    "bloco": "T3",
+    "algoritmo": "random_forest",
+    "MAE_validacao": 521.306140910359,
+    "RMSE_validacao": 1143.3315768606415
+  },
+  {
+    "coorte": "focos2003",
+    "contexto": "RO",
+    "target": "R_pct",
+    "categoria": "incluindo_baselines",
+    "bloco": "T4",
+    "algoritmo": "ridge",
+    "MAE_validacao": 0.6216669162850321,
+    "RMSE_validacao": 0.9690882184180772
+  },
+  {
+    "coorte": "focos2003",
+    "contexto": "RO",
+    "target": "R_pct",
+    "categoria": "supervisionado",
+    "bloco": "T4",
+    "algoritmo": "ridge",
+    "MAE_validacao": 0.6216669162850321,
+    "RMSE_validacao": 0.9690882184180772
+  },
+  {
+    "coorte": "focos2003",
+    "contexto": "TO",
+    "target": "C_ha",
+    "categoria": "incluindo_baselines",
+    "bloco": "T3",
+    "algoritmo": "xgboost",
+    "MAE_validacao": 574.0318850161234,
+    "RMSE_validacao": 1276.4254721284922
+  },
+  {
+    "coorte": "focos2003",
+    "contexto": "TO",
+    "target": "C_ha",
+    "categoria": "supervisionado",
+    "bloco": "T3",
+    "algoritmo": "xgboost",
+    "MAE_validacao": 574.0318850161234,
+    "RMSE_validacao": 1276.4254721284922
+  },
+  {
+    "coorte": "focos2003",
+    "contexto": "TO",
+    "target": "R_pct",
+    "categoria": "incluindo_baselines",
+    "bloco": "T4",
+    "algoritmo": "elastic_net",
+    "MAE_validacao": 0.5675000299699918,
+    "RMSE_validacao": 0.8783111159220153
+  },
+  {
+    "coorte": "focos2003",
+    "contexto": "TO",
+    "target": "R_pct",
+    "categoria": "supervisionado",
+    "bloco": "T4",
+    "algoritmo": "elastic_net",
+    "MAE_validacao": 0.5675000299699918,
+    "RMSE_validacao": 0.8783111159220153
+  },
+  {
+    "coorte": "focos2003",
+    "contexto": "temporal",
+    "target": "C_ha",
+    "categoria": "incluindo_baselines",
+    "bloco": "T3",
+    "algoritmo": "xgboost",
+    "MAE_validacao": 516.2260642361668,
+    "RMSE_validacao": 1099.3260288458248
+  },
+  {
+    "coorte": "focos2003",
+    "contexto": "temporal",
+    "target": "C_ha",
+    "categoria": "supervisionado",
+    "bloco": "T3",
+    "algoritmo": "xgboost",
+    "MAE_validacao": 516.2260642361668,
+    "RMSE_validacao": 1099.3260288458248
+  },
+  {
+    "coorte": "focos2003",
+    "contexto": "temporal",
+    "target": "R_pct",
+    "categoria": "incluindo_baselines",
+    "bloco": "T4",
+    "algoritmo": "ridge",
+    "MAE_validacao": 0.6130205714398342,
+    "RMSE_validacao": 0.9621785898790581
+  },
+  {
+    "coorte": "focos2003",
+    "contexto": "temporal",
+    "target": "R_pct",
+    "categoria": "supervisionado",
+    "bloco": "T4",
+    "algoritmo": "ridge",
+    "MAE_validacao": 0.6130205714398342,
+    "RMSE_validacao": 0.9621785898790581
+  },
+  {
+    "coorte": "principal",
+    "contexto": "MA",
+    "target": "C_ha",
+    "categoria": "incluindo_baselines",
+    "bloco": "BASE",
+    "algoritmo": "persistencia",
+    "MAE_validacao": 657.2574692821472,
+    "RMSE_validacao": 1306.7163115621772
+  },
+  {
+    "coorte": "principal",
+    "contexto": "MA",
+    "target": "C_ha",
+    "categoria": "supervisionado",
+    "bloco": "T3",
+    "algoritmo": "xgboost",
+    "MAE_validacao": 660.6445598241705,
+    "RMSE_validacao": 1331.4932138913284
+  },
+  {
+    "coorte": "principal",
+    "contexto": "MA",
+    "target": "R_pct",
+    "categoria": "incluindo_baselines",
+    "bloco": "BASE",
+    "algoritmo": "persistencia",
+    "MAE_validacao": 0.5931583463864335,
+    "RMSE_validacao": 1.041725506490932
+  },
+  {
+    "coorte": "principal",
+    "contexto": "MA",
+    "target": "R_pct",
+    "categoria": "supervisionado",
+    "bloco": "T3",
+    "algoritmo": "elastic_net",
+    "MAE_validacao": 0.6019368992231364,
+    "RMSE_validacao": 0.9688637468309991
+  },
+  {
+    "coorte": "principal",
+    "contexto": "MT",
+    "target": "C_ha",
+    "categoria": "incluindo_baselines",
+    "bloco": "T3",
+    "algoritmo": "random_forest",
+    "MAE_validacao": 363.1824463646378,
+    "RMSE_validacao": 621.0045345786732
+  },
+  {
+    "coorte": "principal",
+    "contexto": "MT",
+    "target": "C_ha",
+    "categoria": "supervisionado",
+    "bloco": "T3",
+    "algoritmo": "random_forest",
+    "MAE_validacao": 363.1824463646378,
+    "RMSE_validacao": 621.0045345786732
+  },
+  {
+    "coorte": "principal",
+    "contexto": "MT",
+    "target": "R_pct",
+    "categoria": "incluindo_baselines",
+    "bloco": "T3",
+    "algoritmo": "random_forest",
+    "MAE_validacao": 0.7383788532197816,
+    "RMSE_validacao": 1.09661064003252
+  },
+  {
+    "coorte": "principal",
+    "contexto": "MT",
+    "target": "R_pct",
+    "categoria": "supervisionado",
+    "bloco": "T3",
+    "algoritmo": "random_forest",
+    "MAE_validacao": 0.7383788532197816,
+    "RMSE_validacao": 1.09661064003252
+  },
+  {
+    "coorte": "principal",
+    "contexto": "PA",
+    "target": "C_ha",
+    "categoria": "incluindo_baselines",
+    "bloco": "T3",
+    "algoritmo": "random_forest",
+    "MAE_validacao": 524.4870234635274,
+    "RMSE_validacao": 1153.5637226226809
+  },
+  {
+    "coorte": "principal",
+    "contexto": "PA",
+    "target": "C_ha",
+    "categoria": "supervisionado",
+    "bloco": "T3",
+    "algoritmo": "random_forest",
+    "MAE_validacao": 524.4870234635274,
+    "RMSE_validacao": 1153.5637226226809
+  },
+  {
+    "coorte": "principal",
+    "contexto": "PA",
+    "target": "R_pct",
+    "categoria": "incluindo_baselines",
+    "bloco": "T3",
+    "algoritmo": "xgboost",
+    "MAE_validacao": 0.6283909411408262,
+    "RMSE_validacao": 0.9495283624334826
+  },
+  {
+    "coorte": "principal",
+    "contexto": "PA",
+    "target": "R_pct",
+    "categoria": "supervisionado",
+    "bloco": "T3",
+    "algoritmo": "xgboost",
+    "MAE_validacao": 0.6283909411408262,
+    "RMSE_validacao": 0.9495283624334826
+  },
+  {
+    "coorte": "principal",
+    "contexto": "RO",
+    "target": "C_ha",
+    "categoria": "incluindo_baselines",
+    "bloco": "T3",
+    "algoritmo": "xgboost",
+    "MAE_validacao": 537.5898027082146,
+    "RMSE_validacao": 1094.094719838484
+  },
+  {
+    "coorte": "principal",
+    "contexto": "RO",
+    "target": "C_ha",
+    "categoria": "supervisionado",
+    "bloco": "T3",
+    "algoritmo": "xgboost",
+    "MAE_validacao": 537.5898027082146,
+    "RMSE_validacao": 1094.094719838484
+  },
+  {
+    "coorte": "principal",
+    "contexto": "RO",
+    "target": "R_pct",
+    "categoria": "incluindo_baselines",
+    "bloco": "BASE",
+    "algoritmo": "persistencia",
+    "MAE_validacao": 0.6634397037128078,
+    "RMSE_validacao": 1.0618340913391793
+  },
+  {
+    "coorte": "principal",
+    "contexto": "RO",
+    "target": "R_pct",
+    "categoria": "supervisionado",
+    "bloco": "T3",
+    "algoritmo": "xgboost",
+    "MAE_validacao": 0.6648651587084107,
+    "RMSE_validacao": 1.018973983910284
+  },
+  {
+    "coorte": "principal",
+    "contexto": "TO",
+    "target": "C_ha",
+    "categoria": "incluindo_baselines",
+    "bloco": "T3",
+    "algoritmo": "xgboost",
+    "MAE_validacao": 604.4816395225565,
+    "RMSE_validacao": 1250.7345092302048
+  },
+  {
+    "coorte": "principal",
+    "contexto": "TO",
+    "target": "C_ha",
+    "categoria": "supervisionado",
+    "bloco": "T3",
+    "algoritmo": "xgboost",
+    "MAE_validacao": 604.4816395225565,
+    "RMSE_validacao": 1250.7345092302048
+  },
+  {
+    "coorte": "principal",
+    "contexto": "TO",
+    "target": "R_pct",
+    "categoria": "incluindo_baselines",
+    "bloco": "BASE",
+    "algoritmo": "persistencia",
+    "MAE_validacao": 0.6050643280005782,
+    "RMSE_validacao": 0.947254704824482
+  },
+  {
+    "coorte": "principal",
+    "contexto": "TO",
+    "target": "R_pct",
+    "categoria": "supervisionado",
+    "bloco": "T3",
+    "algoritmo": "xgboost",
+    "MAE_validacao": 0.630982047186546,
+    "RMSE_validacao": 0.9647408895046653
+  },
+  {
+    "coorte": "principal",
+    "contexto": "temporal",
+    "target": "C_ha",
+    "categoria": "incluindo_baselines",
+    "bloco": "T3",
+    "algoritmo": "random_forest",
+    "MAE_validacao": 538.7928495432959,
+    "RMSE_validacao": 1151.6439857919818
+  },
+  {
+    "coorte": "principal",
+    "contexto": "temporal",
+    "target": "C_ha",
+    "categoria": "supervisionado",
+    "bloco": "T3",
+    "algoritmo": "random_forest",
+    "MAE_validacao": 538.7928495432959,
+    "RMSE_validacao": 1151.6439857919818
+  },
+  {
+    "coorte": "principal",
+    "contexto": "temporal",
+    "target": "R_pct",
+    "categoria": "incluindo_baselines",
+    "bloco": "BASE",
+    "algoritmo": "persistencia",
+    "MAE_validacao": 0.6547042807070189,
+    "RMSE_validacao": 1.0523384476983726
+  },
+  {
+    "coorte": "principal",
+    "contexto": "temporal",
+    "target": "R_pct",
+    "categoria": "supervisionado",
+    "bloco": "T3",
+    "algoritmo": "xgboost",
+    "MAE_validacao": 0.6601829705707187,
+    "RMSE_validacao": 1.013297826407017
+  }
+]

@@ -1,0 +1,13 @@
+{
+  "protocolo_sha256": "ec6fe93e40a4ecb2a23dd52a41761c3d4d1f37df85d1d5c677d322a7fa69f2f0",
+  "grupos": 108,
+  "modelos_finais": 504,
+  "tempo_segundos": 345.7348358,
+  "escolhas_definidas_antes_teste": true,
+  "artefatos_sha256": {
+    "METRICAS_VALIDACAO_CONGELADAS.parquet": "b8184bbe135236cc03e765927ca23412302a852a8df79c62219e46d521c5ffb4",
+    "AJUSTES_CV_DESENVOLVIMENTO.parquet": "ba34e7593486e35be2567afea0752b6d116ddb83e67c50c7d7c0c74534f6f191",
+    "MODELOS_PARA_TESTE.json": "4cc7e146a289b61dd9b0bab6b19ba2434b3af65d7684d7459eedd035daf0e89e",
+    "VENCEDORES_PELA_VALIDACAO.json": "6e9da5a62eb7aa51d9fd0bfdc2ae8e77badd297bc67e4e44555b9b90259f30a2"
+  }
+}

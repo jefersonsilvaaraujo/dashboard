@@ -1,0 +1,16 @@
+{
+  "fim_UTC": "2026-11-12T14:37:55.159765+00:00",
+  "avaliacoes_finais": 1,
+  "sem_novo_ajuste": true,
+  "modelos_arquivos": 504,
+  "linhas_predicoes": 191760,
+  "novas_escolhas_permitidas": false,
+  "artefatos_sha256": {
+    "METRICAS_POR_MAGNITUDE.parquet": "d694018dd7bbb349fec553b38eaab9c5f6839657a49aaf452bcc4310a352a289",
+    "METRICAS_TESTE_FINAL.parquet": "9c5e356b66954cd25150019aac2785f98d83562dbef80c5b625cfd32176ca22f",
+    "METRICAS_TESTE_POR_ANO.parquet": "473176468ab9d0647d01283dfb23bb289228c28dd7966d11d75b8788afc8246a",
+    "METRICAS_TESTE_POR_ESTADO.parquet": "cbfca67232b2cd3ecbd9972bb2d1f3ec70d33e877a4dd022f675ca39e8d64e0a",
+    "PREDICOES_ANTES_ABRIR_Y.parquet": "f53735b4843e7d891f543c17f089707b695d65a8535d8ae951756dfd69a706f6",
+    "RESULTADOS_IMUTAVEIS_TESTE.parquet": "f244ece2e296d032abfdd751a9a94a59ef9ba309ec12a96b642e823d5f862a66"
+  }
+}

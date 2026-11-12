@@ -1,0 +1,28 @@
+{
+  "tentativa": "tentativas\\c67f388c82",
+  "protocolo_sha256": "ec6fe93e40a4ecb2a23dd52a41761c3d4d1f37df85d1d5c677d322a7fa69f2f0",
+  "artefatos": {
+    "tentativas\\c67f388c82\\CV.parquet": "1ca32dd7d6424c0432e25d10ba9b2647bd0d9b9549bc10d051a14b3e55700742",
+    "tentativas\\c67f388c82\\especificacoes_modelos.json": "d3763398d09e1677a97c00a2f43bafba8482cc39d7597dce76749fa848237849",
+    "tentativas\\c67f388c82\\validacao_metricas.parquet": "f6640e286cd4055b44c48f4b59eb9f5ea481a4b209af6a204e5ef6324ea346bd",
+    "tentativas\\c67f388c82\\validacao_predicoes.parquet": "5a8803b34280f072bf28a99248169c6a4326bbd41a6a3e8f25f6502bb3ddf63f",
+    "tentativas\\c67f388c82\\xgboost\\final\\modelo.json": "4e0212e83dbafe0ec01c686034fd9b812f601300ea19664114420c22e9b34103",
+    "tentativas\\c67f388c82\\xgboost\\final\\modelo_xgboost.json": "13b4967235ded0d80c77a553e1024fe1d075f9aac96c45c02b710019edabad16",
+    "tentativas\\c67f388c82\\xgboost\\final\\preprocessamento.skops": "cf680ad1ec3affbfbc5c5269d394731345a572a6bea91f75e12defc34b0c6992",
+    "tentativas\\c67f388c82\\xgboost\\inicial\\modelo.json": "e973cfd092dbf71bec3224bcdb840a60108578e3d023fd8bc02ac9434ccc339e",
+    "tentativas\\c67f388c82\\xgboost\\inicial\\modelo_xgboost.json": "8c8e8f92cef2789ee5cf3790cd33ab0c8d4728f1e22a32b5759452ad1603259e",
+    "tentativas\\c67f388c82\\xgboost\\inicial\\preprocessamento.skops": "f81a6edcc313051300bfb7d95c8a766fa2dc99dc5c1ef5c149a6c6babf441bcb",
+    "tentativas\\c67f388c82\\ridge\\final\\modelo.json": "512f1ba3fb26c063d7704199e666c063b88aeaf2cc1b8b33483d2bfeb84df03a",
+    "tentativas\\c67f388c82\\ridge\\final\\pipeline.skops": "f04ea25b42804328f2c4b6ea2f4973d027b1bcbe181acf0b66c9e55c654b8b1b",
+    "tentativas\\c67f388c82\\ridge\\inicial\\modelo.json": "ba94799100028204012fddad067a241f306f374d69c6b049d578181811a66589",
+    "tentativas\\c67f388c82\\ridge\\inicial\\pipeline.skops": "3412d810bd1ecf3f2f834f9192382fb48a34687deb49c2b94d570b0cd2dd7f9d",
+    "tentativas\\c67f388c82\\random_forest\\final\\modelo.json": "88cdb1f2df03b202513bd6df2cb2e932ae316849e4fcc0d494e5678e87b21d67",
+    "tentativas\\c67f388c82\\random_forest\\final\\pipeline.skops": "c59ce9e841e712934d89cccb6726241f7af9e76dcf368c294c373987b690e98f",
+    "tentativas\\c67f388c82\\random_forest\\inicial\\modelo.json": "aa95cc9987f0b1dd73488f3dcda54e8f6820a3ff45c8d61dba448dd73660468f",
+    "tentativas\\c67f388c82\\random_forest\\inicial\\pipeline.skops": "8d0bb52b285bbd2c477a376997e93d32dfe2063845294ea99fcd212c75501fe4",
+    "tentativas\\c67f388c82\\elastic_net\\final\\modelo.json": "b86ddd4a7c12f3371fa361321cd9947b20fd84d70f015759ef6f9117ee173775",
+    "tentativas\\c67f388c82\\elastic_net\\final\\pipeline.skops": "71652c4a16b7cb8c75fcca241c771d194305e1044f9545f668fb128179ec82f5",
+    "tentativas\\c67f388c82\\elastic_net\\inicial\\modelo.json": "edf5c5541e17446da4b86727cf88a157abafd3ddc6e10333e7a7a9f858ec1adf",
+    "tentativas\\c67f388c82\\elastic_net\\inicial\\pipeline.skops": "48eab639265436906ef1f61e5983208ab5ba97b27382374de8d739f5f785892e"
+  }
+}

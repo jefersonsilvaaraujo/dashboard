@@ -1,0 +1,20 @@
+{
+  "versao": "defesa_col9_d1d4_v1",
+  "status": "aprovada_pelo_pesquisador",
+  "aprovacao": "2026-11-11",
+  "serie": "col9_255_1985_2023",
+  "vegetacao_nativa": [3, 4, 5, 6, 49, 11, 12, 50],
+  "natural_especifica": [23, 29, 32],
+  "sensibilidade_vegetacao": [29, 32],
+  "usos_antropicos": [9, 15, 20, 21, 24, 30, 31, 35, 39, 40, 41, 46, 47, 48, 62],
+  "agua": [33],
+  "indeterminada": [25],
+  "nao_observado": [0, 27],
+  "denominador": "soma das areas classificadas, incluindo 25 e 33; excluir 0, 27 e NoData",
+  "agregacao": "razao entre somas de areas; denominador independente do filtro de classes",
+  "decadas": "media anual de area, informando anos e periodos incompletos",
+  "variacao": "variacao liquida de area entre estoques anuais; nao e desmatamento nem transicao espacial",
+  "variavel_alvo": "nao definida; conversao significativa em t+1 exige proposta de transicoes espaciais, limiar validado e controle de vazamento temporal",
+  "territorio": "255 municipios, limites fixos IBGE 2025, EPSG:4674",
+  "limites": ["classes mapeadas nao medem intensidade de impacto", "agua inclui reservatorios", "sensibilidade nao e intervalo de confianca", "diferencas de area nao sao automaticamente NoData"]
+}

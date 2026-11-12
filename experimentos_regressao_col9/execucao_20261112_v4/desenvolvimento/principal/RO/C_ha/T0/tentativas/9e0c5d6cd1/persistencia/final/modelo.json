@@ -1,0 +1,28 @@
+{
+  "coorte": "principal",
+  "contexto": "RO",
+  "target": "C_ha",
+  "bloco": "BASE",
+  "features": [
+    "territorio_area_geodesica_ha",
+    "territorio_lon_referencia",
+    "territorio_lat_referencia"
+  ],
+  "n_treino_inicial": 7250,
+  "n_validacao": 750,
+  "UF_excluida": "RO",
+  "cortes_magnitude_treino": [
+    665.8083260190436,
+    1657.3289369255099,
+    4364.6790300302755
+  ],
+  "row_ids_treino_sha256": "24ace3681204e51c0fbaef1012a52bc60afdb51f2aa77cdf4c68efd2f73eb210",
+  "algoritmo": "persistencia",
+  "media": 3801.164184889062,
+  "mediana": 1604.0257434311575,
+  "n_treino_final": 8000,
+  "treino_final_ate": 2017,
+  "refit_exclui2014": true,
+  "arquivos_sha256": {},
+  "tipos_requerem_revisao_skops": {}
+}

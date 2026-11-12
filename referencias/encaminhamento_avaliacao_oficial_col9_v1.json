@@ -1,0 +1,17 @@
+{
+  "data_registro": "2026-11-12",
+  "origem": "Encaminhamento explícito do pesquisador nesta conversa",
+  "estrategia": "Priorizar pontos oficiais vinculados à Coleção9 e auditoria automatizada complementar, sem interpretação humana adicional",
+  "territorio": "255 polígonos IBGE2025 canônicos",
+  "periodo_principal": [1985, 2023],
+  "ano_2024": "Reservado e não utilizado",
+  "raster_matriz_banco_dashboard_checkpoints": "Preservar integralmente",
+  "referencias": "Avaliar independência, treinamento, classes, pesos, bordas, ausência e repetição temporal; não presumir inferência representativa",
+  "discordancias": "Documentar, sem corrigir automaticamente conversões",
+  "cenarios": "A/B/C não homologados; sem seleção por balanceamento ou desempenho de modelos",
+  "resposta_continua": "Examinar viabilidade como análise complementar; sem mudança de estimando homologada",
+  "modelagem": "Predição retrospectiva, horizonte t+1; manter avaliação temporal e leave-one-state-out, sem alegação de teste completamente cego",
+  "Y_homologado": false,
+  "treinamento_definitivo_autorizado": false,
+  "nova_interpretacao_humana_solicitada": false
+}

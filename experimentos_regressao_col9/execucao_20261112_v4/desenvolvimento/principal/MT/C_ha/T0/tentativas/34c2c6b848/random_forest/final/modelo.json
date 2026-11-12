@@ -1,0 +1,49 @@
+{
+  "coorte": "principal",
+  "contexto": "MT",
+  "target": "C_ha",
+  "bloco": "T0",
+  "features": [
+    "territorio_area_geodesica_ha",
+    "territorio_lon_referencia",
+    "territorio_lat_referencia"
+  ],
+  "n_treino_inicial": 5423,
+  "n_validacao": 561,
+  "UF_excluida": "MT",
+  "cortes_magnitude_treino": [
+    571.9227845163243,
+    1293.309258901958,
+    3030.3203772276247
+  ],
+  "row_ids_treino_sha256": "1dead9323aa4072066ab45b18d32353ca7bbe62fb3ed744c8468c1231add4c8b",
+  "centro": 7.102166313602096,
+  "escala": 1.320240860524664,
+  "transformacao": "log1p",
+  "avisos": [],
+  "algoritmo": "random_forest",
+  "parametros": {
+    "n_estimators": 100,
+    "max_depth": 6,
+    "min_samples_leaf": 15,
+    "max_features": 1.0
+  },
+  "config": 2,
+  "MAE_CV": 1201.9374180699924,
+  "RMSE_CV": 2293.6589080447393,
+  "n_colunas_entrada": 3,
+  "colunas_totalmente_ausentes_treino": [],
+  "n_treino_final": 5984,
+  "treino_final_ate": 2017,
+  "refit_exclui2014": true,
+  "arquivos_sha256": {
+    "pipeline.skops": "7034219803509b30fa6680ab0765d0b0d9c7d39d3ac3b3780db18bb1541c3c9f"
+  },
+  "tipos_requerem_revisao_skops": {
+    "pipeline.skops": [
+      "numpy.dtype",
+      "sklearn.tree._tree.Tree"
+    ]
+  },
+  "persistencia": "Sem pickle/joblib. skops para sklearn; JSONnativoXGBoost. Não carregar tipos desconhecidos automaticamente."
+}

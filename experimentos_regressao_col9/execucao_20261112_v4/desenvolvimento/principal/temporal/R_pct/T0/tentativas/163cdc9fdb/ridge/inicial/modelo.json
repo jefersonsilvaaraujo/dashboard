@@ -1,0 +1,42 @@
+{
+  "coorte": "principal",
+  "contexto": "temporal",
+  "target": "R_pct",
+  "bloco": "T0",
+  "features": [
+    "territorio_area_geodesica_ha",
+    "territorio_lon_referencia",
+    "territorio_lat_referencia"
+  ],
+  "n_treino_inicial": 7395,
+  "n_validacao": 765,
+  "UF_excluida": null,
+  "cortes_magnitude_treino": [
+    1.120333064741975,
+    2.3139755176053933,
+    4.181431245875582
+  ],
+  "row_ids_treino_sha256": "aa5709bf9e6028ee80a7c29e76b37252018f874a5606779c4c5367ebdea720ea",
+  "centro": 3.2285176260237884,
+  "escala": 3.217542598336014,
+  "transformacao": "identidade",
+  "avisos": [],
+  "algoritmo": "ridge",
+  "parametros": {
+    "alpha": 10.0
+  },
+  "config": 1,
+  "MAE_CV": 1.7988207657324293,
+  "RMSE_CV": 2.367843852414754,
+  "n_colunas_entrada": 3,
+  "colunas_totalmente_ausentes_treino": [],
+  "arquivos_sha256": {
+    "pipeline.skops": "fb8503b9108b6e48f462e5ab58310ebf94f74f4d72cf1ab113ee32cf44e0c977"
+  },
+  "tipos_requerem_revisao_skops": {
+    "pipeline.skops": [
+      "numpy.dtype"
+    ]
+  },
+  "persistencia": "Sem pickle/joblib. skops para sklearn; JSONnativoXGBoost. Não carregar tipos desconhecidos automaticamente."
+}

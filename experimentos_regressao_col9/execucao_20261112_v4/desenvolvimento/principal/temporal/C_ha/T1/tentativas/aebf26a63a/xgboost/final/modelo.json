@@ -1,0 +1,82 @@
+{
+  "coorte": "principal",
+  "contexto": "temporal",
+  "target": "C_ha",
+  "bloco": "T1",
+  "features": [
+    "territorio_area_geodesica_ha",
+    "territorio_lon_referencia",
+    "territorio_lat_referencia",
+    "mb_vn_t_ha",
+    "mb_vn_t_pct",
+    "mb_ua_t_ha",
+    "mb_ua_t_pct",
+    "mb_pastagem_t_ha",
+    "mb_pastagem_t_pct",
+    "mb_agricultura_t_ha",
+    "mb_agricultura_t_pct",
+    "mb_formacoes_florestais_t_ha",
+    "mb_formacoes_florestais_t_pct",
+    "mb_savanica_t_ha",
+    "mb_savanica_t_pct",
+    "mb_campestre_t_ha",
+    "mb_campestre_t_pct",
+    "mb_mosaico_t_ha",
+    "mb_mosaico_t_pct",
+    "mb_classe25_t_ha",
+    "mb_classe25_t_pct",
+    "mb_classe29_t_ha",
+    "mb_classe29_t_pct",
+    "mb_classe32_t_ha",
+    "mb_classe32_t_pct",
+    "mb_classe33_t_ha",
+    "mb_classe33_t_pct",
+    "mb_area_classificada_t_ha",
+    "mb_pixels_validos_t",
+    "mb_pixels_sem_classe_valida_t",
+    "mb_cobertura_grade_t_pct",
+    "mb_razao_classificada_territorial_t_pct",
+    "mb_diferenca_classificada_territorial_t_ha"
+  ],
+  "n_treino_inicial": 7395,
+  "n_validacao": 765,
+  "UF_excluida": null,
+  "cortes_magnitude_treino": [
+    676.4421268609228,
+    1705.3107727136753,
+    4474.1242845947945
+  ],
+  "row_ids_treino_sha256": "aa5709bf9e6028ee80a7c29e76b37252018f874a5606779c4c5367ebdea720ea",
+  "centro": 7.398515485103021,
+  "escala": 1.4047822149502094,
+  "transformacao": "log1p",
+  "avisos": [],
+  "algoritmo": "xgboost",
+  "parametros": {
+    "n_estimators": 200,
+    "max_depth": 4,
+    "learning_rate": 0.05,
+    "min_child_weight": 20,
+    "reg_lambda": 10.0,
+    "subsample": 0.9,
+    "colsample_bytree": 0.9
+  },
+  "config": 3,
+  "MAE_CV": 1600.829176473241,
+  "RMSE_CV": 3310.4812558496865,
+  "n_colunas_entrada": 33,
+  "colunas_totalmente_ausentes_treino": [],
+  "n_treino_final": 8160,
+  "treino_final_ate": 2017,
+  "refit_exclui2014": true,
+  "arquivos_sha256": {
+    "preprocessamento.skops": "16fb8a3feefa8dd2fd2f092e20c4d9b919cd89205c204f8699688ed510a58c35",
+    "modelo_xgboost.json": "3d5ddcac264d04ea852f83769325058d3f46cf582f7982591c4a26f39f19727a"
+  },
+  "tipos_requerem_revisao_skops": {
+    "preprocessamento.skops": [
+      "numpy.dtype"
+    ]
+  },
+  "persistencia": "Sem pickle/joblib. skops para sklearn; JSONnativoXGBoost. Não carregar tipos desconhecidos automaticamente."
+}

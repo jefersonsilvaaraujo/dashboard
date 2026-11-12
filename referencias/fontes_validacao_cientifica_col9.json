@@ -1,0 +1,67 @@
+{
+  "verificado_em": "2026-11-11",
+  "fontes": [
+    {
+      "fonte": "Olofsson et al. 2014",
+      "url": "https://doi.org/10.1016/j.rse.2014.02.015",
+      "uso": "Desenho probabil?stico, resposta independente e infer?ncia coerente; n?o fornece tau/A_min."
+    },
+    {
+      "fonte": "MapBiomas produtos",
+      "url": "https://old-brasil.mapbiomas.org/produtos/",
+      "uso": "Col9 publicada agosto2024, s?rie1985?2023; sem equival?ncia autom?tica com Col10.1."
+    },
+    {
+      "fonte": "INPE PRODES",
+      "url": "https://www.obt.inpe.br/OBT/noticias-obt-inpe/inpe-esclarece-sobre-sistemas-de-monitoramento",
+      "uso": "Janelas/estimativa/consolidado Amaz?nia; n?o prova a disponibilidade de cada mapa municipal."
+    },
+    {
+      "fonte": "INPE Queimadas FAQ",
+      "url": "https://data.inpe.br/queimadas/faq/",
+      "uso": "Refer?ncia de sat?lites, revis?es, atualiza??o do servi?o e limita??es de detec??o."
+    },
+    {
+      "fonte": "MapBiomas lan?amentos Fogo",
+      "url": "https://old-brasil.mapbiomas.org/en/lancamentos/",
+      "uso": "Fogo cole??o4 (1985?2024), lan?amento24/06/2025; produto candidato, n?o integrado."
+    },
+    {
+      "fonte": "ESA Sentinel-2",
+      "url": "https://dataspace.copernicus.eu/data-collections/copernicus-sentinel-missions/sentinel-2",
+      "uso": "Sensor de refer?ncia distinto; interpretar temporalidade, resolu??o e QA."
+    },
+    {
+      "fonte": "Earth Search Element84",
+      "url": "https://element84.com/earth-search/",
+      "uso": "Cat?logo p?blico, consultas e ativos de refer?ncia."
+    },
+    {
+      "fonte": "Microsoft SDK SAS",
+      "url": "https://raw.githubusercontent.com/microsoft/planetary-computer-sdk-for-python/main/planetary_computer/sas.py",
+      "uso": "Assinatura p?blica por cont?iner e cache, sem persistir token."
+    },
+    {
+      "fonte": "USGS Landsat QA",
+      "url": "https://www.usgs.gov/landsat-missions/landsat-collection-2-quality-assessment-bands",
+      "uso": "Flags de QA; QA central insuficiente para garantir janela inteira."
+    },
+    {
+      "fonte": "USGS SLC-off",
+      "url": "https://www.usgs.gov/faqs/what-landsat-7-etm-slc-data?items_per_page=6&page=1",
+      "uso": "Falha Landsat7 em31/05/2003 e lacunas; n?o preencher refer?ncias com classe presumida."
+    },
+    {
+      "fonte": "IBGE API PAM2023",
+      "url": "https://servicodados.ibge.gov.br/api/v3/noticias/?qtd=100&de=09-12-2024&ate=09-12-2024",
+      "publicado_em": "2024-09-12",
+      "uso": "Disponibilidade PAM2023; evid?ncia JSON preservada."
+    },
+    {
+      "fonte": "IBGE API PIB2023",
+      "url": "https://servicodados.ibge.gov.br/api/v3/noticias/?qtd=100&de=12-19-2025&ate=12-19-2025",
+      "publicado_em": "2025-12-19",
+      "uso": "Disponibilidade PIBmunicipal2022?2023; evid?ncia JSON preservada."
+    }
+  ]
+}

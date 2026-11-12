@@ -1,0 +1,28 @@
+{
+  "coorte": "focos2003",
+  "contexto": "RO",
+  "target": "C_ha",
+  "bloco": "BASE",
+  "features": [
+    "territorio_area_geodesica_ha",
+    "territorio_lon_referencia",
+    "territorio_lat_referencia"
+  ],
+  "n_treino_inicial": 2750,
+  "n_validacao": 750,
+  "UF_excluida": "RO",
+  "cortes_magnitude_treino": [
+    568.0746282367179,
+    1349.5370426894042,
+    3242.33033850271
+  ],
+  "row_ids_treino_sha256": "316bd6705bdea4d70f280946792c8f4d6c3c18ff13db7b152a8c4924865725cd",
+  "algoritmo": "media_historica",
+  "media": 2722.389916203482,
+  "mediana": 1306.3770362298546,
+  "n_treino_final": 3500,
+  "treino_final_ate": 2017,
+  "refit_exclui2014": true,
+  "arquivos_sha256": {},
+  "tipos_requerem_revisao_skops": {}
+}

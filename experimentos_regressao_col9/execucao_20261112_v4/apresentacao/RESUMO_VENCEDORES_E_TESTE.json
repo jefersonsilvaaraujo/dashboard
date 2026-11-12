@@ -1,0 +1,100 @@
+[
+  {
+    "coorte": "principal",
+    "contexto": "temporal",
+    "target": "R_pct",
+    "categoria": "supervisionado",
+    "bloco": "T3",
+    "algoritmo": "xgboost",
+    "MAE_validacao": 0.6601829705707187,
+    "RMSE_validacao": 1.013297826407017,
+    "categoria_resumo": "melhor_supervisionado_pela_validacao",
+    "metricas_teste": {
+      "coorte": "principal",
+      "contexto": "temporal",
+      "target": "R_pct",
+      "bloco": "T3",
+      "algoritmo": "xgboost",
+      "regime": "movel",
+      "n": 1020,
+      "MAE": 2.288259091798474,
+      "RMSE": 5.795433920291936,
+      "vies": -1.857830605761826,
+      "R2": 0.1857449468074469,
+      "pred_min": 0.08580171212528764,
+      "pred_max": 13.148599140616646,
+      "n_pred_negativas": 0,
+      "n_pred_acima_limite": 0
+    },
+    "melhor_geral_validacao": {
+      "coorte": "principal",
+      "contexto": "temporal",
+      "target": "R_pct",
+      "categoria": "incluindo_baselines",
+      "bloco": "BASE",
+      "algoritmo": "persistencia",
+      "MAE_validacao": 0.6547042807070189,
+      "RMSE_validacao": 1.0523384476983726
+    },
+    "LOSO_micro": {
+      "n": 1020,
+      "MAE": 2.211044839372555,
+      "RMSE": 5.465925033154772,
+      "vies": -1.559653165316267,
+      "R2": 0.2757043322408438,
+      "pred_min": -0.2487873885685219,
+      "pred_max": 19.02662309400087,
+      "n_pred_negativas": 3,
+      "n_pred_acima_limite": 0
+    }
+  },
+  {
+    "coorte": "principal",
+    "contexto": "temporal",
+    "target": "C_ha",
+    "categoria": "supervisionado",
+    "bloco": "T3",
+    "algoritmo": "random_forest",
+    "MAE_validacao": 538.7928495432959,
+    "RMSE_validacao": 1151.6439857919818,
+    "categoria_resumo": "melhor_supervisionado_pela_validacao",
+    "metricas_teste": {
+      "coorte": "principal",
+      "contexto": "temporal",
+      "target": "C_ha",
+      "bloco": "T3",
+      "algoritmo": "random_forest",
+      "regime": "movel",
+      "n": 1020,
+      "MAE": 1278.0889739139084,
+      "RMSE": 2809.216197300662,
+      "vies": -946.6585512478196,
+      "R2": 0.5802839442752188,
+      "pred_min": 35.385657645917625,
+      "pred_max": 23699.212381779835,
+      "n_pred_negativas": 0,
+      "n_pred_acima_limite": 0
+    },
+    "melhor_geral_validacao": {
+      "coorte": "principal",
+      "contexto": "temporal",
+      "target": "C_ha",
+      "categoria": "incluindo_baselines",
+      "bloco": "T3",
+      "algoritmo": "random_forest",
+      "MAE_validacao": 538.7928495432959,
+      "RMSE_validacao": 1151.6439857919818
+    },
+    "LOSO_micro": {
+      "n": 1020,
+      "MAE": 1282.870843123389,
+      "RMSE": 2833.6954744688305,
+      "vies": -918.1722883033573,
+      "R2": 0.5729373323851827,
+      "pred_min": 57.65174950967755,
+      "pred_max": 20372.4651607489,
+      "n_pred_negativas": 0,
+      "n_pred_acima_limite": 0
+    }
+  }
+]

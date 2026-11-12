@@ -1,0 +1,46 @@
+{
+  "coorte": "principal",
+  "contexto": "temporal",
+  "target": "C_ha",
+  "bloco": "T0",
+  "features": [
+    "territorio_area_geodesica_ha",
+    "territorio_lon_referencia",
+    "territorio_lat_referencia"
+  ],
+  "n_treino_inicial": 7395,
+  "n_validacao": 765,
+  "UF_excluida": null,
+  "cortes_magnitude_treino": [
+    676.4421268609228,
+    1705.3107727136753,
+    4474.1242845947945
+  ],
+  "row_ids_treino_sha256": "aa5709bf9e6028ee80a7c29e76b37252018f874a5606779c4c5367ebdea720ea",
+  "centro": 7.436609073254768,
+  "escala": 1.421085685814769,
+  "transformacao": "log1p",
+  "avisos": [],
+  "algoritmo": "random_forest",
+  "parametros": {
+    "n_estimators": 100,
+    "max_depth": 6,
+    "min_samples_leaf": 15,
+    "max_features": 1.0
+  },
+  "config": 2,
+  "MAE_CV": 1950.4648925247868,
+  "RMSE_CV": 3753.637154197311,
+  "n_colunas_entrada": 3,
+  "colunas_totalmente_ausentes_treino": [],
+  "arquivos_sha256": {
+    "pipeline.skops": "81e3052558e3981f258060617cc7bb262792a088df0d60772747d5e84b9444a8"
+  },
+  "tipos_requerem_revisao_skops": {
+    "pipeline.skops": [
+      "numpy.dtype",
+      "sklearn.tree._tree.Tree"
+    ]
+  },
+  "persistencia": "Sem pickle/joblib. skops para sklearn; JSONnativoXGBoost. Não carregar tipos desconhecidos automaticamente."
+}

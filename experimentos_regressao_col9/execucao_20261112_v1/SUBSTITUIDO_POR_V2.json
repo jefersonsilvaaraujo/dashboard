@@ -1,0 +1,7 @@
+{
+  "motivo": "skops pede revisao explicita de numpy.dtype; lista estatica sera autorizada na revisao2",
+  "ajustes_com_dados_cientificos": 0,
+  "teste_reservado_aberto": false,
+  "desenho_cientifico_alterado": false,
+  "proxima_versao": "execucao_20261112_v2"
+}

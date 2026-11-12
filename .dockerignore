@@ -20,3 +20,7 @@ historico/*.docx
 historico/estatisticas_coverage_historico_bkp.csv
 municipios_shapefile/municipios_2023.*
 manual_streamlit_vps.md
+resultados_transicoes_col9/
+entregas_transicoes_col9/
+validacao_cientifica_col9/
+deploy/

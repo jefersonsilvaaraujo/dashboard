@@ -1,0 +1,296 @@
+[
+  {
+    "coorte": "focos2003",
+    "contexto": "TO",
+    "target": "C_ha",
+    "bloco": "BASE",
+    "algoritmo": "media_historica",
+    "modelo_dir": "experimentos_regressao_col9/execucao_20261112_v4/desenvolvimento/focos2003/TO/C_ha/T0/tentativas/38d9810781/media_historica/final",
+    "meta": {
+      "coorte": "focos2003",
+      "contexto": "TO",
+      "target": "C_ha",
+      "bloco": "BASE",
+      "features": [
+        "territorio_area_geodesica_ha",
+        "territorio_lon_referencia",
+        "territorio_lat_referencia"
+      ],
+      "n_treino_inicial": 2013,
+      "n_validacao": 549,
+      "UF_excluida": "TO",
+      "cortes_magnitude_treino": [
+        594.5450614520948,
+        1490.6984272409345,
+        3863.295725182229
+      ],
+      "row_ids_treino_sha256": "a7317350655b4b6ea567fa6501087d35ae5bc61287630250da21d6880ea7039b",
+      "algoritmo": "media_historica",
+      "media": 3128.104601290444,
+      "mediana": 1427.0061423346708,
+      "n_treino_final": 2562,
+      "treino_final_ate": 2017,
+      "refit_exclui2014": true,
+      "arquivos_sha256": {},
+      "tipos_requerem_revisao_skops": {}
+    }
+  },
+  {
+    "coorte": "focos2003",
+    "contexto": "TO",
+    "target": "C_ha",
+    "bloco": "BASE",
+    "algoritmo": "mediana_historica",
+    "modelo_dir": "experimentos_regressao_col9/execucao_20261112_v4/desenvolvimento/focos2003/TO/C_ha/T0/tentativas/38d9810781/mediana_historica/final",
+    "meta": {
+      "coorte": "focos2003",
+      "contexto": "TO",
+      "target": "C_ha",
+      "bloco": "BASE",
+      "features": [
+        "territorio_area_geodesica_ha",
+        "territorio_lon_referencia",
+        "territorio_lat_referencia"
+      ],
+      "n_treino_inicial": 2013,
+      "n_validacao": 549,
+      "UF_excluida": "TO",
+      "cortes_magnitude_treino": [
+        594.5450614520948,
+        1490.6984272409345,
+        3863.295725182229
+      ],
+      "row_ids_treino_sha256": "a7317350655b4b6ea567fa6501087d35ae5bc61287630250da21d6880ea7039b",
+      "algoritmo": "mediana_historica",
+      "media": 3128.104601290444,
+      "mediana": 1427.0061423346708,
+      "n_treino_final": 2562,
+      "treino_final_ate": 2017,
+      "refit_exclui2014": true,
+      "arquivos_sha256": {},
+      "tipos_requerem_revisao_skops": {}
+    }
+  },
+  {
+    "coorte": "focos2003",
+    "contexto": "TO",
+    "target": "C_ha",
+    "bloco": "BASE",
+    "algoritmo": "persistencia",
+    "modelo_dir": "experimentos_regressao_col9/execucao_20261112_v4/desenvolvimento/focos2003/TO/C_ha/T0/tentativas/38d9810781/persistencia/final",
+    "meta": {
+      "coorte": "focos2003",
+      "contexto": "TO",
+      "target": "C_ha",
+      "bloco": "BASE",
+      "features": [
+        "territorio_area_geodesica_ha",
+        "territorio_lon_referencia",
+        "territorio_lat_referencia"
+      ],
+      "n_treino_inicial": 2013,
+      "n_validacao": 549,
+      "UF_excluida": "TO",
+      "cortes_magnitude_treino": [
+        594.5450614520948,
+        1490.6984272409345,
+        3863.295725182229
+      ],
+      "row_ids_treino_sha256": "a7317350655b4b6ea567fa6501087d35ae5bc61287630250da21d6880ea7039b",
+      "algoritmo": "persistencia",
+      "media": 3128.104601290444,
+      "mediana": 1427.0061423346708,
+      "n_treino_final": 2562,
+      "treino_final_ate": 2017,
+      "refit_exclui2014": true,
+      "arquivos_sha256": {},
+      "tipos_requerem_revisao_skops": {}
+    }
+  },
+  {
+    "coorte": "focos2003",
+    "contexto": "TO",
+    "target": "C_ha",
+    "bloco": "T0",
+    "algoritmo": "ridge",
+    "modelo_dir": "experimentos_regressao_col9/execucao_20261112_v4/desenvolvimento/focos2003/TO/C_ha/T0/tentativas/38d9810781/ridge/final",
+    "meta": {
+      "coorte": "focos2003",
+      "contexto": "TO",
+      "target": "C_ha",
+      "bloco": "T0",
+      "features": [
+        "territorio_area_geodesica_ha",
+        "territorio_lon_referencia",
+        "territorio_lat_referencia"
+      ],
+      "n_treino_inicial": 2013,
+      "n_validacao": 549,
+      "UF_excluida": "TO",
+      "cortes_magnitude_treino": [
+        594.5450614520948,
+        1490.6984272409345,
+        3863.295725182229
+      ],
+      "row_ids_treino_sha256": "a7317350655b4b6ea567fa6501087d35ae5bc61287630250da21d6880ea7039b",
+      "centro": 7.226591528978404,
+      "escala": 1.3742687537729519,
+      "transformacao": "log1p",
+      "avisos": [],
+      "algoritmo": "ridge",
+      "parametros": {
+        "alpha": 1000.0
+      },
+      "config": 5,
+      "MAE_CV": 1669.6288871285144,
+      "RMSE_CV": 3031.664355164611,
+      "n_colunas_entrada": 3,
+      "colunas_totalmente_ausentes_treino": [],
+      "n_treino_final": 2562,
+      "treino_final_ate": 2017,
+      "refit_exclui2014": true
+    }
+  },
+  {
+    "coorte": "focos2003",
+    "contexto": "TO",
+    "target": "C_ha",
+    "bloco": "T0",
+    "algoritmo": "elastic_net",
+    "modelo_dir": "experimentos_regressao_col9/execucao_20261112_v4/desenvolvimento/focos2003/TO/C_ha/T0/tentativas/38d9810781/elastic_net/final",
+    "meta": {
+      "coorte": "focos2003",
+      "contexto": "TO",
+      "target": "C_ha",
+      "bloco": "T0",
+      "features": [
+        "territorio_area_geodesica_ha",
+        "territorio_lon_referencia",
+        "territorio_lat_referencia"
+      ],
+      "n_treino_inicial": 2013,
+      "n_validacao": 549,
+      "UF_excluida": "TO",
+      "cortes_magnitude_treino": [
+        594.5450614520948,
+        1490.6984272409345,
+        3863.295725182229
+      ],
+      "row_ids_treino_sha256": "a7317350655b4b6ea567fa6501087d35ae5bc61287630250da21d6880ea7039b",
+      "centro": 3128.104601290444,
+      "escala": 4781.033269642505,
+      "transformacao": "identidade",
+      "avisos": [],
+      "algoritmo": "elastic_net",
+      "parametros": {
+        "alpha": 0.001,
+        "l1_ratio": 0.25
+      },
+      "config": 0,
+      "MAE_CV": 2474.5352328029553,
+      "RMSE_CV": 4158.595399593235,
+      "n_colunas_entrada": 3,
+      "colunas_totalmente_ausentes_treino": [],
+      "n_treino_final": 2562,
+      "treino_final_ate": 2017,
+      "refit_exclui2014": true
+    }
+  },
+  {
+    "coorte": "focos2003",
+    "contexto": "TO",
+    "target": "C_ha",
+    "bloco": "T0",
+    "algoritmo": "random_forest",
+    "modelo_dir": "experimentos_regressao_col9/execucao_20261112_v4/desenvolvimento/focos2003/TO/C_ha/T0/tentativas/38d9810781/random_forest/final",
+    "meta": {
+      "coorte": "focos2003",
+      "contexto": "TO",
+      "target": "C_ha",
+      "bloco": "T0",
+      "features": [
+        "territorio_area_geodesica_ha",
+        "territorio_lon_referencia",
+        "territorio_lat_referencia"
+      ],
+      "n_treino_inicial": 2013,
+      "n_validacao": 549,
+      "UF_excluida": "TO",
+      "cortes_magnitude_treino": [
+        594.5450614520948,
+        1490.6984272409345,
+        3863.295725182229
+      ],
+      "row_ids_treino_sha256": "a7317350655b4b6ea567fa6501087d35ae5bc61287630250da21d6880ea7039b",
+      "centro": 7.226591528978404,
+      "escala": 1.3742687537729519,
+      "transformacao": "log1p",
+      "avisos": [],
+      "algoritmo": "random_forest",
+      "parametros": {
+        "n_estimators": 100,
+        "max_depth": 10,
+        "min_samples_leaf": 10,
+        "max_features": 0.7
+      },
+      "config": 3,
+      "MAE_CV": 1653.8081301516022,
+      "RMSE_CV": 3061.2131384166787,
+      "n_colunas_entrada": 3,
+      "colunas_totalmente_ausentes_treino": [],
+      "n_treino_final": 2562,
+      "treino_final_ate": 2017,
+      "refit_exclui2014": true
+    }
+  },
+  {
+    "coorte": "focos2003",
+    "contexto": "TO",
+    "target": "C_ha",
+    "bloco": "T0",
+    "algoritmo": "xgboost",
+    "modelo_dir": "experimentos_regressao_col9/execucao_20261112_v4/desenvolvimento/focos2003/TO/C_ha/T0/tentativas/38d9810781/xgboost/final",
+    "meta": {
+      "coorte": "focos2003",
+      "contexto": "TO",
+      "target": "C_ha",
+      "bloco": "T0",
+      "features": [
+        "territorio_area_geodesica_ha",
+        "territorio_lon_referencia",
+        "territorio_lat_referencia"
+      ],
+      "n_treino_inicial": 2013,
+      "n_validacao": 549,
+      "UF_excluida": "TO",
+      "cortes_magnitude_treino": [
+        594.5450614520948,
+        1490.6984272409345,
+        3863.295725182229
+      ],
+      "row_ids_treino_sha256": "a7317350655b4b6ea567fa6501087d35ae5bc61287630250da21d6880ea7039b",
+      "centro": 7.226591528978404,
+      "escala": 1.3742687537729519,
+      "transformacao": "log1p",
+      "avisos": [],
+      "algoritmo": "xgboost",
+      "parametros": {
+        "n_estimators": 160,
+        "max_depth": 2,
+        "learning_rate": 0.05,
+        "min_child_weight": 10,
+        "reg_lambda": 5.0,
+        "subsample": 0.9,
+        "colsample_bytree": 0.9
+      },
+      "config": 2,
+      "MAE_CV": 1702.3409387900238,
+      "RMSE_CV": 3024.4492307259316,
+      "n_colunas_entrada": 3,
+      "colunas_totalmente_ausentes_treino": [],
+      "n_treino_final": 2562,
+      "treino_final_ate": 2017,
+      "refit_exclui2014": true
+    }
+  }
+]

@@ -1,0 +1,75 @@
+{
+  "coorte": "principal",
+  "contexto": "TO",
+  "target": "C_ha",
+  "bloco": "T1",
+  "features": [
+    "territorio_area_geodesica_ha",
+    "territorio_lon_referencia",
+    "territorio_lat_referencia",
+    "mb_vn_t_ha",
+    "mb_vn_t_pct",
+    "mb_ua_t_ha",
+    "mb_ua_t_pct",
+    "mb_pastagem_t_ha",
+    "mb_pastagem_t_pct",
+    "mb_agricultura_t_ha",
+    "mb_agricultura_t_pct",
+    "mb_formacoes_florestais_t_ha",
+    "mb_formacoes_florestais_t_pct",
+    "mb_savanica_t_ha",
+    "mb_savanica_t_pct",
+    "mb_campestre_t_ha",
+    "mb_campestre_t_pct",
+    "mb_mosaico_t_ha",
+    "mb_mosaico_t_pct",
+    "mb_classe25_t_ha",
+    "mb_classe25_t_pct",
+    "mb_classe29_t_ha",
+    "mb_classe29_t_pct",
+    "mb_classe32_t_ha",
+    "mb_classe32_t_pct",
+    "mb_classe33_t_ha",
+    "mb_classe33_t_pct",
+    "mb_area_classificada_t_ha",
+    "mb_pixels_validos_t",
+    "mb_pixels_sem_classe_valida_t",
+    "mb_cobertura_grade_t_pct",
+    "mb_razao_classificada_territorial_t_pct",
+    "mb_diferenca_classificada_territorial_t_ha"
+  ],
+  "n_treino_inicial": 5307,
+  "n_validacao": 549,
+  "UF_excluida": "TO",
+  "cortes_magnitude_treino": [
+    693.9782711732132,
+    1892.1646019903808,
+    5985.4878893154955
+  ],
+  "row_ids_treino_sha256": "1680d3086e12acd9f2c5c535388a9b2b19a6f196411db80317784ea99442b9fd",
+  "centro": 4559.049298994134,
+  "escala": 6844.203651447794,
+  "transformacao": "identidade",
+  "avisos": [],
+  "algoritmo": "ridge",
+  "parametros": {
+    "alpha": 1000.0
+  },
+  "config": 2,
+  "MAE_CV": 3578.0544306080965,
+  "RMSE_CV": 5812.853045943754,
+  "n_colunas_entrada": 33,
+  "colunas_totalmente_ausentes_treino": [],
+  "n_treino_final": 5856,
+  "treino_final_ate": 2017,
+  "refit_exclui2014": true,
+  "arquivos_sha256": {
+    "pipeline.skops": "cfeb2f142abaecf96498b376f68bcedc275babaf9f0ec388d7383ba68eb6c47e"
+  },
+  "tipos_requerem_revisao_skops": {
+    "pipeline.skops": [
+      "numpy.dtype"
+    ]
+  },
+  "persistencia": "Sem pickle/joblib. skops para sklearn; JSONnativoXGBoost. Não carregar tipos desconhecidos automaticamente."
+}

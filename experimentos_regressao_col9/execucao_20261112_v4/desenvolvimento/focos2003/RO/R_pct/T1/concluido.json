@@ -1,0 +1,19 @@
+{
+  "tentativa": "tentativas\\61924fc59d",
+  "protocolo_sha256": "ec6fe93e40a4ecb2a23dd52a41761c3d4d1f37df85d1d5c677d322a7fa69f2f0",
+  "artefatos": {
+    "tentativas\\61924fc59d\\CV.parquet": "625f03b4d3b23dce739f35a2f87ec14c3fc6f800c367d70662a12e063df159e0",
+    "tentativas\\61924fc59d\\especificacoes_modelos.json": "f0659156474d05b27b5652c69daf69e76fa3a480e9eae1c95c9beef4dc3752fd",
+    "tentativas\\61924fc59d\\validacao_metricas.parquet": "190a1d356cd8c609e7efcafc65a453492ff22ad2f2954a403b08008048eb117d",
+    "tentativas\\61924fc59d\\validacao_predicoes.parquet": "096852e055727048749b76b4ba3b4d2a644657a7a0b7556a4e1d476e1a0d2635",
+    "tentativas\\61924fc59d\\xgboost\\final\\modelo.json": "a3c9e4270146f7935c544836cb54e41b0f222bdc2897443ca9b629153d2d4935",
+    "tentativas\\61924fc59d\\xgboost\\final\\modelo_xgboost.json": "f2aed152ba871c66a125cb36db1577eb12546834f4acdb66c774cc654af32ab7",
+    "tentativas\\61924fc59d\\xgboost\\final\\preprocessamento.skops": "dee1c103d6cb8418fdacd964e38790cc4f5e931bb0b6b11c74b3b4ca4e8a0ef4",
+    "tentativas\\61924fc59d\\ridge\\final\\modelo.json": "6ea4b3dc1d98532ae7fb470aceae6634c1463764ed4c741801ec0e8174479921",
+    "tentativas\\61924fc59d\\ridge\\final\\pipeline.skops": "b742565d3b8ce08be8c1fd1265669f101a4cf2e18e869b7a4ef29205a61bcf5b",
+    "tentativas\\61924fc59d\\random_forest\\final\\modelo.json": "adcef79718b155606081f954205e552d47fad3382fca13112c6016361783f355",
+    "tentativas\\61924fc59d\\random_forest\\final\\pipeline.skops": "36157b6c76a06a42ea8d47688523609e7d51a16b4d4ff64d3ceefa18eea7b663",
+    "tentativas\\61924fc59d\\elastic_net\\final\\modelo.json": "34603e3cf6ddf72e4861e66eff2405c1ab7fe7928ed2c929c43d7597b455761d",
+    "tentativas\\61924fc59d\\elastic_net\\final\\pipeline.skops": "8250368e0dae5b71cffc0838ae839b81fbc67e4b947ed21704eb030b77e72f50"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "coorte": "focos2003",
+  "contexto": "MA",
+  "target": "C_ha",
+  "bloco": "BASE",
+  "features": [
+    "territorio_area_geodesica_ha",
+    "territorio_lon_referencia",
+    "territorio_lat_referencia"
+  ],
+  "n_treino_inicial": 1760,
+  "n_validacao": 480,
+  "UF_excluida": "MA",
+  "cortes_magnitude_treino": [
+    711.482372449294,
+    1867.151250143464,
+    4188.906480706229
+  ],
+  "row_ids_treino_sha256": "28a065c2ef8799883413615fba5eecd1c5e6b1eb3b6fbc8215e60a4f59a99893",
+  "algoritmo": "persistencia",
+  "media": 3363.9191893527736,
+  "mediana": 1812.761398742327,
+  "n_treino_final": 2240,
+  "treino_final_ate": 2017,
+  "refit_exclui2014": true,
+  "arquivos_sha256": {},
+  "tipos_requerem_revisao_skops": {}
+}

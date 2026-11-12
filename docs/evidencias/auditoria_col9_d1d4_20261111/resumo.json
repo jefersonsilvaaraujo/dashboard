@@ -1,0 +1,141 @@
+{
+  "metodologia": {
+    "serie": "col9_255_1985_2023",
+    "colecao": "9",
+    "periodo": [
+      1985,
+      2023
+    ],
+    "municipios": 255,
+    "cobertura": "mapbiomas.vw_cobertura_col9_255",
+    "territorio": "ref.vw_municipios_col9_255",
+    "limites": "IBGE 2025 / EPSG:4674",
+    "legenda": {
+      "versao": "col9_legend_code_v2",
+      "colecao": "9",
+      "fonte": "https://brasil.mapbiomas.org/wp-content/uploads/sites/4/2024/10/Legenda-Colecao-9-LEGEND-CODE_v2.pdf",
+      "consulta": "2026-11-11",
+      "escopo": "29 classes terminais; níveis agregados omitidos para impedir dupla contagem",
+      "campos_conferidos": [
+        "classe_cobertura",
+        "nome_classe",
+        "cor_rgb",
+        "grupo"
+      ],
+      "tipo_natural_antropico": "não homologado; não fornecido por este documento oficial",
+      "restricao": "O documento oficial não define o tipo operacional. A metodologia aprovada da pesquisa está separada em metodologia_col9.json. Código zero é NoData, não uma transição."
+    },
+    "arquivos": {
+      "verificado_em": "2026-11-11",
+      "escopo": "Hashes dos arquivos locais citados no histórico; não certificam os rasters pixel a pixel.",
+      "consolidado": {
+        "arquivo": "cobertura_col9_255_1985_2023_consolidada.csv",
+        "sha256": "8342c8ce79eaceb6fd13a6a2b8ea217b06d4448325667348ae8d205435c56212",
+        "delimitador": ";",
+        "decimal": ".",
+        "encoding": "utf-8-sig"
+      },
+      "territorio": {
+        "arquivo": "municipios_255_ibge_2025.gpkg",
+        "sha256": "743491f51925c252b7d094aa577290bb892161e015ac2e5aa9c6c55ab0d76fe8"
+      },
+      "script_complementar": {
+        "arquivo": "processar_cobertura_col9_255_complementado.py",
+        "sha256": "e0f423be96d275a999f8385acfed948a886e6d223698a21193502ea0a6f9fed3",
+        "area": "Geod WGS84 por linha; não confundir área geográfica de pixels com pixels * 0.09 ha"
+      }
+    },
+    "metodologia": {
+      "versao": "defesa_col9_d1d4_v1",
+      "status": "aprovada_pelo_pesquisador",
+      "aprovacao": "2026-11-11",
+      "serie": "col9_255_1985_2023",
+      "vegetacao_nativa": [
+        3,
+        4,
+        5,
+        6,
+        49,
+        11,
+        12,
+        50
+      ],
+      "natural_especifica": [
+        23,
+        29,
+        32
+      ],
+      "sensibilidade_vegetacao": [
+        29,
+        32
+      ],
+      "usos_antropicos": [
+        9,
+        15,
+        20,
+        21,
+        24,
+        30,
+        31,
+        35,
+        39,
+        40,
+        41,
+        46,
+        47,
+        48,
+        62
+      ],
+      "agua": [
+        33
+      ],
+      "indeterminada": [
+        25
+      ],
+      "nao_observado": [
+        0,
+        27
+      ],
+      "denominador": "soma das areas classificadas, incluindo 25 e 33; excluir 0, 27 e NoData",
+      "agregacao": "razao entre somas de areas; denominador independente do filtro de classes",
+      "decadas": "media anual de area, informando anos e periodos incompletos",
+      "variacao": "variacao liquida de area entre estoques anuais; nao e desmatamento nem transicao espacial",
+      "variavel_alvo": "nao definida; conversao significativa em t+1 exige proposta de transicoes espaciais, limiar validado e controle de vazamento temporal",
+      "territorio": "255 municipios, limites fixos IBGE 2025, EPSG:4674",
+      "limites": [
+        "classes mapeadas nao medem intensidade de impacto",
+        "agua inclui reservatorios",
+        "sensibilidade nao e intervalo de confianca",
+        "diferencas de area nao sao automaticamente NoData"
+      ]
+    },
+    "ressalva_2002": "Buriticupu: diferença de máscara; transições exigem pixels válidos nos dois anos.",
+    "fontes_complementares": "PRODES e queimadas ainda não harmonizados para os 255."
+  },
+  "pares_municipio_ano": 9945,
+  "municipios": 255,
+  "anos": 39,
+  "causa_diferencas": "não atribuída; nenhuma diferença é automaticamente NoData",
+  "estatisticas": {
+    "razao_classificada_cadastrada_pct": {
+      "min": 98.12296006283981,
+      "mediana": 99.4757162840667,
+      "max": 99.99780715940192
+    },
+    "razao_classificada_geodesica_wgs84_pct": {
+      "min": 99.5762006443421,
+      "mediana": 99.99985891471411,
+      "max": 100.04068661870093
+    },
+    "desvio_cadastro_geodesica_pct": {
+      "min": 0.0020687462465506586,
+      "mediana": 0.5206063210855884,
+      "max": 1.8812650844097352
+    },
+    "diferenca_classificada_geodesica_wgs84_ha": {
+      "min": -1082.2274527429545,
+      "mediana": -0.2919279109482886,
+      "max": 34.88538428884931
+    }
+  }
+}

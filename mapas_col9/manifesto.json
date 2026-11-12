@@ -1,0 +1,41 @@
+{
+  "colecao": "9",
+  "territorio": {
+    "arquivo": "municipios_255_ibge_2025.gpkg",
+    "sha256": "743491f51925c252b7d094aa577290bb892161e015ac2e5aa9c6c55ab0d76fe8"
+  },
+  "municipios": 255,
+  "crs_desenho": "EPSG:4326",
+  "bounds": [
+    -61.5758111,
+    -16.2795798,
+    -42.6415021,
+    -2.25123349999996
+  ],
+  "metodo": "vizinho mais proximo; mascara 255; complemento apenas zeros nos tres municipios MA; somente visualizacao",
+  "advertencia": "Imagem reduzida; cores nao sao RGB de origem; nao usar para estatisticas ou transicoes.",
+  "mapas": {
+    "1985": {
+      "arquivo": "colecao9_255_1985.png",
+      "sha256": "689f902d7cadb6a1c2c21b59fc8c2a20f6d619bd8a6cfc740e3abd5f992c275d",
+      "raster": "municipios_coverage_1985-040.tif",
+      "sha256_raster": "900fe1fbe28a34da6c1f247b397daf7272c102dfd89b4ae64a88fb6b7ce1f7c5",
+      "complemento": "mapbiomas_col9_recuperacao_3municipios_MA.tif",
+      "sha256_complemento": "b210cd6fae9f11b6ca638f3a2bebdce663a76bb21559b424d390f3c1f0d88bc5",
+      "pixels_recuperados_no_desenho": 304,
+      "largura": 1400,
+      "altura": 1037
+    },
+    "2023": {
+      "arquivo": "colecao9_255_2023.png",
+      "sha256": "58bb6a2c5ba7f20b699cab6a330189134dab3ca0e45f44950eaf1ead9adbc1e3",
+      "raster": "municipios_coverage_2023-002.tif",
+      "sha256_raster": "e7bc134376c1fb44a5d596b096a8b6d4d32714e5fb6ae5e571682dd4d806eedc",
+      "complemento": "mapbiomas_col9_recuperacao_3municipios_MA.tif",
+      "sha256_complemento": "b210cd6fae9f11b6ca638f3a2bebdce663a76bb21559b424d390f3c1f0d88bc5",
+      "pixels_recuperados_no_desenho": 304,
+      "largura": 1400,
+      "altura": 1037
+    }
+  }
+}

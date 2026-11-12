@@ -5,3 +5,7 @@ venv/
 .venv/
 .env
 .pytest_cache/
+resultados_transicoes_col9/
+entregas_transicoes_col9/
+validacao_cientifica_col9/
+deploy/checkpoint_*/
